@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
     new Thread(() -> {
       try {
         Thread.sleep(1000);
-        // robotContainer.drivetrain.coast();
+        robotContainer.dt.coast();
       } catch(InterruptedException e) {}
     }).start();
     Log.flush();
@@ -72,8 +72,8 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    // robotContainer.drivetrain.brake();
-    // robotContainer.drivetrain.resetOdometry();
+    robotContainer.dt.brake();
+    robotContainer.dt.resetOdometry();
     robotContainer.getAutonomousCommand().schedule();
     Log.setDataLoggingDisabled(false);
   }
@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    // robotContainer.drivetrain.brake();
+    robotContainer.dt.brake();
     Log.setDataLoggingDisabled(false);
   }
 

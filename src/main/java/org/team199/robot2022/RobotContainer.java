@@ -4,35 +4,57 @@
 
 package org.team199.robot2022;
 
+import org.team199.robot2022.commands.TeleopDrive;
+import org.team199.robot2022.subsystems.Drivetrain;
+
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  public PowerDistribution pdp = new PowerDistribution();
+  public final Joystick leftJoy = new Joystick(Constants.OI.LeftJoy.port);
+  public final Joystick rightJoy = new Joystick(Constants.OI.RightJoy.port);
+  public final Joystick controller = Constants.OI.Controller.controller;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  public final Drivetrain dt = new Drivetrain();
+  public final PowerDistribution pdp = new PowerDistribution();
+
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    dt.setDefaultCommand(new TeleopDrive(dt,
+        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.Y)),
+        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)),
+        () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X))));
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -42,5 +64,56 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return null;
+  }
+
+  private double getStickValue(Constants.OI.StickType stick, Constants.OI.StickDirection dir) {
+    switch (Constants.OI.CONTROL_TYPE) {
+      case JOYSTICKS:
+        if (stick == Constants.OI.StickType.LEFT && dir == Constants.OI.StickDirection.X)
+          return leftJoy.getX();
+        if (stick == Constants.OI.StickType.LEFT && dir == Constants.OI.StickDirection.Y)
+          return -leftJoy.getY();
+        if (stick == Constants.OI.StickType.RIGHT && dir == Constants.OI.StickDirection.X)
+          return rightJoy.getX();
+        if (stick == Constants.OI.StickType.RIGHT && dir == Constants.OI.StickDirection.Y)
+          return -rightJoy.getY();
+      case GAMEPAD:
+        if (controller.getName().equals("Logitech Dual Action")) {
+          if (stick == Constants.OI.StickType.LEFT && dir == Constants.OI.StickDirection.X)
+            return controller.getRawAxis(0);
+          if (stick == Constants.OI.StickType.LEFT && dir == Constants.OI.StickDirection.Y)
+            return -controller.getRawAxis(1);
+          if (stick == Constants.OI.StickType.RIGHT && dir == Constants.OI.StickDirection.X)
+            return controller.getRawAxis(2);
+          if (stick == Constants.OI.StickType.RIGHT && dir == Constants.OI.StickDirection.Y)
+            return -controller.getRawAxis(3);
+        } else {
+          if (stick == Constants.OI.StickType.LEFT && dir == Constants.OI.StickDirection.X)
+            return controller.getRawAxis(0);
+          if (stick == Constants.OI.StickType.LEFT && dir == Constants.OI.StickDirection.Y)
+            return -controller.getRawAxis(1);
+          if (stick == Constants.OI.StickType.RIGHT && dir == Constants.OI.StickDirection.X)
+            return controller.getRawAxis(4);
+          if (stick == Constants.OI.StickType.RIGHT && dir == Constants.OI.StickDirection.Y)
+            return -controller.getRawAxis(5);
+        }
+      default:
+        return 0;
+    }
+  }
+
+  /**
+   * Processes an input from the joystick into a value between -1 and 1
+   * 
+   * @param value The value to be processed.
+   * @return The processed value.
+   */
+  private double inputProcessing(double value) {
+    double processedInput;
+    // processedInput =
+    // (((1-Math.cos(value*Math.PI))/2)*((1-Math.cos(value*Math.PI))/2))*(value/Math.abs(value));
+    processedInput = Math.copySign(((1 - Math.cos(value * Math.PI)) / 2) * ((1 - Math.cos(value * Math.PI)) / 2),
+        value);
+    return processedInput;
   }
 }
