@@ -6,6 +6,7 @@ package org.team199.robot2022;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.lib.SwerveConfig;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -99,6 +100,8 @@ public final class Constants {
         public static final double[] xPIDController = {4, 0.0, 0.0};
         public static final double[] yPIDController = {4, 0.0, 0.0};
         public static final double[] thetaPIDController = {4, 0.0, 0.0};
+
+        public static final SwerveConfig swerveConfig = new SwerveConfig(wheelDiameterMeters, driveGearing, mu, autoCentripetalAccel, kForwardVolts, kForwardVels, kForwardAccels, kBackwardVolts, kBackwardVels, kBackwardAccels, drivekP, drivekI, drivekD, turnkP, turnkI, turnkD, turnkS, turnkV, turnkA, turnZero, driveInversion, reversed);
 
     }
 
