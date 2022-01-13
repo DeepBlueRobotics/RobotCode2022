@@ -7,10 +7,9 @@ package org.team199.robot2022;
 import org.team199.robot2022.commands.TeleopDrive;
 import org.team199.robot2022.subsystems.Drivetrain;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -36,8 +35,23 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
+    if (DriverStation.isJoystickConnected(Constants.OI.LeftJoy.port)) {
+      configureButtonBindingsLeftJoy();
+    } else {
+      System.err.println("ERROR: Dude, you're missing the left joystick.");
+    }
+
+    if (DriverStation.isJoystickConnected(Constants.OI.RightJoy.port)) {
+      configureButtonBindingsRightJoy();
+    } else {
+      System.err.println("ERROR: Dude, you're missing the right joystick.");
+    }
+
+    if (DriverStation.isJoystickConnected(Constants.OI.Controller.port)) {
+      configureButtonBindingsController();
+    } else {
+      System.err.println("ERROR: Dude, you're missing the controller.");
+    }
 
     dt.setDefaultCommand(new TeleopDrive(dt,
         () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.Y)),
@@ -45,15 +59,16 @@ public class RobotContainer {
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X))));
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-   * it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
+  private void configureButtonBindingsLeftJoy() {
+
+  }
+
+  private void configureButtonBindingsRightJoy() {
+
+  }
+
+  private void configureButtonBindingsController() {
+
   }
 
   /**
