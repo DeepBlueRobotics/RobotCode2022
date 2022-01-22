@@ -37,8 +37,10 @@ public class ColorSensor extends SubsystemBase {
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  // The color sensor can detect how far away the object is from the sensor
-  // This can be used to determine whether there is a ball or not
+  /** The color sensor can detect how far away the object is from the sensor
+   *  This can be used to determine whether there is a ball or not
+   *  This ranges from 0 to 2047 where the value is larger when an object is closer
+   */
   private final int minProxmity = 2000;
 
   /** Creates a new ColorSensor. */
