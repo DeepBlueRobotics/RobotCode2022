@@ -11,17 +11,45 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.ColorSensorV3;
+
+
 import com.revrobotics.ColorMatchResult;
+
+
 import com.revrobotics.ColorMatch;
+    
+
 
 public class ColorSensor extends SubsystemBase {
 
   /**
-   * Currently, there might be some errors with the I2C port but it shouldn't be an issue
-   * as they probably will fix it before competition
+   * Adds a box to SmartDashboard to put in team color
+   * takes in what color the team is from smart dashboard to be checked
+   * with color sensor
+   */
+  boolean ignored = SmartDashboard.putString("Team Color", null);
+  String teamColor = SmartDashboard.getString("Team Color", null);
+
+
+  /**
+   * Change the I2C port below to match the connection of your color sensor
    */
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
+
+  /**
+   * A Rev Color Sensor V3 object is constructed with an I2C port as a 
+   * parameter. The device will be automatically initialized with default 
+   * parameters.
+   */
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+
+  /**
+   * A Rev Color Match object is used to register and detect known colors. This can 
+   * be calibrated ahead of time or during operation.
+   * 
+   * This object uses a simple euclidian distance to estimate the closest match
+   * with given confidence range.
+   */
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
   /**
@@ -31,12 +59,6 @@ public class ColorSensor extends SubsystemBase {
    */
   //private final Color kBlueTarget = Color.makeColor(0.143, 0.427, 0.429);
 
-  /**
-   * may want to add WHAT COLOR BALLS THE ROBOT WANTS TO HAVE
-   * change the boolean output for false to match the correct color
-   */
-  
-   
   /** Creates a new ColorSensor. */
   public ColorSensor() {
     m_colorMatcher.addColorMatch(Color.kBlue);
@@ -46,10 +68,9 @@ public class ColorSensor extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    detectColor();
   }
 
-  public void detectColor() {
+  public boolean detectColor() {
     /**
      * The method GetColor() returns a normalized color value from the sensor and can be
      * useful if outputting the color to an RGB LED or similar. To
@@ -59,22 +80,13 @@ public class ColorSensor extends SubsystemBase {
      * well lit conditions (the built in LED is a big help here!). The farther
      * an object is the more light from the surroundings will bleed into the 
      * measurements and make it difficult to accurately determine its color.
+     * 
+     * @return returns a boolean of whether or not the color is correct
      */
     Color detectedColor = m_colorSensor.getColor();
 
     /**
      * Run the color match algorithm on our detected color
-     *
-     * once the color is read, it will output to the smartdashboard
-     * we can then use this information and put it into regurgitate
-     * 
-     * - create a boolean that detects if a ball is "correct", this boolean 
-     * can then be switched around depending on what team we are.
-     *    - ideally, we want the ball to be instantly regurgitated if it is not
-     *      the "correct" color
-     *    
-     * 
-     * 
      */
     String colorString;
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
@@ -89,12 +101,30 @@ public class ColorSensor extends SubsystemBase {
 
     /**
      * Open Smart Dashboard or Shuffleboard to see the color detected by the 
-     * sensor.
+     * sensor. DEBUGGING STUFF NOT REALLY USEFUL IN GAME
      */
     SmartDashboard.putNumber("Red", detectedColor.red);
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
     SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putString("Detected Color", colorString);
+
+    
+    /**
+     * Takes in color from sensor and checks it with the color previously 
+     * inputted in SmartDashboard, if true, the detectColor method returns
+     * true, if false, detectColor() returns false. Regurgitate will only run
+     * if detectColor() returns false.
+     * 
+     * 
+     * SHOULD BE TRUE BY DEFAULT SO WE MAY NEED TO PAINT BOTTOM OF INTAKE 
+     * PLEXIGLASS SO IT WONT READ ROBOT PARTS
+     * 
+     * 
+     */
+
+    return teamColor.equals(colorString);
+
+
   }
 }
