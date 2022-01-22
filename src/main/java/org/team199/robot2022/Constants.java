@@ -107,20 +107,20 @@ public final class Constants {
 
     public static final class DrivePorts {
 
-        public static final int driveFrontLeft = 0;
-        public static final int driveFrontRight = 0;
-        public static final int driveBackLeft = 0;
-        public static final int driveBackRight = 0;
+        public static final int driveFrontLeft = 2;
+        public static final int driveFrontRight = 3;
+        public static final int driveBackLeft = 12;
+        public static final int driveBackRight = 11;
 
-        public static final int turnFrontLeft = 0;
-        public static final int turnFrontRight = 0;
-        public static final int turnBackLeft = 0;
-        public static final int turnBackRight = 0;
+        public static final int turnFrontLeft = 9;
+        public static final int turnFrontRight = 4;
+        public static final int turnBackLeft = 1;
+        public static final int turnBackRight = 10;
 
-        public static final int canCoderPortFL = 0;
-        public static final int canCoderPortFR = 0;
-        public static final int canCoderPortBL = 0;
-        public static final int canCoderPortBR = 0;
+        public static final int canCoderPortFL = 1;
+        public static final int canCoderPortFR = 2;
+        public static final int canCoderPortBL = 3;
+        public static final int canCoderPortBR = 4;
 
     }
 
@@ -130,7 +130,7 @@ public final class Constants {
         public static enum StickType {LEFT, RIGHT};
         public static enum StickDirection {X, Y};
 
-        public static ControlType CONTROL_TYPE = ControlType.GAMEPAD;
+        public static ControlType CONTROL_TYPE = ControlType.JOYSTICKS;
         public static final double JOY_THRESH = 0.01;
         public static final class LeftJoy {
             public static final int port = 0;
