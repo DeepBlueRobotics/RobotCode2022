@@ -30,34 +30,16 @@ public class ColorSensor extends SubsystemBase {
   boolean ignored = SmartDashboard.putString("Team Color", "");
   String teamColor = SmartDashboard.getString("Team Color", "");
 
-  static final float confidenceLevel = 0.95f;
   /**
-   * Change the I2C port below to match the connection of your color sensor
+   * Color Sensor initialization
    */
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
-
-  /**
-   * A Rev Color Sensor V3 object is constructed with an I2C port as a 
-   * parameter. The device will be automatically initialized with default 
-   * parameters.
-   */
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-
-  /**
-   * A Rev Color Match object is used to register and detect known colors. This can 
-   * be calibrated ahead of time or during operation.
-   * 
-   * This object uses a simple euclidian distance to estimate the closest match
-   * with given confidence range.
-   */
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  /**
-   * Note: Any example colors should be calibrated as the user needs, these
-   * are here as a basic example.
-   * The example code that was copy pasted doesn't work kekw
-   */
-  //private final Color kBlueTarget = Color.makeColor(0.143, 0.427, 0.429);
+  // The color sensor can detect how far away the object is from the sensor
+  // This can be used to determine whether there is a ball or not
+  private final int minProxmity = 2000;
 
   /** Creates a new ColorSensor. */
   public ColorSensor() {
@@ -91,17 +73,15 @@ public class ColorSensor extends SubsystemBase {
      */
     String colorString = "";
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
-
-    if (match.confidence >= confidenceLevel) {
-      if (match.color == Color.kBlue) {
+    
+    if (m_colorSensor.getProximity() >= minProxmity) {
+      if (match.color == Color.kBlue)
         colorString = "Blue";
-      } else if (match.color == Color.kRed) {
+      else if (match.color == Color.kRed)
         colorString = "Red";
-      }
     } else {
       colorString = "Unknown";
     }
-
 
     /**
      * Open Smart Dashboard or Shuffleboard to see the color detected by the 
@@ -111,6 +91,7 @@ public class ColorSensor extends SubsystemBase {
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
     SmartDashboard.putNumber("Confidence", match.confidence);
+    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
     SmartDashboard.putString("Detected Color", colorString);
     
     /**
