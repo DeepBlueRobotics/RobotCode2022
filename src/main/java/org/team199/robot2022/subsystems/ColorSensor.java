@@ -27,10 +27,10 @@ public class ColorSensor extends SubsystemBase {
    * takes in what color the team is from smart dashboard to be checked
    * with color sensor
    */
-  boolean ignored = SmartDashboard.putString("Team Color", null);
-  String teamColor = SmartDashboard.getString("Team Color", null);
+  boolean ignored = SmartDashboard.putString("Team Color", "");
+  String teamColor = SmartDashboard.getString("Team Color", "");
 
-
+  static final float confidenceLevel = 0.95f;
   /**
    * Change the I2C port below to match the connection of your color sensor
    */
@@ -68,6 +68,7 @@ public class ColorSensor extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    detectColor();
   }
 
   public boolean detectColor() {
@@ -88,16 +89,19 @@ public class ColorSensor extends SubsystemBase {
     /**
      * Run the color match algorithm on our detected color
      */
-    String colorString;
+    String colorString = "";
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
-    if (match.color == Color.kBlue) {
-      colorString = "Blue";
-    } else if (match.color == Color.kRed) {
-      colorString = "Red";
+    if (match.confidence >= confidenceLevel) {
+      if (match.color == Color.kBlue) {
+        colorString = "Blue";
+      } else if (match.color == Color.kRed) {
+        colorString = "Red";
+      }
     } else {
       colorString = "Unknown";
     }
+
 
     /**
      * Open Smart Dashboard or Shuffleboard to see the color detected by the 
@@ -108,7 +112,6 @@ public class ColorSensor extends SubsystemBase {
     SmartDashboard.putNumber("Blue", detectedColor.blue);
     SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putString("Detected Color", colorString);
-
     
     /**
      * Takes in color from sensor and checks it with the color previously 
@@ -117,14 +120,11 @@ public class ColorSensor extends SubsystemBase {
      * if detectColor() returns false.
      * 
      * 
-     * SHOULD BE TRUE BY DEFAULT SO WE MAY NEED TO PAINT BOTTOM OF INTAKE 
-     * PLEXIGLASS SO IT WONT READ ROBOT PARTS
+     * Can read through pexiglass
      * 
      * 
      */
 
     return teamColor.equals(colorString);
-
-
   }
 }
