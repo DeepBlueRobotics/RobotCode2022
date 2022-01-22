@@ -17,24 +17,11 @@ import com.revrobotics.ColorMatch;
 public class ColorSensor extends SubsystemBase {
 
   /**
-   * Change the I2C port below to match the connection of your color sensor
+   * Currently, there might be some errors with the I2C port but it shouldn't be an issue
+   * as they probably will fix it before competition
    */
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
-
-  /**
-   * A Rev Color Sensor V3 object is constructed with an I2C port as a 
-   * parameter. The device will be automatically initialized with default 
-   * parameters.
-   */
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-
-  /**
-   * A Rev Color Match object is used to register and detect known colors. This can 
-   * be calibrated ahead of time or during operation.
-   * 
-   * This object uses a simple euclidian distance to estimate the closest match
-   * with given confidence range.
-   */
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
   /**
@@ -44,6 +31,12 @@ public class ColorSensor extends SubsystemBase {
    */
   //private final Color kBlueTarget = Color.makeColor(0.143, 0.427, 0.429);
 
+  /**
+   * may want to add WHAT COLOR BALLS THE ROBOT WANTS TO HAVE
+   * change the boolean output for false to match the correct color
+   */
+  
+   
   /** Creates a new ColorSensor. */
   public ColorSensor() {
     m_colorMatcher.addColorMatch(Color.kBlue);
@@ -53,6 +46,7 @@ public class ColorSensor extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    detectColor();
   }
 
   public void detectColor() {
@@ -70,6 +64,17 @@ public class ColorSensor extends SubsystemBase {
 
     /**
      * Run the color match algorithm on our detected color
+     *
+     * once the color is read, it will output to the smartdashboard
+     * we can then use this information and put it into regurgitate
+     * 
+     * - create a boolean that detects if a ball is "correct", this boolean 
+     * can then be switched around depending on what team we are.
+     *    - ideally, we want the ball to be instantly regurgitated if it is not
+     *      the "correct" color
+     *    
+     * 
+     * 
      */
     String colorString;
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);

@@ -7,7 +7,6 @@ package org.team199.robot2022;
 import org.team199.robot2022.commands.TeleopDrive;
 import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.ColorSensor;
-import org.team199.robot2022.commands.DetectColor;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -39,7 +38,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    configureColorSensor();
 
     if (DriverStation.isJoystickConnected(Constants.OI.LeftJoy.port)) {
       configureButtonBindingsLeftJoy();
@@ -63,10 +61,6 @@ public class RobotContainer {
         () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.Y)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X))));
-  }
-
-  public void configureColorSensor() {
-    colorSensor.setDefaultCommand(new DetectColor(colorSensor)); 
   }
 
   private void configureButtonBindingsLeftJoy() {
