@@ -4,20 +4,22 @@
 
 package org.team199.robot2022.commands;
 
+import com.revrobotics.CANSparkMax;
+
+import org.team199.robot2022.Constants;
 import org.team199.robot2022.subsystems.ColorSensor;
 import org.team199.robot2022.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.lib.MotorControllerFactory;
 
 public class Shoot extends CommandBase {
   
   private final ColorSensor colorSensor;
   private final Shooter shooter;
 
-  /** Creates a new Regurgitate. 
-   * 
-   * **/
+  
   public Shoot(ColorSensor colorSensor, Shooter shooter) {
     //addRequirements(requirements);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -37,6 +39,15 @@ public class Shoot extends CommandBase {
      * otherwise if not, the command is run
      */
     
+     if (colorSensor.detectColor())
+     {
+       //don't run command, keep on having motors running well
+     }
+     else
+     {
+       //run command
+     };
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -53,6 +64,12 @@ public class Shoot extends CommandBase {
     // If its the wrong ball, it can automatically turn and shoot the other direction without any input from the driver. 
     // possibly maybe just shoot the ball at a low speed
     // If its right, it can automatically shoot.
+
+    /**
+     * Instead of having the robot turn around and shoot, we may just want
+     * to drastically slow down the shooter speed and have the ball pop out 
+     * and fall to the ground
+     */
   }
 
   // Called once the command ends or is interrupted.
