@@ -9,16 +9,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
-
 import com.revrobotics.ColorSensorV3;
-
-
 import com.revrobotics.ColorMatchResult;
-
-
 import com.revrobotics.ColorMatch;
-    
-
 
 public class ColorSensor extends SubsystemBase {
 
@@ -28,7 +21,7 @@ public class ColorSensor extends SubsystemBase {
    * with color sensor
    */
   boolean ignored = SmartDashboard.putString("Team Color", "");
-  String teamColor = SmartDashboard.getString("Team Color", "");
+  String teamColor = SmartDashboard.getString("Team Color", "").toUpperCase();
 
   /**
    * Color Sensor initialization
@@ -45,6 +38,9 @@ public class ColorSensor extends SubsystemBase {
 
   /** Creates a new ColorSensor. */
   public ColorSensor() {
+    // If the color sensor does not respond
+    if (!m_colorSensor.isConnected())
+      SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
     m_colorMatcher.addColorMatch(Color.kBlue);
     m_colorMatcher.addColorMatch(Color.kRed);
   }
@@ -52,7 +48,12 @@ public class ColorSensor extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    detectColor();
+    if (m_colorSensor.isConnected())
+      detectColor();
+    else SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
+
+    // Ocassionally update the team color if the team put the wrong one by accident
+    teamColor = SmartDashboard.getString("Team Color", "").toUpperCase();
   }
 
   public boolean detectColor() {
@@ -78,11 +79,11 @@ public class ColorSensor extends SubsystemBase {
     
     if (m_colorSensor.getProximity() >= minProxmity) {
       if (match.color == Color.kBlue)
-        colorString = "Blue";
+        colorString = "BLUE";
       else if (match.color == Color.kRed)
-        colorString = "Red";
+        colorString = "RED";
     } else {
-      colorString = "Unknown";
+      colorString = "UNKNOWN";
     }
 
     /**
@@ -101,11 +102,6 @@ public class ColorSensor extends SubsystemBase {
      * inputted in SmartDashboard, if true, the detectColor method returns
      * true, if false, detectColor() returns false. Regurgitate will only run
      * if detectColor() returns false.
-     * 
-     * 
-     * Can read through pexiglass
-     * 
-     * 
      */
 
     return teamColor.equals(colorString);
