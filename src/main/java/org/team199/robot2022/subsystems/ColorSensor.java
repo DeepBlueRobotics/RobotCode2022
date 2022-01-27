@@ -23,20 +23,16 @@ public class ColorSensor extends SubsystemBase {
   boolean ignored = SmartDashboard.putString("Team Color", "");
   String teamColor = SmartDashboard.getString("Team Color", "").toUpperCase();
 
-  /**
-   * Color Sensor initialization
-   */
-  private final I2C.Port i2cPort = I2C.Port.kOnboard;
-  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-  private final ColorMatch m_colorMatcher = new ColorMatch();
-
   /** The color sensor can detect how far away the object is from the sensor
    *  This can be used to determine whether there is a ball or not
    *  This ranges from 0 to 2047 where the value is larger when an object is closer
    */
   private final int minProxmity = 2000;
 
-  /** Creates a new ColorSensor. */
+  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+  private final ColorMatch m_colorMatcher = new ColorMatch();
+
   public ColorSensor() {
     // If the color sensor does not respond
     if (!m_colorSensor.isConnected())
@@ -47,33 +43,32 @@ public class ColorSensor extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // Ocassionally update the team color if the team put the wrong one by accident
+    teamColor = SmartDashboard.getString("Team Color", "").toUpperCase();
+
+    // Imperative to inform the driver whether color sensor is working
     if (m_colorSensor.isConnected())
       detectColor();
     else SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
-
-    // Ocassionally update the team color if the team put the wrong one by accident
-    teamColor = SmartDashboard.getString("Team Color", "").toUpperCase();
   }
 
+  /**
+   * Color sensor detects whether the color of the ball is our team color
+   * Takes in color from sensor and checks it with the color previously 
+   * inputted in SmartDashboard. The command will also return true if the color
+   * sensor is disconnected, meaning that the driver can still shoot when color
+   * sensor is no longer working. Regurgitation will only happen when the color
+   * detected is incorrect.
+   * 
+   * @return returns a boolean of whether or not the color is correct
+   */
   public boolean detectColor() {
-    /**
-     * The method GetColor() returns a normalized color value from the sensor and can be
-     * useful if outputting the color to an RGB LED or similar. To
-     * read the raw color, use GetRawColor().
-     * 
-     * The color sensor works best when within a few inches from an object in
-     * well lit conditions (the built in LED is a big help here!). The farther
-     * an object is the more light from the surroundings will bleed into the 
-     * measurements and make it difficult to accurately determine its color.
-     * 
-     * @return returns a boolean of whether or not the color is correct
-     */
-    Color detectedColor = m_colorSensor.getColor();
 
-    /**
-     * Run the color match algorithm on our detected color
-     */
+    // If the color sensor is disconnected, the driver still has the ability to shoot
+    if (!m_colorSensor.isConnected())
+      return true;
+    
+    Color detectedColor = m_colorSensor.getColor();
     String colorString = "";
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
     
@@ -95,14 +90,8 @@ public class ColorSensor extends SubsystemBase {
     SmartDashboard.putNumber("Blue", detectedColor.blue);
     SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
+    // This is important
     SmartDashboard.putString("Detected Color", colorString);
-    
-    /**
-     * Takes in color from sensor and checks it with the color previously 
-     * inputted in SmartDashboard, if true, the detectColor method returns
-     * true, if false, detectColor() returns false. Regurgitate will only run
-     * if detectColor() returns false.
-     */
 
     return teamColor.equals(colorString);
   }
