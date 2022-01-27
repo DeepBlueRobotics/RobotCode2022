@@ -4,28 +4,20 @@
 
 package org.team199.robot2022.commands;
 
-import com.revrobotics.CANSparkMax;
-
 import org.team199.robot2022.Constants;
 import org.team199.robot2022.subsystems.ColorSensor;
 import org.team199.robot2022.subsystems.Shooter;
 
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.lib.MotorControllerFactory;
 
 public class Shoot extends CommandBase {
   
   private final ColorSensor colorSensor;
   private final Shooter shooter;
-
   
   public Shoot(ColorSensor colorSensor, Shooter shooter) {
-    //addRequirements(requirements);
-    // Use addRequirements() here to declare subsystem dependencies.
     /**
      * takes in detectcolor method output from the sensor readings
-     * 
      */
     addRequirements(this.colorSensor = colorSensor, this.shooter = shooter);
   }
@@ -33,62 +25,41 @@ public class Shoot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    
+  }
+
+  /** Automatically checks what ball is in the shooter. 
+    * If its the wrong ball, it can automatically turn and shoot the ball at a low speed to miss
+    * If its right, it can automatically shoot.
+    */
+  @Override
+  public void execute() {
     /**
      * checks detectcolor input to see if the ball is correct color, 
      * if correct, the command is not run
      * otherwise if not, the command is run
      */
     
-     if (colorSensor.detectColor())
-     {
-       //don't run command, keep on having motors running well
-     }
-     else
-     {
-       //run command
-     };
-    
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    /**
-     * Here we want to essentially stop and then reverse the motors in order 
-     * to regurgitate the balls from the robot
-     */
-
-    // from shooter team: 
-    // Uses color sensor
-    // Shooter team wants to make it so that it automatically checks what ball is in the shooter. 
-    // If its the wrong ball, it can automatically turn and shoot the other direction without any input from the driver. 
-    // possibly maybe just shoot the ball at a low speed
-    // If its right, it can automatically shoot.
-
-    /**
-     * Instead of having the robot turn around and shoot, we may just want
-     * to drastically slow down the shooter speed and have the ball pop out 
-     * and fall to the ground
-     */
+    if (colorSensor.detectColor())
+    {
+      // Shoot the ball, the color is correct or color sensor not work
+    }
+    else
+    {
+      // Regurgitate the ball, the color is incorrect
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    /**
-     * will end when the ball is correct color again or the incorrect color
-     * is no longer read
-     * 
-     * **IMPORTANT NOTE**
-     * we may need a second color sensor or some other kind of sensor
-     * to check if the ball has left the robot and been successfully 
-     * regurgitated
-     */
+    
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    // The command should end when there are no more balls in feeder/shooter
     return false;
   }
 }
