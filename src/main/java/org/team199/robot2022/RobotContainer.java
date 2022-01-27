@@ -7,6 +7,7 @@ package org.team199.robot2022;
 import org.team199.robot2022.commands.TeleopDrive;
 import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.ColorSensor;
+import org.team199.robot2022.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -31,6 +32,7 @@ public class RobotContainer {
 
   public final Drivetrain dt = new Drivetrain();
   public final PowerDistribution pdp = new PowerDistribution();
+  public final Shooter shooter = new Shooter();
 
   public final ColorSensor colorSensor = new ColorSensor();
 
