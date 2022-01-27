@@ -122,6 +122,9 @@ public final class Constants {
         public static final int canCoderPortBL = 0;
         public static final int canCoderPortBR = 0;
 
+        public static final int kShooterMaster = 0;
+        public static final int kShooterSlave = 0;
+
     }
 
     public static final class OI {
