@@ -125,6 +125,10 @@ public final class Constants {
         public static final int kShooterMaster = 0;
         public static final int kShooterSlave = 0;
 
+        public static final int kIntakeTop = 0;
+        public static final int kIntakeMiddle = 0;
+        public static final int kIntakeBottom = 0;
+
     }
 
     public static final class OI {
