@@ -60,7 +60,7 @@ public class Shooter extends SubsystemBase {
         if (d != pidController.getD()) pidController.setD(d);
         pidController.setReference(getTargetSpeed(), ControlType.kVelocity, 0, calculateFeedForward(getTargetSpeed()));
         
-        SmartDashboard.putNumber("Speed Spark Max Port 2", master.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Speed Spark Max Port 3", master.getEncoder().getVelocity());
         SmartDashboard.putNumber("Speed Spark Max Port 4", slave.getEncoder().getVelocity());
     }
 
