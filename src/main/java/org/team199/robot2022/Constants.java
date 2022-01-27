@@ -187,7 +187,10 @@ public final class Constants {
                 }
             }
 
-
+            public static final int midClimberDeploy = LT;
+            public static final int midClimberRetract = LB;
+            public static final int highClimberDeploy = RT;
+            public static final int highClimberRetract = RB;
         }
     }
 
