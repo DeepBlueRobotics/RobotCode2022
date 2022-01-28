@@ -8,11 +8,13 @@ import org.team199.robot2022.commands.TeleopDrive;
 import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.ColorSensor;
+import org.team199.robot2022.commands.Shoot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -70,7 +72,7 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsRightJoy() {
-
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(colorSensor, shooter));
   }
 
   private void configureButtonBindingsController() {
