@@ -5,21 +5,21 @@
 package org.team199.robot2022.commands;
 
 import org.team199.robot2022.Constants;
-import org.team199.robot2022.subsystems.ColorSensor;
+import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class Shoot extends CommandBase {
   
-  private final ColorSensor colorSensor;
+  private final IntakeFeeder intakeFeeder;
   private final Shooter shooter;
   
-  public Shoot(ColorSensor colorSensor, Shooter shooter) {
+  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter) {
     /**
      * takes in detectcolor method output from the sensor readings
      */
-    addRequirements(this.colorSensor = colorSensor, this.shooter = shooter);
+    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -40,7 +40,7 @@ public class Shoot extends CommandBase {
      * otherwise if not, the command is run
      */
     
-    if (colorSensor.detectColor())
+    if (intakeFeeder.eject())
     {
       // Shoot the ball, the color is correct or color sensor not work
     }
