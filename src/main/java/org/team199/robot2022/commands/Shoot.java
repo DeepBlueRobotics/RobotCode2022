@@ -25,7 +25,6 @@ public class Shoot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
   }
 
   /** Automatically checks what ball is in the shooter. 
