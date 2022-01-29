@@ -4,11 +4,23 @@
 
 package org.team199.robot2022.subsystems;
 
+import com.revrobotics.CANSparkMax;
+
+import org.team199.robot2022.Constants;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.lib.MotorControllerFactory;
 
 public class IntakeFeeder extends SubsystemBase {
+
+  private final CANSparkMax feederBottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
+  private final CANSparkMax feederTop = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
+
+  private final double speed = 1.0;
+  
   /** Creates a new IntakeFeeder. */
-  public IntakeFeeder() {}
+  public IntakeFeeder() {
+  }
 
   @Override
   public void periodic() {
@@ -19,18 +31,8 @@ public class IntakeFeeder extends SubsystemBase {
     //moves intake motors
   }
 
-  public void runFirstMotor()
-  {
-    //runs bottommost intake motor
-  }
-
-  public void runSecondMotor()
-  {
-    //runs middle intake motor
-  }
-
-  public void runThirdMotor()
-  {
-    //runs top motor
+  public void feeder() {
+    feederBottom.set(speed);
+    feederTop.set(speed);
   }
 }
