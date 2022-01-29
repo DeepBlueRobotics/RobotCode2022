@@ -1,9 +1,16 @@
+package org.team199.robot2022.subsystems;
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.team199.robot2022.subsystems;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.SparkMaxPIDController;
 
+import org.team199.robot2022.Constants;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import edu.wpi.first.wpilibj.I2C;
@@ -75,7 +82,7 @@ public class IntakeFeeder extends SubsystemBase {
     intake.set(speed);
     bottom.set(speed);
   }
-
+  
   @Override
   public void periodic() {
     // Ocassionally update the team color if the team put the wrong one by accident
