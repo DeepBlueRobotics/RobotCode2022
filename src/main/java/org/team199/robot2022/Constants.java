@@ -26,13 +26,13 @@ public final class Constants {
 
     public static final class DriveConstants {
 
-        public static final double wheelBase = Units.inchesToMeters(25.0);
-        public static final double trackWidth = Units.inchesToMeters(21.5);
+        public static final double wheelBase = Units.inchesToMeters(20.0);
+        public static final double trackWidth = Units.inchesToMeters(21.0);
         // "swerveRadius" is the distance from the center of the robot to one of the modules
         public static final double swerveRadius = Math.sqrt(Math.pow(wheelBase / 2, 2) + Math.pow(trackWidth / 2, 2));
         // The gearing reduction from the drive motor controller to the wheels
-        // "Fast" gearing for the MK3 Swerve Module is 6.86 : 1
-        public static final double driveGearing = 6.86;
+        // Gearing for the Swerve Modules is 6.75 : 1
+        public static final double driveGearing = 6.75;
 
         public static final double driveModifier = 1;
         public static final double wheelDiameterMeters = Units.inchesToMeters(4.0) * 7.36/7.65 /* empirical correction */;
@@ -107,20 +107,20 @@ public final class Constants {
 
     public static final class DrivePorts {
 
-        public static final int driveFrontLeft = 0;
-        public static final int driveFrontRight = 0;
-        public static final int driveBackLeft = 0;
-        public static final int driveBackRight = 0;
+        public static final int driveFrontLeft = 2;
+        public static final int driveFrontRight = 3;
+        public static final int driveBackLeft = 12;
+        public static final int driveBackRight = 11;
 
-        public static final int turnFrontLeft = 0;
-        public static final int turnFrontRight = 0;
-        public static final int turnBackLeft = 0;
-        public static final int turnBackRight = 0;
+        public static final int turnFrontLeft = 9;
+        public static final int turnFrontRight = 4;
+        public static final int turnBackLeft = 1;
+        public static final int turnBackRight = 10;
 
-        public static final int canCoderPortFL = 0;
-        public static final int canCoderPortFR = 0;
-        public static final int canCoderPortBL = 0;
-        public static final int canCoderPortBR = 0;
+        public static final int canCoderPortFL = 1;
+        public static final int canCoderPortFR = 2;
+        public static final int canCoderPortBL = 3;
+        public static final int canCoderPortBR = 4;
 
     }
 
@@ -130,7 +130,7 @@ public final class Constants {
         public static enum StickType {LEFT, RIGHT};
         public static enum StickDirection {X, Y};
 
-        public static ControlType CONTROL_TYPE = ControlType.GAMEPAD;
+        public static ControlType CONTROL_TYPE = ControlType.JOYSTICKS;
         public static final double JOY_THRESH = 0.01;
         public static final class LeftJoy {
             public static final int port = 0;
