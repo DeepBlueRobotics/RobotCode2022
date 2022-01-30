@@ -147,7 +147,7 @@ public final class Constants {
         }
 
         public static final class Controller {
-            public static final int port = 0;
+            public static final int port = 2;
 
             public static Joystick controller = new Joystick(port);
 
