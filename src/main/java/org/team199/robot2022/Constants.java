@@ -107,15 +107,15 @@ public final class Constants {
 
     public static final class DrivePorts {
 
-        public static final int driveFrontLeft = 2;
-        public static final int driveFrontRight = 3;
-        public static final int driveBackLeft = 12;
-        public static final int driveBackRight = 11;
+        public static final int driveFrontLeft = 10;
+        public static final int driveFrontRight = 2;
+        public static final int driveBackLeft = 11;
+        public static final int driveBackRight = 17;
 
         public static final int turnFrontLeft = 9;
-        public static final int turnFrontRight = 4;
-        public static final int turnBackLeft = 1;
-        public static final int turnBackRight = 10;
+        public static final int turnFrontRight = 1;
+        public static final int turnBackLeft = 12;
+        public static final int turnBackRight = 18;
 
         public static final int canCoderPortFL = 1;
         public static final int canCoderPortFR = 2;
