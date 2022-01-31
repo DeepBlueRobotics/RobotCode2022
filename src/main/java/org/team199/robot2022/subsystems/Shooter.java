@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
         
         slave.follow(master, true);
         master.setInverted(true);
-        Log.registerDoubleVar("Spark Max Port 2 Speed", () -> master.getEncoder().getVelocity());
+        Log.registerDoubleVar("Spark Max Port 3 Speed", () -> master.getEncoder().getVelocity());
         Log.registerDoubleVar("Spark Max Port 4 Speed", () -> slave.getEncoder().getVelocity());
     }
 
