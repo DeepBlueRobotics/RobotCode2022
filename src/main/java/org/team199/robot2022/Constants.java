@@ -181,7 +181,7 @@ public final class Constants {
                     START = 10;
                 } else {
                     // Buttons and triggers for xbox controller
-                    X = 3;z
+                    X = 3;
                     A = 1;
                     B = 2;
                     Y = 4;
