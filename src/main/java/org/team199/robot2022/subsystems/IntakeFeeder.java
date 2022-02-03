@@ -48,9 +48,9 @@ public class IntakeFeeder extends SubsystemBase {
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
   // These three motors are for the three motors in the intake tube system
-  private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
-  private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
-  private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
+  private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom); //TODO: set port
+  private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
+  private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop); //TODO: set port
 
   private final double speed = 1.0;
 
