@@ -88,7 +88,6 @@ public class IntakeFeeder extends SubsystemBase {
   @Override
   public void periodic() {
     
-    
     // Ocassionally update the team color if the team put the wrong one by accident
     teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
     if (teamColorArr.length > 0)
@@ -196,7 +195,7 @@ public class IntakeFeeder extends SubsystemBase {
       }
       else
       {
-        SmartDashboard.putString("No Balls in Feeder", "");
+        SmartDashboard.putString("Balls in Feeder", "None");
       }
 
       if (cargo.size() == 1)
@@ -205,7 +204,7 @@ public class IntakeFeeder extends SubsystemBase {
       }
       else
       {
-        SmartDashboard.putString("No Balls in Shooter or Feeder", "");
+        SmartDashboard.putString("Ball in Shooter", "None");
       }
     }
   }

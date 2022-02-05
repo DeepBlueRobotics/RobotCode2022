@@ -126,7 +126,7 @@ public final class Constants {
         public static final int kShooterSlave = 0;
 
         public static final int kIntakeTop = 0;
-        public static final int kIntakeMiddle = 4;
+        public static final int kIntakeMiddle = 3;
         public static final int kIntakeBottom = 0;
 
     }
