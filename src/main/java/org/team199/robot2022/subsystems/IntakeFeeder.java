@@ -148,6 +148,57 @@ public class IntakeFeeder extends SubsystemBase {
     feed = !feed;
   }
 
+  public void addBalls()
+  {
+    if (cargo.size() >= 2)
+    {
+      return;
+    }
+    else
+    {
+      SmartDashboard.putString("Add Ball to Queue", "");
+      SmartDashboard.putNumber("Remove Ball(s) from Queue", 0);
+      char ballAdded = SmartDashboard.getString("Add Ball to Queue", "").toUpperCase().toCharArray()[0];
+      int numBallsRemoved = (int)SmartDashboard.getNumber("Remove Ball(s) from Queue", 0);
+
+      //REMOVES BALLS
+      for (int i = 0; i < numBallsRemoved; i++)
+      {
+        cargo.poll();
+      }
+
+      //ADDS BALLS
+      if (ballAdded == 'T')
+      {
+        cargo.add(true);
+      }
+      else if (ballAdded == 'F')
+      {
+        cargo.add(false);
+      }
+
+      Boolean[] arr = (Boolean[]) cargo.toArray();
+
+      if (cargo.size() >= 2)
+      {
+        SmartDashboard.putString("Ball in Feeder", arr[1].toString());
+      }
+      else
+      {
+        SmartDashboard.putString("No Balls in Feeder", "");
+      }
+
+      if (cargo.size() == 1)
+      {
+        SmartDashboard.putString("Ball in Shooter", arr[0].toString());
+      }
+      else
+      {
+        SmartDashboard.putString("No Balls in Shooter or Feeder", "");
+      }
+    }
+  }
+
   /**
    * Color sensor detects whether the color of the ball is our team color
    * Takes in color from sensor and checks it with the color previously 
