@@ -188,11 +188,11 @@ public class IntakeFeeder extends SubsystemBase {
         cargo.add(false);
       }
 
-      Boolean[] arr = (Boolean[]) cargo.toArray();
+      Object[] arr = cargo.toArray();
 
       if (cargo.size() >= 2)
       {
-        SmartDashboard.putString("Ball in Feeder", arr[1].toString());
+        SmartDashboard.putString("Ball in Feeder", ((Boolean) arr[1]).toString());
       }
       else
       {
@@ -201,7 +201,7 @@ public class IntakeFeeder extends SubsystemBase {
 
       if (cargo.size() == 1)
       {
-        SmartDashboard.putString("Ball in Shooter", arr[0].toString());
+        SmartDashboard.putString("Ball in Shooter", ((Boolean) arr[0]).toString());
       }
       else
       {
