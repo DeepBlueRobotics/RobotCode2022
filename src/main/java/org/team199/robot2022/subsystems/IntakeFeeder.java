@@ -165,7 +165,11 @@ public class IntakeFeeder extends SubsystemBase {
     {
       SmartDashboard.putString("Add Ball to Queue", "");
       SmartDashboard.putNumber("Remove Ball(s) from Queue", 0);
-      char ballAdded = SmartDashboard.getString("Add Ball to Queue", "").toUpperCase().toCharArray()[0];
+      char[] ballAddedArr = SmartDashboard.getString("Add Ball to Queue", "").toUpperCase().toCharArray();
+      // By default set to "Unknown"
+      char ballAdded = 'U';
+      if (ballAddedArr.length > 0)
+        ballAdded = ballAddedArr[0];
       int numBallsRemoved = (int)SmartDashboard.getNumber("Remove Ball(s) from Queue", 0);
 
       //REMOVES BALLS
