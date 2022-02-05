@@ -34,7 +34,10 @@ public class IntakeFeeder extends SubsystemBase {
    * with color sensor
    */
   boolean ignored = SmartDashboard.putString("Team Color", "");
-  char teamColor = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray()[0];
+  char[] teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
+  // Team Color is set to blue by default
+  char teamColor = 'B';
+  
 
   /** The color sensor can detect how far away the object is from the sensor
    *  This can be used to determine whether there is a ball or not
@@ -87,7 +90,10 @@ public class IntakeFeeder extends SubsystemBase {
     
     
     // Ocassionally update the team color if the team put the wrong one by accident
-    teamColor = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray()[0];
+    teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
+    if (teamColorArr.length > 0)
+      teamColor = teamColorArr[0];
+    else teamColor = 'B';
 
     // Imperative to inform the driver whether color sensor is working
     if (m_colorSensor.isConnected()) {
@@ -126,6 +132,7 @@ public class IntakeFeeder extends SubsystemBase {
         bottom.setInverted(true);
       }
     }
+    addBalls();
   }
 
   /**
