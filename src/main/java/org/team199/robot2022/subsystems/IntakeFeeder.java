@@ -193,7 +193,7 @@ public class IntakeFeeder extends SubsystemBase {
       }
       else
       {
-        SmartDashboard.putString("Balls in Feeder", "None");
+        SmartDashboard.putString("Ball in Feeder", "None");
       }
 
       if (cargo.size() == 1)
