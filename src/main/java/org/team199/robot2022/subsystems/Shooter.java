@@ -23,17 +23,21 @@ public class Shooter extends SubsystemBase {
     private static final double kD = 0.005;
 
     private double kTargetSpeed = 60;
-    private final double speedOffset = 100;
+    private double kTopWheelSpeed = 0.1; //check this
+    private final double speedOffsetMain = 100;
 
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
     private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
+    private final CANSparkMax topwheel = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterTop);
     private final SparkMaxPIDController pidController = master.getPIDController();
 
 
     public Shooter() {
         master.setSmartCurrentLimit(40);
         slave.setSmartCurrentLimit(40);
+        topwheel.setSmartCurrentLimit(40);
         SmartDashboard.putNumber("Shooter.kTargetSpeed", kTargetSpeed);
+        SmartDashboard.putNumber("Shooter.kTopWheelSpeed",kTopWheelSpeed);
         SmartDashboard.putNumber("Shooter.kP", kP);
         SmartDashboard.putNumber("Shooter.kI", kI);
         SmartDashboard.putNumber("Shooter.kD", kD);
@@ -44,6 +48,7 @@ public class Shooter extends SubsystemBase {
         master.setInverted(true);
         Log.registerDoubleVar("Spark Max Port 3 Speed", () -> master.getEncoder().getVelocity());
         Log.registerDoubleVar("Spark Max Port 4 Speed", () -> slave.getEncoder().getVelocity());
+        Log.registerDoubleVar("Spark Max Port 5 Speed", () -> topwheel.getEncoder().getVelocity());
     }
 
     public void periodic()  {
@@ -53,27 +58,40 @@ public class Shooter extends SubsystemBase {
 
         kV = SmartDashboard.getNumber("Shooter.kV", kV);
         kS = SmartDashboard.getNumber("Shooter.kS", kS);
-        setSpeed(SmartDashboard.getNumber("Shooter.kTargetSpeed", kTargetSpeed));
+        setMainSpeed(SmartDashboard.getNumber("Shooter.kTargetSpeed", kTargetSpeed));
+        setTopWheelSpeed(SmartDashboard.getNumber("Shooter.kTopWheelSpeed",kTopWheelSpeed));
 
         if (p != pidController.getP()) pidController.setP(p);
         if (i != pidController.getI()) pidController.setI(i);
         if (d != pidController.getD()) pidController.setD(d);
         pidController.setReference(getTargetSpeed(), ControlType.kVelocity, 0, calculateFeedForward(getTargetSpeed()));
         
+        topwheel.set(kTopWheelSpeed);
+
         SmartDashboard.putNumber("Speed Spark Max Port 3", master.getEncoder().getVelocity());
         SmartDashboard.putNumber("Speed Spark Max Port 4", slave.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Speed Spark Max Port 5", topwheel.getEncoder().getVelocity());
     }
 
-    public void setSpeed(double speed) {
-        kTargetSpeed = speed;
+    public void setMainSpeed(double 
+    mainSpeed) {
+        kTargetSpeed = mainSpeed;
+    }
+
+    public void setTopWheelSpeed(double topWheelSpeed){
+        kTopWheelSpeed = topWheelSpeed;
     }
 
     public double getTargetSpeed() {
         return kTargetSpeed;
     }
 
+    public double getTopWheelSpeed() {
+        return kTopWheelSpeed;
+    }
+
     public boolean isAtTargetSpeed() {
-        return (master.getEncoder().getVelocity() > (kTargetSpeed - speedOffset));
+        return (master.getEncoder().getVelocity() > (kTargetSpeed - speedOffsetMain));
     }
 
     public double calculateFeedForward(double velocity) {

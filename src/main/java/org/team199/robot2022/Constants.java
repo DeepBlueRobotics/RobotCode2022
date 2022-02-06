@@ -124,6 +124,7 @@ public final class Constants {
 
         public static final int kShooterMaster = 3;
         public static final int kShooterSlave = 4;
+        public static final int kShooterTop = 5;
 
     }
 
