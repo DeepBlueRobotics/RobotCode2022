@@ -105,18 +105,15 @@ public class IntakeFeeder extends SubsystemBase {
         // If this ball is the first ball in the feeder
         if (cargo.size() == 1) {
           // while ball is still in color sensor range move the ball out to prevent jam
-          if (m_colorSensor.getProximity() >= minProxmity) {
-            middle.set(speed);
-            top.set(speed);
-          }else{
-            middle.set(0);
-            top.set(0);
-          }
+          middle.set(speed);
+          top.set(speed);
         }
         // If this ball is the second ball in the feeder
         else {
           // This is to prevent any more balls getting in
           bottom.setInverted(true);
+          middle.set(0);
+          top.set(0);
         } 
       }
     }
