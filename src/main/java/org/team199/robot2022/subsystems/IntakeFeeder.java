@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
 
@@ -35,7 +34,10 @@ public class IntakeFeeder extends SubsystemBase {
    * with color sensor
    */
   boolean ignored = SmartDashboard.putString("Team Color", "");
-  char teamColor = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray()[0];
+  char[] teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
+  // Team Color is set to blue by default
+  char teamColor = 'B';
+  
 
   /** The color sensor can detect how far away the object is from the sensor
    *  This can be used to determine whether there is a ball or not
@@ -49,9 +51,9 @@ public class IntakeFeeder extends SubsystemBase {
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
   // These three motors are for the three motors in the intake tube system
-  private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
-  private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
-  private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
+  private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom); //TODO: set port
+  private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
+  private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop); //TODO: set port
 
   private final double speed = 1.0;
 
@@ -86,9 +88,11 @@ public class IntakeFeeder extends SubsystemBase {
   @Override
   public void periodic() {
     
-    
     // Ocassionally update the team color if the team put the wrong one by accident
-    teamColor = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray()[0];
+    teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
+    if (teamColorArr.length > 0)
+      teamColor = teamColorArr[0];
+    else teamColor = 'B';
 
     // Imperative to inform the driver whether color sensor is working
     if (m_colorSensor.isConnected()) {
@@ -101,17 +105,15 @@ public class IntakeFeeder extends SubsystemBase {
         // If this ball is the first ball in the feeder
         if (cargo.size() == 1) {
           // while ball is still in color sensor range move the ball out to prevent jam
-          while (m_colorSensor.getProximity() >= minProxmity) {
-            middle.set(speed);
-            top.set(speed);
-          }
-          middle.set(0);
-          top.set(0);
+          middle.set(speed);
+          top.set(speed);
         }
         // If this ball is the second ball in the feeder
         else {
           // This is to prevent any more balls getting in
           bottom.setInverted(true);
+          middle.set(0);
+          top.set(0);
         } 
       }
     }
@@ -127,6 +129,7 @@ public class IntakeFeeder extends SubsystemBase {
         bottom.setInverted(true);
       }
     }
+    addBalls();
   }
 
   /**
@@ -147,6 +150,61 @@ public class IntakeFeeder extends SubsystemBase {
   public void intake()
   {
     feed = !feed;
+  }
+
+  public void addBalls()
+  {
+    if (cargo.size() >= 2)
+    {
+      return;
+    }
+    else
+    {
+      SmartDashboard.putString("Add Ball to Queue", "");
+      SmartDashboard.putNumber("Remove Ball(s) from Queue", 0);
+      char[] ballAddedArr = SmartDashboard.getString("Add Ball to Queue", "").toUpperCase().toCharArray();
+      // By default set to "Unknown"
+      char ballAdded = 'U';
+      if (ballAddedArr.length > 0)
+        ballAdded = ballAddedArr[0];
+      int numBallsRemoved = (int)SmartDashboard.getNumber("Remove Ball(s) from Queue", 0);
+
+      //REMOVES BALLS
+      for (int i = 0; i < numBallsRemoved; i++)
+      {
+        cargo.poll();
+      }
+
+      //ADDS BALLS
+      if (ballAdded == 'T')
+      {
+        cargo.add(true);
+      }
+      else if (ballAdded == 'F')
+      {
+        cargo.add(false);
+      }
+
+      Object[] arr = cargo.toArray();
+
+      if (cargo.size() >= 2)
+      {
+        SmartDashboard.putString("Ball in Feeder", ((Boolean) arr[1]).toString());
+      }
+      else
+      {
+        SmartDashboard.putString("Ball in Feeder", "None");
+      }
+
+      if (cargo.size() == 1)
+      {
+        SmartDashboard.putString("Ball in Shooter", ((Boolean) arr[0]).toString());
+      }
+      else
+      {
+        SmartDashboard.putString("Ball in Shooter", "None");
+      }
+    }
   }
 
   /**
