@@ -3,17 +3,19 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package org.team199.robot2022.commands;
-import org.team199.robot2022.subsystems.Climber;
+import org.team199.robot2022.Constants;
+import org.team199.robot2022.subsystems.Drivetrain;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DeployMidRungClimber extends CommandBase {
+public class MoveToClimb extends CommandBase {
 
-  private final Climber climber;
+  private final Drivetrain drivetrain;
+  //Get and save initial position
 
   /** Creates a new SetMidRungClimber. */
-  public DeployMidRungClimber(Climber climber) {
-    addRequirements(this.climber = climber);
+  public MoveToClimb(Drivetrain drivetrain) {
+    addRequirements(this.drivetrain = drivetrain);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -26,7 +28,7 @@ public class DeployMidRungClimber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climber.climb(Climber.kExtendSpeed);
+    drivetrain.drive(Constants.DriveConstants.driveToRungSpeed, 0, 0);
     //For full extension rotate 135 full rotations of motor (70 in of rope)
     //Should retract same amount
   }
@@ -34,16 +36,13 @@ public class DeployMidRungClimber extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climber.climb(0);
+    drivetrain.drive(0, 0, 0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (climber.getRotations() >= Climber.kMidRungRotations) {
-      return true;
-    } else {
-      return false;
-    }
+    //If new position is far enough from init position, then return true, else return false
+    return false;
   }
 }

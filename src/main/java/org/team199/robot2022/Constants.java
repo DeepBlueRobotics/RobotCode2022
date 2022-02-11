@@ -33,6 +33,10 @@ public final class Constants {
         // The gearing reduction from the drive motor controller to the wheels
         // "Fast" gearing for the MK3 Swerve Module is 6.86 : 1
         public static final double driveGearing = 6.86;
+        public static final double driveToRungDist = 0;
+        //TODO : this is not 0, find and set
+        public static final double driveToRungSpeed = 0;
+        //TODO : this is not 0, find and set
 
         public static final double driveModifier = 1;
         public static final double wheelDiameterMeters = Units.inchesToMeters(4.0) * 7.36/7.65 /* empirical correction */;

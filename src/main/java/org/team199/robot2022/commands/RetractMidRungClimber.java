@@ -5,10 +5,15 @@
 package org.team199.robot2022.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.team199.robot2022.subsystems.Climber;
 
 public class RetractMidRungClimber extends CommandBase {
+
+  private final Climber climber;  
+
   /** Creates a new RetractMidRungClimber. */
-  public RetractMidRungClimber() {
+  public RetractMidRungClimber(Climber climber) {
+    addRequirements(this.climber = climber);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -18,7 +23,9 @@ public class RetractMidRungClimber extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    climber.climb(Climber.kRetractSpeed);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -27,6 +34,10 @@ public class RetractMidRungClimber extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if (climber.getRotations() <= Climber.kMidRungRetractions) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
