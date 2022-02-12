@@ -35,11 +35,8 @@ public class IntakeFeeder extends SubsystemBase {
    * with color sensor
    */
   SendableChooser<Character> color = new SendableChooser<>();
+  char teamColor;
   
-  // Team Color is set to blue by default
-  char teamColor = 'B';
-  
-
   /** The color sensor can detect how far away the object is from the sensor
    *  This can be used to determine whether there is a ball or not
    *  This ranges from 0 to 2047 where the value is larger when an object is closer
@@ -89,6 +86,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     color.addOption("Red", 'R');
     color.setDefaultOption("Blue", 'B');
+    SmartDashboard.putData(color);
   }
   
   @Override
