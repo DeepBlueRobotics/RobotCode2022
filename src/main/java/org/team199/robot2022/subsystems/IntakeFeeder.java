@@ -5,21 +5,16 @@ package org.team199.robot2022.subsystems;
 // the WPILib BSD license file in the root directory of this project.
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.SparkMaxPIDController;
-
 import org.team199.robot2022.Constants;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
-
-import org.team199.robot2022.Constants;
-
 import com.revrobotics.ColorMatchResult;
 
 import java.util.LinkedList;
@@ -77,15 +72,11 @@ public class IntakeFeeder extends SubsystemBase {
       SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
     m_colorMatcher.addColorMatch(Color.kBlue);
     m_colorMatcher.addColorMatch(Color.kRed);
-    /**
-     * Initially have these motors
-     * 
-     * - Edited so there is no intake motor running
-     */
+
     bottom.set(speed);
 
-    color.addOption("Red", 'R');
     color.setDefaultOption("Blue", 'B');
+    color.addOption("Red", 'R');
     SmartDashboard.putData(color);
   }
   
@@ -114,6 +105,9 @@ public class IntakeFeeder extends SubsystemBase {
           bottom.setInverted(true);
           middle.set(0);
         } 
+      }
+      else {
+        middle.set(0);
       }
     }
     else {
@@ -174,6 +168,8 @@ public class IntakeFeeder extends SubsystemBase {
     {
       SmartDashboard.putString("Ball in Shooter", "None");
     }
+
+    SmartDashboard.putNumber("Size", cargo.size());
   }
 
   public void addBalls()
