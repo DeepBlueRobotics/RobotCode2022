@@ -57,6 +57,8 @@ public class IntakeFeeder extends SubsystemBase {
 
   private final double speed = 1.0;
 
+  private boolean hasDetectedBall = false;
+
   /* Concern:
    * Make sure that when the ball is going thru the feeder that there is enough space between the balls
    * DO NOT let them rub against each other otherwise a jam can occur
@@ -130,6 +132,7 @@ public class IntakeFeeder extends SubsystemBase {
       }
     }
     addBalls();
+    debug();
   }
 
   /**
@@ -150,6 +153,29 @@ public class IntakeFeeder extends SubsystemBase {
   public void intake()
   {
     feed = !feed;
+  }
+
+  public void debug()
+  {
+    Object[] arr = cargo.toArray();
+
+    if (cargo.size() >= 2)
+    {
+      SmartDashboard.putString("Ball in Feeder", ((Boolean) arr[1]).toString());
+    }
+    else
+    {
+      SmartDashboard.putString("Ball in Feeder", "None");
+    }
+
+    if (cargo.size() == 1)
+    {
+      SmartDashboard.putString("Ball in Shooter", ((Boolean) arr[0]).toString());
+    }
+    else
+    {
+      SmartDashboard.putString("Ball in Shooter", "None");
+    }
   }
 
   public void addBalls()
@@ -184,26 +210,6 @@ public class IntakeFeeder extends SubsystemBase {
       {
         cargo.add(false);
       }
-
-      Object[] arr = cargo.toArray();
-
-      if (cargo.size() >= 2)
-      {
-        SmartDashboard.putString("Ball in Feeder", ((Boolean) arr[1]).toString());
-      }
-      else
-      {
-        SmartDashboard.putString("Ball in Feeder", "None");
-      }
-
-      if (cargo.size() == 1)
-      {
-        SmartDashboard.putString("Ball in Shooter", ((Boolean) arr[0]).toString());
-      }
-      else
-      {
-        SmartDashboard.putString("Ball in Shooter", "None");
-      }
     }
   }
 
@@ -221,8 +227,10 @@ public class IntakeFeeder extends SubsystemBase {
   public boolean detectColor() {
 
     // If the color sensor is disconnected, the driver still has the ability to shoot
-    if (!m_colorSensor.isConnected())
+    if (!m_colorSensor.isConnected()) {
+      hasDetectedBall = false;
       return true;
+    }
     
     Color detectedColor = m_colorSensor.getColor();
     char color = 'U';
@@ -242,8 +250,12 @@ public class IntakeFeeder extends SubsystemBase {
      * sensor.
      */
     SmartDashboard.putString("Detected Color", Character.toString(color));
-    if (color != 'U')
+    if (color != 'U' && !hasDetectedBall) {
       cargo.add(color == teamColor);
+      hasDetectedBall = true;
+    }
+    else if (color == 'U')
+      hasDetectedBall = false;
 
     return color != 'U';
   }
