@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxPIDController;
 
 import org.team199.robot2022.Constants;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
@@ -33,8 +34,8 @@ public class IntakeFeeder extends SubsystemBase {
    * takes in what color the team is from smart dashboard to be checked
    * with color sensor
    */
-  boolean ignored = SmartDashboard.putString("Team Color", "");
-  char[] teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
+  SendableChooser<Character> color = new SendableChooser<>();
+  
   // Team Color is set to blue by default
   char teamColor = 'B';
   
@@ -44,7 +45,7 @@ public class IntakeFeeder extends SubsystemBase {
    *  This ranges from 0 to 2047 where the value is larger when an object is closer
    *  9.75 in
    */
-  private final int minProxmity = 2000;
+  private final int minProxmity = 150;
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
@@ -85,16 +86,16 @@ public class IntakeFeeder extends SubsystemBase {
      * - Edited so there is no intake motor running
      */
     bottom.set(speed);
+
+    color.addOption("Red", 'R');
+    color.setDefaultOption("Blue", 'B');
   }
   
   @Override
   public void periodic() {
     
     // Ocassionally update the team color if the team put the wrong one by accident
-    teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
-    if (teamColorArr.length > 0)
-      teamColor = teamColorArr[0];
-    else teamColor = 'B';
+    teamColor = color.getSelected();
 
     // Imperative to inform the driver whether color sensor is working
     if (m_colorSensor.isConnected()) {
@@ -108,14 +109,12 @@ public class IntakeFeeder extends SubsystemBase {
         if (cargo.size() == 1) {
           // while ball is still in color sensor range move the ball out to prevent jam
           middle.set(speed);
-          top.set(speed);
         }
         // If this ball is the second ball in the feeder
         else {
           // This is to prevent any more balls getting in
           bottom.setInverted(true);
           middle.set(0);
-          top.set(0);
         } 
       }
     }
@@ -143,6 +142,7 @@ public class IntakeFeeder extends SubsystemBase {
   {
     if (cargo.size() == 0)
       return false;
+    top.set(1);
     return cargo.poll();
   }
 
@@ -168,7 +168,7 @@ public class IntakeFeeder extends SubsystemBase {
       SmartDashboard.putString("Ball in Feeder", "None");
     }
 
-    if (cargo.size() == 1)
+    if (cargo.size() >= 1)
     {
       SmartDashboard.putString("Ball in Shooter", ((Boolean) arr[0]).toString());
     }
