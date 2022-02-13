@@ -31,8 +31,12 @@ public final class Constants {
         // "swerveRadius" is the distance from the center of the robot to one of the modules
         public static final double swerveRadius = Math.sqrt(Math.pow(wheelBase / 2, 2) + Math.pow(trackWidth / 2, 2));
         // The gearing reduction from the drive motor controller to the wheels
-        // Gearing for the Swerve Modules is 6.75 : 1
-        public static final double driveGearing = 6.75;
+        // "Fast" gearing for the MK3 Swerve Module is 6.86 : 1
+        public static final double driveGearing = 6.86;
+        public static final double driveToRungDist = 0;
+        //TODO : this is not 0, find and set
+        public static final double driveToRungSpeed = 0;
+        //TODO : this is not 0, find and set
 
         public static final double driveModifier = 1;
         public static final double wheelDiameterMeters = Units.inchesToMeters(4.0) * 7.36/7.65 /* empirical correction */;
@@ -195,7 +199,10 @@ public final class Constants {
                 }
             }
 
-
+            public static final int midClimberDeploy = LT;
+            public static final int midClimberRetract = LB;
+            public static final int highClimberDeploy = RT;
+            public static final int highClimberRetract = RB;
         }
     }
 
