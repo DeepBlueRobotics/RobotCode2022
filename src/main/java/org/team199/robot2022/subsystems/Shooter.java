@@ -32,6 +32,8 @@ public class Shooter extends SubsystemBase {
     private static final double kI = 0.0;
     private static final double kD = 0.005;
 
+    private static final double regularShooterRPM = 3320; 
+
     private double kTargetSpeed = 60;
     private final double speedOffset = 100;
 
@@ -112,4 +114,10 @@ public class Shooter extends SubsystemBase {
     public double calculateFeedForward(double velocity) {
         return kS * Math.signum(velocity) + kV * velocity;
     }
+
+    //if motor velocity is slower than usual, returns a boolean
+    public boolean isBallThere() {
+        return (master.getEncoder().getVelocity() < (regularShooterRPM));
+    }
+
 }
