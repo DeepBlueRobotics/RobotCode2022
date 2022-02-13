@@ -16,11 +16,10 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorMatch;
 
 import java.util.LinkedList;
 import java.util.Queue;
-
-import com.revrobotics.ColorMatch;
 
 public class IntakeFeeder extends SubsystemBase {
 
@@ -62,9 +61,9 @@ public class IntakeFeeder extends SubsystemBase {
   private Queue<Boolean> cargo = new LinkedList<>();
 
   // Should the robot intake balls or not (should only be used when color sensor is not working)
-  // true = intake, false = regurgitate
+  // 0 = no balls, 1 = 1 ball, 2 = 2 balls
   // THIS IS ONLY FOR INTAKE NOT THE SHOOTER
-  private boolean feed = true;
+  private int feed = 0;
 
   public IntakeFeeder() {
     // If the color sensor does not respond
@@ -82,15 +81,18 @@ public class IntakeFeeder extends SubsystemBase {
   
   @Override
   public void periodic() {
+    // if someone put the motor the wrong direction I don't have to manually switch the trues and falses
+    boolean inverted = true;
     
     // Ocassionally update the team color if the team put the wrong one by accident
     teamColor = color.getSelected();
 
     // Imperative to inform the driver whether color sensor is working
     if (m_colorSensor.isConnected()) {
+      feed = cargo.size();
       if (cargo.size() < 2)
       {
-        bottom.setInverted(false);
+        bottom.setInverted(!inverted);
       }
 
       if (detectColor()) {
@@ -102,7 +104,7 @@ public class IntakeFeeder extends SubsystemBase {
         // If this ball is the second ball in the feeder
         else {
           // This is to prevent any more balls getting in
-          bottom.setInverted(true);
+          bottom.setInverted(inverted);
           middle.set(0);
         } 
       }
@@ -115,11 +117,20 @@ public class IntakeFeeder extends SubsystemBase {
       // Reset the balls in the cargo as color sensor no longer works and we cannot accurately record the cargo
       cargo = new LinkedList<>();
       // Manually intake balls
-      if (feed)
+      switch(feed)
       {
-        bottom.setInverted(false);
-      } else {
-        bottom.setInverted(true);
+        case 0:
+          bottom.setInverted(!inverted);
+          middle.set(speed);
+          break;
+        case 1:
+          bottom.setInverted(!inverted);
+          middle.set(0);
+          break;
+        case 2:
+          bottom.setInverted(inverted);
+          middle.set(0);
+          break;
       }
     }
     addBalls();
@@ -141,12 +152,30 @@ public class IntakeFeeder extends SubsystemBase {
   /**
    * Should only be used when color sensor is not working
    * Used get/stop balls from getting in by pressing a joystick button
+   * by changing the feed variable which controls motors
    */
-  public void intake()
+  public void manualAdd()
   {
-    feed = !feed;
+    if (feed == 2) {
+      System.err.println("You can't add any more balls!");
+      return;
+    }
+    ++feed;
   }
 
+  public void manualSub()
+  {
+    if (feed == 0) {
+      System.err.println("You can't subtract any more balls!");
+      return;
+    }
+    --feed;
+  }
+
+  /**
+   * Puts whether the ball is the team color or not and whether its in the feeder or shooter
+   * in "shooter" basically means the next ball to be shot
+   */
   public void debug()
   {
     Object[] arr = cargo.toArray();
@@ -169,9 +198,12 @@ public class IntakeFeeder extends SubsystemBase {
       SmartDashboard.putString("Ball in Shooter", "None");
     }
 
-    SmartDashboard.putNumber("Size", cargo.size());
+    SmartDashboard.putNumber("Size", feed);
   }
 
+  /**
+   * Another debugging tool to add/remove balls to the cargo
+   */
   public void addBalls()
   {
     if (cargo.size() >= 2)
@@ -239,10 +271,6 @@ public class IntakeFeeder extends SubsystemBase {
       color = 'U';
     }
 
-    /**
-     * Open Smart Dashboard or Shuffleboard to see the color detected by the 
-     * sensor.
-     */
     SmartDashboard.putString("Detected Color", Character.toString(color));
     if (color != 'U' && !hasDetectedBall) {
       cargo.add(color == teamColor);
