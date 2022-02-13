@@ -31,8 +31,8 @@ public final class Constants {
         // "swerveRadius" is the distance from the center of the robot to one of the modules
         public static final double swerveRadius = Math.sqrt(Math.pow(wheelBase / 2, 2) + Math.pow(trackWidth / 2, 2));
         // The gearing reduction from the drive motor controller to the wheels
-        // "Fast" gearing for the MK3 Swerve Module is 6.86 : 1
-        public static final double driveGearing = 6.86;
+        // Gearing for the Swerve Modules is 6.75 : 1
+        public static final double driveGearing = 6.75;
         public static final double driveToRungDist = 0;
         //TODO : this is not 0, find and set
         public static final double driveToRungSpeed = 0;
@@ -126,13 +126,13 @@ public final class Constants {
         public static final int canCoderPortBL = 3;
         public static final int canCoderPortBR = 4;
 
-        public static final int kShooterMaster = 3;
-        public static final int kShooterSlave = 4;
-        public static final int kShooterTop = 5;
+        public static final int kShooterMaster = 20;
+        public static final int kShooterSlave = 19;
+        public static final int kShooterTop = 99;
 
-        public static final int kIntakeTop = 0;
-        public static final int kIntakeMiddle = 3;
-        public static final int kIntakeBottom = 0;
+        public static final int kIntakeTop = 3;
+        public static final int kIntakeMiddle = 4;
+        public static final int kIntakeBottom = 5;
 
     }
 
