@@ -146,7 +146,8 @@ public final class Constants {
         public static final double JOY_THRESH = 0.01;
         public static final class LeftJoy {
             public static final int port = 0;
-
+            public static final int manualAddPort = 1; // TODO: Set correct port for addPort and subtractPort
+            public static final int manualSubtractPort = 2;
         }
 
         public static final class RightJoy {

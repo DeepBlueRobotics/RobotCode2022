@@ -156,6 +156,11 @@ public class IntakeFeeder extends SubsystemBase {
    */
   public void manualAdd()
   {
+    if (m_colorSensor.isConnected())
+    {
+      System.err.println("Color sensor is connected");
+      return;
+    }
     if (feed == 2) {
       System.err.println("You can't add any more balls!");
       return;
@@ -165,6 +170,11 @@ public class IntakeFeeder extends SubsystemBase {
 
   public void manualSub()
   {
+    if (m_colorSensor.isConnected())
+    {
+      System.err.println("Color sensor is connected");
+      return;
+    }
     if (feed == 0) {
       System.err.println("You can't subtract any more balls!");
       return;
