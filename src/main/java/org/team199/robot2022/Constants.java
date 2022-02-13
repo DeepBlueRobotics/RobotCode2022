@@ -33,6 +33,10 @@ public final class Constants {
         // The gearing reduction from the drive motor controller to the wheels
         // Gearing for the Swerve Modules is 6.75 : 1
         public static final double driveGearing = 6.75;
+        public static final double driveToRungDist = 0;
+        //TODO : this is not 0, find and set
+        public static final double driveToRungSpeed = 0;
+        //TODO : this is not 0, find and set
 
         public static final double driveModifier = 1;
         public static final double wheelDiameterMeters = Units.inchesToMeters(4.0) * 7.36/7.65 /* empirical correction */;
@@ -124,6 +128,7 @@ public final class Constants {
 
         public static final int kShooterMaster = 3;
         public static final int kShooterSlave = 4;
+        public static final int kShooterTop = 5;
 
         public static final int kIntakeTop = 0;
         public static final int kIntakeMiddle = 3;
@@ -195,7 +200,10 @@ public final class Constants {
                 }
             }
 
-
+            public static final int midClimberDeploy = LT;
+            public static final int midClimberRetract = LB;
+            public static final int highClimberDeploy = RT;
+            public static final int highClimberRetract = RB;
         }
     }
 

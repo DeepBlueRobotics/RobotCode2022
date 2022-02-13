@@ -5,20 +5,16 @@ package org.team199.robot2022.subsystems;
 // the WPILib BSD license file in the root directory of this project.
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.SparkMaxPIDController;
-
 import org.team199.robot2022.Constants;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
-
-import org.team199.robot2022.Constants;
-
 import com.revrobotics.ColorMatchResult;
 
 import java.util.LinkedList;
@@ -33,18 +29,15 @@ public class IntakeFeeder extends SubsystemBase {
    * takes in what color the team is from smart dashboard to be checked
    * with color sensor
    */
-  boolean ignored = SmartDashboard.putString("Team Color", "");
-  char[] teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
-  // Team Color is set to blue by default
-  char teamColor = 'B';
+  SendableChooser<Character> color = new SendableChooser<>();
+  char teamColor;
   
-
   /** The color sensor can detect how far away the object is from the sensor
    *  This can be used to determine whether there is a ball or not
    *  This ranges from 0 to 2047 where the value is larger when an object is closer
    *  9.75 in
    */
-  private final int minProxmity = 2000;
+  private final int minProxmity = 150;
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
@@ -56,6 +49,8 @@ public class IntakeFeeder extends SubsystemBase {
   private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop); //TODO: set port
 
   private final double speed = 1.0;
+
+  private boolean hasDetectedBall = false;
 
   /* Concern:
    * Make sure that when the ball is going thru the feeder that there is enough space between the balls
@@ -77,22 +72,19 @@ public class IntakeFeeder extends SubsystemBase {
       SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
     m_colorMatcher.addColorMatch(Color.kBlue);
     m_colorMatcher.addColorMatch(Color.kRed);
-    /**
-     * Initially have these motors
-     * 
-     * - Edited so there is no intake motor running
-     */
+
     bottom.set(speed);
+
+    color.setDefaultOption("Blue", 'B');
+    color.addOption("Red", 'R');
+    SmartDashboard.putData(color);
   }
   
   @Override
   public void periodic() {
     
     // Ocassionally update the team color if the team put the wrong one by accident
-    teamColorArr = SmartDashboard.getString("Team Color", "").toUpperCase().toCharArray();
-    if (teamColorArr.length > 0)
-      teamColor = teamColorArr[0];
-    else teamColor = 'B';
+    teamColor = color.getSelected();
 
     // Imperative to inform the driver whether color sensor is working
     if (m_colorSensor.isConnected()) {
@@ -106,15 +98,16 @@ public class IntakeFeeder extends SubsystemBase {
         if (cargo.size() == 1) {
           // while ball is still in color sensor range move the ball out to prevent jam
           middle.set(speed);
-          top.set(speed);
         }
         // If this ball is the second ball in the feeder
         else {
           // This is to prevent any more balls getting in
           bottom.setInverted(true);
           middle.set(0);
-          top.set(0);
         } 
+      }
+      else {
+        middle.set(0);
       }
     }
     else {
@@ -130,6 +123,7 @@ public class IntakeFeeder extends SubsystemBase {
       }
     }
     addBalls();
+    debug();
   }
 
   /**
@@ -140,6 +134,7 @@ public class IntakeFeeder extends SubsystemBase {
   {
     if (cargo.size() == 0)
       return false;
+    top.set(1);
     return cargo.poll();
   }
 
@@ -150,6 +145,31 @@ public class IntakeFeeder extends SubsystemBase {
   public void intake()
   {
     feed = !feed;
+  }
+
+  public void debug()
+  {
+    Object[] arr = cargo.toArray();
+
+    if (cargo.size() >= 2)
+    {
+      SmartDashboard.putString("Ball in Feeder", ((Boolean) arr[1]).toString());
+    }
+    else
+    {
+      SmartDashboard.putString("Ball in Feeder", "None");
+    }
+
+    if (cargo.size() >= 1)
+    {
+      SmartDashboard.putString("Ball in Shooter", ((Boolean) arr[0]).toString());
+    }
+    else
+    {
+      SmartDashboard.putString("Ball in Shooter", "None");
+    }
+
+    SmartDashboard.putNumber("Size", cargo.size());
   }
 
   public void addBalls()
@@ -184,26 +204,6 @@ public class IntakeFeeder extends SubsystemBase {
       {
         cargo.add(false);
       }
-
-      Object[] arr = cargo.toArray();
-
-      if (cargo.size() >= 2)
-      {
-        SmartDashboard.putString("Ball in Feeder", ((Boolean) arr[1]).toString());
-      }
-      else
-      {
-        SmartDashboard.putString("Ball in Feeder", "None");
-      }
-
-      if (cargo.size() == 1)
-      {
-        SmartDashboard.putString("Ball in Shooter", ((Boolean) arr[0]).toString());
-      }
-      else
-      {
-        SmartDashboard.putString("Ball in Shooter", "None");
-      }
     }
   }
 
@@ -221,8 +221,10 @@ public class IntakeFeeder extends SubsystemBase {
   public boolean detectColor() {
 
     // If the color sensor is disconnected, the driver still has the ability to shoot
-    if (!m_colorSensor.isConnected())
+    if (!m_colorSensor.isConnected()) {
+      hasDetectedBall = false;
       return true;
+    }
     
     Color detectedColor = m_colorSensor.getColor();
     char color = 'U';
@@ -242,8 +244,12 @@ public class IntakeFeeder extends SubsystemBase {
      * sensor.
      */
     SmartDashboard.putString("Detected Color", Character.toString(color));
-    if (color != 'U')
+    if (color != 'U' && !hasDetectedBall) {
       cargo.add(color == teamColor);
+      hasDetectedBall = true;
+    }
+    else if (color == 'U')
+      hasDetectedBall = false;
 
     return color != 'U';
   }
