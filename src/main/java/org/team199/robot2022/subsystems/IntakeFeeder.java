@@ -1,9 +1,5 @@
 package org.team199.robot2022.subsystems;
 
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 import com.revrobotics.CANSparkMax;
 import org.team199.robot2022.Constants;
 
@@ -18,8 +14,8 @@ import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
+import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 
 public class IntakeFeeder extends SubsystemBase {
 
@@ -36,13 +32,12 @@ public class IntakeFeeder extends SubsystemBase {
    *  This ranges from 0 to 2047 where the value is larger when an object is closer
    *  9.75 in
    */
-  private final int minProxmity = 150;
+  private final int minProxmity = 130; // TODO : Accurately determine minProxmity constant
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  // These three motors are for the three motors in the intake tube system
   private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom); //TODO: set port
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
   private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop); //TODO: set port
@@ -58,15 +53,17 @@ public class IntakeFeeder extends SubsystemBase {
 
   // Will store what color balls are in the feeder
   // true = team color, false = not team color
-  private Queue<Boolean> cargo = new LinkedList<>();
+  private Deque<Boolean> cargo = new LinkedList<>();
 
   // Should the robot intake balls or not (should only be used when color sensor is not working)
   // 0 = no balls, 1 = 1 ball, 2 = 2 balls
   // THIS IS ONLY FOR INTAKE NOT THE SHOOTER
   private int feed = 0;
 
+  // if someone put the motor the wrong direction I don't have to manually switch the trues and falses
+  boolean inverted = true;
+
   public IntakeFeeder() {
-    // If the color sensor does not respond
     if (!m_colorSensor.isConnected())
       SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
     m_colorMatcher.addColorMatch(Color.kBlue);
@@ -81,72 +78,89 @@ public class IntakeFeeder extends SubsystemBase {
   
   @Override
   public void periodic() {
-    // if someone put the motor the wrong direction I don't have to manually switch the trues and falses
-    boolean inverted = true;
-    
     // Ocassionally update the team color if the team put the wrong one by accident
     teamColor = color.getSelected();
 
-    // Imperative to inform the driver whether color sensor is working
-    if (m_colorSensor.isConnected()) {
-      feed = cargo.size();
-      if (cargo.size() < 2)
-      {
-        bottom.setInverted(!inverted);
-      }
-
-      if (detectColor()) {
-        // If this ball is the first ball in the feeder
-        if (cargo.size() == 1) {
-          // while ball is still in color sensor range move the ball out to prevent jam
-          middle.set(speed);
-        }
-        // If this ball is the second ball in the feeder
-        else {
-          // This is to prevent any more balls getting in
-          bottom.setInverted(inverted);
-          middle.set(0);
-        } 
-      }
-      else {
-        middle.set(0);
-      }
-    }
-    else {
-      SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
-      // Reset the balls in the cargo as color sensor no longer works and we cannot accurately record the cargo
-      cargo = new LinkedList<>();
-      // Manually intake balls
-      switch(feed)
-      {
-        case 0:
-          bottom.setInverted(!inverted);
-          middle.set(speed);
-          break;
-        case 1:
-          bottom.setInverted(!inverted);
-          middle.set(0);
-          break;
-        case 2:
-          bottom.setInverted(inverted);
-          middle.set(0);
-          break;
-      }
-    }
+    if (m_colorSensor.isConnected()) 
+      autonomousPeriodic();
+    else 
+      manualPeriodic();
+    
     addBalls();
     debug();
+  }
+
+  /**
+   * Run in the periodic method if color sensor is working
+   */
+  public void autonomousPeriodic()
+  {
+    feed = cargo.size();
+    if (cargo.size() < 2)
+    {
+      bottom.set(speed);
+    }
+
+    if (detectColor()) {
+      if (cargo.peekFirst() == false)
+      {
+        // Regurgitate via intake
+        bottom.setInverted(inverted);
+        middle.set(0);
+      }  
+      else if (cargo.size() == 1) {
+        // while ball is still in color sensor range move the ball out to prevent jam
+        middle.set(speed); // TODO : The ball might not reach the destination fast enough if second ball gets in
+      }
+      // If this ball is the second ball in the feeder
+      else {
+        // This is to prevent any more balls getting in
+        middle.set(0);
+        bottom.set(0);
+      } 
+    }
+
+    // if ball has been successfully regurgitated
+    if (cargo.peekFirst() == false && hasDetectedBall == false)
+      cargo.removeFirst();
+  }
+
+  /**
+   * Run only if color sensor is not working in replacement of the automous periodic method
+   */
+  public void manualPeriodic()
+  {
+    SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
+    // Reset the balls in the cargo as color sensor no longer works and we cannot accurately record the cargo
+    cargo = new LinkedList<>();
+    // Manually intake balls
+    switch(feed)
+    {
+      case 0:
+        bottom.setInverted(!inverted);
+        middle.set(speed);
+        break;
+      case 1:
+        bottom.setInverted(!inverted);
+        middle.set(0);
+        break;
+      case 2:
+        bottom.setInverted(inverted);
+        middle.set(0);
+        break;
+    }
   }
 
   /**
    * Will pop from the queue
    * @return the top-most ball (the ball about to be shot)
    */
-  public boolean eject()
+  public boolean eject() // TODO : Unfinished, need to integrate with shooter subsystem
   {
     if (cargo.size() == 0)
       return false;
     top.set(1);
-    return cargo.poll();
+    return cargo.pollFirst();
   }
 
   /**
@@ -234,7 +248,7 @@ public class IntakeFeeder extends SubsystemBase {
       //REMOVES BALLS
       for (int i = 0; i < numBallsRemoved; i++)
       {
-        cargo.poll();
+        cargo.pollFirst();
       }
 
       //ADDS BALLS
@@ -283,7 +297,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     SmartDashboard.putString("Detected Color", Character.toString(color));
     if (color != 'U' && !hasDetectedBall) {
-      cargo.add(color == teamColor);
+      cargo.addLast(color == teamColor);
       hasDetectedBall = true;
     }
     else if (color == 'U')
