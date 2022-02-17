@@ -137,15 +137,17 @@ public class IntakeFeeder extends SubsystemBase {
     switch(feed)
     {
       case 0:
-        bottom.setInverted(!inverted);
-        middle.set(speed);
-        break;
-      case 1:
+        bottom.set(speed);
         bottom.setInverted(!inverted);
         middle.set(0);
         break;
+      case 1:
+        bottom.set(speed);
+        bottom.setInverted(!inverted);
+        middle.set(speed);
+        break;
       case 2:
-        bottom.setInverted(inverted);
+        bottom.set(0);
         middle.set(0);
         break;
     }
@@ -194,6 +196,17 @@ public class IntakeFeeder extends SubsystemBase {
       return;
     }
     --feed;
+  }
+
+  /**
+   * Regurgitates out of intake not shooter
+   * Only used when color sensor no work
+   * Does not automatically remove the ball from deque
+   */
+  public void regurgitate()
+  {
+    bottom.setInverted(inverted);
+    bottom.set(speed);
   }
 
   /**
