@@ -42,7 +42,7 @@ public class IntakeFeeder extends SubsystemBase {
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
   private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop); //TODO: set port
 
-  private final double speed = 1.0;
+  private final double speed = 0.333;
 
   private boolean hasDetectedBall = false;
 

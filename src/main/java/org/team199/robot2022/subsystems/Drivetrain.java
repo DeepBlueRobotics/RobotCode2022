@@ -137,7 +137,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     }
 
     public double getHeading() {
-        double x = gyro.getAngle();
+        double x = -gyro.getAngle();
         if (SmartDashboard.getBoolean("Field Oriented", true)) {
             x -= SmartDashboard.getNumber("Field Offset from North (degrees)", 0);
         }

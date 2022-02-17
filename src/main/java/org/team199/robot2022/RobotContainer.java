@@ -167,7 +167,7 @@ public class RobotContainer {
 
   public AutoPath getAutoPath() {
     for(int i = 0; i < autoSelectors.length; i++) {
-      if(autoSelectors[i].get())
+      if(!autoSelectors[i].get())
         return autoPaths[i];
     }
     return null;
