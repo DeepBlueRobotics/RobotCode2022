@@ -37,6 +37,7 @@ public class IntakeFeeder extends SubsystemBase {
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   private final ColorMatch m_colorMatcher = new ColorMatch();
+  private final 
 
   private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom); //TODO: set port
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
@@ -155,6 +156,10 @@ public class IntakeFeeder extends SubsystemBase {
     }
   }
 
+  public boolean isBallThere() {
+    return (bottom.getEncoder().getVelocity() < (speed));
+}
+
   /**
    * Will pop from the queue
    * @return the top-most ball (the ball about to be shot)
@@ -207,8 +212,11 @@ public class IntakeFeeder extends SubsystemBase {
    */
   public void regurgitate()
   {
-    bottom.setInverted(inverted);
-    bottom.set(speed);
+    while(isBallThere()) 
+    {  
+      bottom.setInverted(inverted);
+      bottom.set(speed);
+    }
   }
 
   /**
