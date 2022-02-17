@@ -238,6 +238,7 @@ public class IntakeFeeder extends SubsystemBase {
     }
 
     SmartDashboard.putNumber("Size", feed);
+    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
   }
 
   /**
