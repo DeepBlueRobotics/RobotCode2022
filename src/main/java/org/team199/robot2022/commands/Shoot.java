@@ -10,7 +10,6 @@ import com.revrobotics.CANSparkMax;
 import org.team199.robot2022.Constants;
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
-import org.team199.robot2022.subsystems.ColorSensor;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -20,15 +19,13 @@ public class Shoot extends CommandBase {
   
   private final IntakeFeeder intakeFeeder;
   private final Shooter shooter;
-  private final ColorSensor colorSensor;
-
   
-  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter, ColorSensor colorSensor) {
+  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter) {
     /**
      * takes in detectcolor method output from the sensor readings
      * 
      */
-    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter, this.colorSensor = colorSensor);
+    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -43,7 +40,7 @@ public class Shoot extends CommandBase {
   @Override
   //Shoots a ball forward/backwards depending on ball color
   public void execute() {
-    if (colorSensor.detectColor()){ //if color is correct
+    if (intakeFeeder.detectColor()){ //if color is correct
      if (intakeFeeder.eject())
       {
        // Shoot the ball
@@ -53,7 +50,7 @@ public class Shoot extends CommandBase {
       }
     }
     
-    else if (!colorSensor.detectColor()){
+    else if (!intakeFeeder.detectColor()){
       if(intakeFeeder.eject()){
        //if (shooter.isAtSoftShootSpped()){
          //move to side

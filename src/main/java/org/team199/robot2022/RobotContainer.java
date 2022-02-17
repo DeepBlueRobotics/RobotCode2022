@@ -7,7 +7,6 @@ package org.team199.robot2022;
 import org.team199.robot2022.commands.TeleopDrive;
 import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.IntakeFeeder;
-import org.team199.robot2022.subsystems.ColorSensor;
 import org.team199.robot2022.subsystems.Shooter;
 
 import java.io.IOException;
@@ -45,7 +44,6 @@ public class RobotContainer {
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
   public final IntakeFeeder intakeFeeder = new IntakeFeeder();
-  public final ColorSensor colorSensor = new ColorSensor();
 
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
@@ -99,7 +97,7 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsRightJoy() {
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(intakeFeeder, shooter, colorSensor));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(intakeFeeder, shooter));
   }
 
   private void configureButtonBindingsController() {
