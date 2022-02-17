@@ -95,6 +95,7 @@ public class RobotContainer {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.regurgitatePort).whenHeld(new InstantCommand(intakeFeeder::regurgitate));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
 
   private void configureButtonBindingsRightJoy() {

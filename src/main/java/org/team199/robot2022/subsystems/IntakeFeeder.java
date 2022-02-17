@@ -45,6 +45,8 @@ public class IntakeFeeder extends SubsystemBase {
   private final double speed = 1.0;
 
   private boolean hasDetectedBall = false;
+  // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
+  private boolean overrideSensor = false;
 
   /* Concern:
    * Make sure that when the ball is going thru the feeder that there is enough space between the balls
@@ -83,7 +85,7 @@ public class IntakeFeeder extends SubsystemBase {
     // Ocassionally update the team color if the team put the wrong one by accident
     teamColor = color.getSelected();
 
-    if (m_colorSensor.isConnected()) 
+    if (m_colorSensor.isConnected() && !overrideSensor) 
       autonomousPeriodic();
     else 
       manualPeriodic();
@@ -128,7 +130,8 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   /**
-   * Run only if color sensor is not working in replacement of the automous periodic method
+
+''  * Run only if color sensor is not working in replacement of the automous periodic method
    */
   public void manualPeriodic()
   {
@@ -209,6 +212,14 @@ public class IntakeFeeder extends SubsystemBase {
   {
     bottom.setInverted(inverted);
     bottom.set(speed);
+  }
+
+  /**
+   * Switches on or off to override sensor
+   */
+  public void override()
+  {
+    overrideSensor = !overrideSensor;
   }
 
   /**
