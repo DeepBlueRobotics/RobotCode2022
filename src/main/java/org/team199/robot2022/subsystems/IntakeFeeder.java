@@ -74,6 +74,8 @@ public class IntakeFeeder extends SubsystemBase {
     color.setDefaultOption("Blue", 'B');
     color.addOption("Red", 'R');
     SmartDashboard.putData(color);
+    SmartDashboard.putString("Add Ball to Queue", "");
+    SmartDashboard.putNumber("Remove Ball from Queue", 0);
   }
   
   @Override
@@ -130,7 +132,7 @@ public class IntakeFeeder extends SubsystemBase {
    */
   public void manualPeriodic()
   {
-    SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
+    SmartDashboard.putString("Detected Color", "Disconnected");
     // Reset the balls in the cargo as color sensor no longer works and we cannot accurately record the cargo
     cargo = new LinkedList<>();
     // Manually intake balls
@@ -219,20 +221,20 @@ public class IntakeFeeder extends SubsystemBase {
 
     if (cargo.size() >= 2)
     {
-      SmartDashboard.putString("Ball in Feeder", ((Boolean) arr[1]).toString());
+      SmartDashboard.putString("Lower Ball", ((Boolean) arr[1]).toString());
     }
     else
     {
-      SmartDashboard.putString("Ball in Feeder", "None");
+      SmartDashboard.putString("Lower Ball", "None");
     }
 
     if (cargo.size() >= 1)
     {
-      SmartDashboard.putString("Ball in Shooter", ((Boolean) arr[0]).toString());
+      SmartDashboard.putString("Upper Ball", ((Boolean) arr[0]).toString());
     }
     else
     {
-      SmartDashboard.putString("Ball in Shooter", "None");
+      SmartDashboard.putString("Upper Ball", "None");
     }
 
     SmartDashboard.putNumber("Size", feed);
@@ -249,8 +251,6 @@ public class IntakeFeeder extends SubsystemBase {
     }
     else
     {
-      SmartDashboard.putString("Add Ball to Queue", "");
-      SmartDashboard.putNumber("Remove Ball(s) from Queue", 0);
       char[] ballAddedArr = SmartDashboard.getString("Add Ball to Queue", "").toUpperCase().toCharArray();
       // By default set to "Unknown"
       char ballAdded = 'U';
