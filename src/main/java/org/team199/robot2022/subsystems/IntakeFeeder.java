@@ -11,7 +11,6 @@ import frc.robot.lib.MotorControllerFactory;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
@@ -27,13 +26,6 @@ public class IntakeFeeder extends SubsystemBase {
    */
   SendableChooser<Character> color = new SendableChooser<>();
   char teamColor;
-  
-  /** The color sensor can detect how far away the object is from the sensor
-   *  This can be used to determine whether there is a ball or not
-   *  This ranges from 0 to 2047 where the value is larger when an object is closer
-   *  9.75 in
-   */
-  private final int minProxmity = 130; // TODO : Accurately determine minProxmity constant
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
@@ -43,7 +35,11 @@ public class IntakeFeeder extends SubsystemBase {
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
   private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop); //TODO: set port
 
-  private final double speed = 1.0;
+  private final double speed = .333;
+  // Constant values that can be tweaked
+  // Used to calculate whether there is a ball against the motor
+  private final double ampsThreshold = 7; // TODO : Get the best threshold that includes deflated balls
+  private final int minProxmity = 400; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
@@ -238,8 +234,12 @@ public class IntakeFeeder extends SubsystemBase {
     overrideSensor = !overrideSensor;
   }
 
+  /**
+   * @param motor
+   * @return whether ball is there
+   */
   public boolean isBallThere(CANSparkMax motor) {
-    return (motor.getEncoder().getVelocity() < (speed));
+    return motor.getOutputCurrent() > ampsThreshold;
   }
   
   /**
@@ -270,6 +270,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     SmartDashboard.putNumber("Size", feed);
     SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
+    SmartDashboard.putNumber("Current", bottom.getOutputCurrent());
   }
 
   /**
