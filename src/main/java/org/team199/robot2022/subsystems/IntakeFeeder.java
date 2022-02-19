@@ -11,6 +11,7 @@ import frc.robot.lib.MotorControllerFactory;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
@@ -37,7 +38,6 @@ public class IntakeFeeder extends SubsystemBase {
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   private final ColorMatch m_colorMatcher = new ColorMatch();
-  private final 
 
   private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom); //TODO: set port
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
@@ -131,8 +131,7 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   /**
-
-''  * Run only if color sensor is not working in replacement of the automous periodic method
+   * Run only if color sensor is not working in replacement of the automous periodic method
    */
   public void manualPeriodic()
   {
@@ -158,10 +157,6 @@ public class IntakeFeeder extends SubsystemBase {
         break;
     }
   }
-
-  public boolean isBallThere() {
-    return (bottom.getEncoder().getVelocity() < (speed));
-}
 
   /**
    * Will pop from the queue
@@ -215,7 +210,7 @@ public class IntakeFeeder extends SubsystemBase {
    */
   public void regurgitate()
   {
-    while(isBallThere()) 
+    while(isBallThere(bottom)) 
     {  
       bottom.setInverted(inverted);
       bottom.set(speed);
@@ -230,6 +225,10 @@ public class IntakeFeeder extends SubsystemBase {
     overrideSensor = !overrideSensor;
   }
 
+  public boolean isBallThere(CANSparkMax motor) {
+    return (motor.getEncoder().getVelocity() < (speed));
+  }
+  
   /**
    * Puts whether the ball is the team color or not and whether its in the feeder or shooter
    * in "shooter" basically means the next ball to be shot
@@ -295,6 +294,7 @@ public class IntakeFeeder extends SubsystemBase {
       }
     }
   }
+
 
   /**
    * Color sensor detects whether the color of the ball is our team color
