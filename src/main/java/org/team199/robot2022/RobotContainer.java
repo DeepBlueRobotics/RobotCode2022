@@ -48,6 +48,7 @@ public class RobotContainer {
 
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
+  
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -55,11 +56,11 @@ public class RobotContainer {
   public RobotContainer() {
 
     autoPaths = new AutoPath[] {
-      new AutoPath(false, loadPath("Taxi1"), null, false, false),
-      new AutoPath(false, loadPath("Taxi2"), null, false, false),
-      new AutoPath(true, loadPath("Path1"), null, true, true),
-      new AutoPath(true, loadPath("Path2"), null, true, true),
-      new AutoPath(true, loadPath("Path3"), null, true, true)
+      new AutoPath(false, loadPath("Taxi1").reversed(), null, false, false),
+      new AutoPath(false, loadPath("Taxi2").reversed(), null, false, false),
+      new AutoPath(true, loadPath("Path1").reversed(), null, true, true),
+      new AutoPath(true, loadPath("Path2").reversed(), null, true, true),
+      new AutoPath(true, loadPath("Path3").reversed(), null, true, true)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 10)];
