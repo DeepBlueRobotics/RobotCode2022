@@ -93,8 +93,8 @@ public final class Constants {
         //public static final double[] kForwardAccels = {0, 0, 0, 0};
         //public static final double[] kBackwardAccels = {0, 0, 0, 0};
 
-        public static final double autoMaxSpeedMps = 0.35 * 4.4;  // Meters / second
-        public static final double autoMaxAccelMps2 = mu * g;  // Meters / seconds^2
+        public static final double autoMaxSpeedMps = 0.5 * 4.4;  // Meters / second
+        public static final double autoMaxAccelMps2 = mu * 0.2 * g;  // Meters / seconds^2
         public static final double autoMaxVolt = 10.0;   // For Drivetrain voltage constraint in RobotPath.java
         // The maximum acceleration the robot can achieve is equal to the coefficient of static friction times the gravitational acceleration
         // a = mu * 9.8 m/s^2

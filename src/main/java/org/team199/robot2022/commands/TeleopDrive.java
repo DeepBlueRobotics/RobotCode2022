@@ -79,7 +79,7 @@ public class TeleopDrive extends CommandBase {
     //SmartDashboard.putNumber("Forward (mps)", currentForward);
    // SmartDashboard.putNumber("Strafe (mps)", currentStrafe);
     double driveMultiplier = slow.get() ? kSlowDriveSpeed : 1;
-    double rotationMultiplier = slow.get() ? kSlowDriveRotation : 1;
+    double rotationMultiplier = slow.get() ? kSlowDriveRotation : -1;
     drivetrain.drive(currentForward * driveMultiplier, currentStrafe * driveMultiplier, rotateClockwise * rotationMultiplier);
   }
 
