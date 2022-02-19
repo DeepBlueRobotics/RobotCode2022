@@ -6,8 +6,8 @@ package org.team199.robot2022;
 
 import org.team199.robot2022.commands.TeleopDrive;
 import org.team199.robot2022.subsystems.Drivetrain;
+import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
-import org.team199.robot2022.subsystems.ColorSensor;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ public class RobotContainer {
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
 
-  public final ColorSensor colorSensor = new ColorSensor();
+  public final IntakeFeeder intakeFeeder = new IntakeFeeder();
 
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
@@ -92,11 +92,14 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsLeftJoy() {
-
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.regurgitatePort).whenPressed(new InstantCommand(intakeFeeder::regurgitate));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
 
   private void configureButtonBindingsRightJoy() {
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(colorSensor, shooter));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(intakeFeeder, shooter));
   }
 
   private void configureButtonBindingsController() {
@@ -110,7 +113,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     AutoPath path = getAutoPath();
-    return path == null ? new InstantCommand() : new Autonomous(path, dt, colorSensor,/*intakeFeeder,*/ shooter);
+    return path == null ? new InstantCommand() : new Autonomous(path, dt, intakeFeeder, shooter);
   }
 
   private double getStickValue(Constants.OI.StickType stick, Constants.OI.StickDirection dir) {
