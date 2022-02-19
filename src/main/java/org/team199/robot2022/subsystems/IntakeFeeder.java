@@ -107,27 +107,40 @@ public class IntakeFeeder extends SubsystemBase {
     }
 
     if (detectColor()) {
-      if (cargo.peekFirst() == false)
+      if (cargo.size() > 0 && cargo.peekFirst() == false)
       {
-        // Regurgitate via intake
-        bottom.setInverted(inverted);
         middle.set(0);
-      }  
+        // Regurgitate via intake
+        if (isBallThere(bottom)) {
+          bottom.setInverted(inverted);
+          bottom.set(speed);
+        } else {
+          bottom.setInverted(!inverted);
+          bottom.set(speed);
+          cargo.removeFirst();
+        }
+      }
       else if (cargo.size() == 1) {
         // while ball is still in color sensor range move the ball out to prevent jam
-        middle.set(speed); // TODO : The ball might not reach the destination fast enough if second ball gets in
+        // TODO : The ball might not reach the destination fast enough if second ball gets in
+        if (!isBallThere(middle) && isBallThere(top))
+        {
+          middle.set(0);
+          top.set(0);
+        } else {
+          middle.set(speed);
+          top.set(speed);
+        }
       }
       // If this ball is the second ball in the feeder
       else {
         // This is to prevent any more balls getting in
+        top.set(0);
         middle.set(0);
         bottom.set(0);
+        bottom.setInverted(!inverted);
       } 
     }
-
-    // if ball has been successfully regurgitated
-    if (cargo.peekFirst() == false && hasDetectedBall == false)
-      cargo.removeFirst();
   }
 
   /**
