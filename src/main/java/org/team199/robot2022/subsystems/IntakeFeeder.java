@@ -31,12 +31,12 @@ public class IntakeFeeder extends SubsystemBase {
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom); //TODO: set port
+  private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom); //TODO: set ports for motors
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
-  private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop); //TODO: set port
+  private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop);
 
-  private final double speed = .333;
   // Constant values that can be tweaked
+  private final double speed = .333;
   // Used to calculate whether there is a ball against the motor
   private final double ampsThreshold = 7; // TODO : Get the best threshold that includes deflated balls
   private final int minProxmity = 400; // TODO : Accurately determine minProxmity constant
@@ -158,11 +158,20 @@ public class IntakeFeeder extends SubsystemBase {
       case 1:
         bottom.set(speed);
         bottom.setInverted(!inverted);
-        middle.set(speed);
+        if (!isBallThere(middle) && isBallThere(top))
+        {
+          middle.set(0);
+          top.set(0);
+        } else {
+          middle.set(speed);
+          top.set(speed);
+        }
         break;
       case 2:
         bottom.set(0);
         middle.set(0);
+        top.set(0);
+        bottom.setInverted(!inverted);
         break;
     }
   }
@@ -171,11 +180,12 @@ public class IntakeFeeder extends SubsystemBase {
    * Will pop from the queue
    * @return the top-most ball (the ball about to be shot)
    */
-  public boolean eject() // TODO : Unfinished, need to integrate with shooter subsystem
+  public boolean eject()
   {
     if (cargo.size() == 0)
       return false;
-    top.set(1);
+    while (isBallThere(top))
+      top.set(speed);
     return cargo.pollFirst();
   }
 
@@ -186,7 +196,7 @@ public class IntakeFeeder extends SubsystemBase {
    */
   public void manualAdd()
   {
-    if (m_colorSensor.isConnected())
+    if (m_colorSensor.isConnected() && !overrideSensor)
     {
       System.err.println("Color sensor is connected");
       return;
@@ -200,7 +210,7 @@ public class IntakeFeeder extends SubsystemBase {
 
   public void manualSub()
   {
-    if (m_colorSensor.isConnected())
+    if (m_colorSensor.isConnected() && !overrideSensor)
     {
       System.err.println("Color sensor is connected");
       return;
@@ -224,6 +234,8 @@ public class IntakeFeeder extends SubsystemBase {
       bottom.setInverted(inverted);
       bottom.set(speed);
     }
+    bottom.setInverted(!inverted);
+    bottom.set(speed);
   }
 
   /**
