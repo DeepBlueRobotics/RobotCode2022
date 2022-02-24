@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.REVLibError;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
@@ -62,6 +64,10 @@ public class IntakeFeeder extends SubsystemBase {
   // if someone put the motor the wrong direction I don't have to manually switch the trues and falses
   boolean inverted = true;
 
+  private Timer timer = new Timer();
+  // How many seconds need to pass to determine whether something is jammed
+  private final int jamThreshold = 5;
+
   public IntakeFeeder() {
     if (!m_colorSensor.isConnected())
       SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
@@ -102,21 +108,21 @@ public class IntakeFeeder extends SubsystemBase {
       bottom.set(speed);
     }
 
-    if (detectColor()) {
-      if (cargo.size() > 0 && cargo.peekFirst() == false)
-      {
-        middle.set(0);
-        // Regurgitate via intake
-        if (isBallThere(bottom)) {
-          bottom.setInverted(inverted);
-          bottom.set(speed);
-        } else {
-          bottom.setInverted(!inverted);
-          bottom.set(speed);
-          cargo.removeFirst();
-        }
+    if (cargo.size() > 0 && cargo.peekFirst() == false)
+    {
+      middle.set(0);
+      // Regurgitate via intake
+      if (!isJammed(bottom) && isBallThere(bottom)) {
+        bottom.setInverted(inverted);
+        bottom.set(speed);
+      } else {
+        cargo.removeFirst();
+        bottom.setInverted(!inverted);
+        bottom.set(speed);
       }
-      else if (cargo.size() == 1) {
+    }
+    if (detectColor()) {
+      if (cargo.size() == 1 && cargo.peekFirst()) {
         // while ball is still in color sensor range move the ball out to prevent jam
         // TODO : The ball might not reach the destination fast enough if second ball gets in
         if (!isBallThere(middle) && isBallThere(top))
@@ -229,6 +235,7 @@ public class IntakeFeeder extends SubsystemBase {
    */
   public void regurgitate()
   {
+    middle.set(0);
     while(isBallThere(bottom)) 
     {  
       bottom.setInverted(inverted);
@@ -254,6 +261,32 @@ public class IntakeFeeder extends SubsystemBase {
     return motor.getOutputCurrent() > ampsThreshold;
   }
   
+  /**
+   * If motor is still trying to get a ball out for more than the number of seconds
+   * stated in jamThreshold constant, then the ball is jammed
+   * @param motor
+   * @return
+   */
+  public boolean isJammed(CANSparkMax motor)
+  {
+    if (timer.get() == 0) {
+      timer.start();
+    }
+    if (!isBallThere(motor))
+    {
+      timer.stop();
+      timer.reset();
+      return false;
+    }
+    if ((timer.get() > jamThreshold && isBallThere(motor)) || motor.getLastError() == REVLibError.kOk)
+    {
+      timer.stop();
+      timer.reset();
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Puts whether the ball is the team color or not and whether its in the feeder or shooter
    * in "shooter" basically means the next ball to be shot
