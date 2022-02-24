@@ -116,6 +116,8 @@ public class IntakeFeeder extends SubsystemBase {
         bottom.setInverted(inverted);
         bottom.set(speed);
       } else {
+        // TODO : cargo.removeFirst() may remove the red ball but the color sensor will not detect that the ball is not
+        // regurgitated and will not add the ball
         cargo.removeFirst();
         bottom.setInverted(!inverted);
         bottom.set(speed);
@@ -209,8 +211,22 @@ public class IntakeFeeder extends SubsystemBase {
   {
     if (cargo.size() == 0)
       return false;
-    while (isBallThere(top))
+    top.setInverted(!inverted);
+    while (isBallThere(top) && !isJammed(top))
       top.set(speed);
+    
+    if (isBallThere(top))
+    {
+      timer.reset();
+      timer.start();
+      // Tries to unjam by running motors opposite direction for one second
+      while (timer.get() <= 1)
+        top.setInverted(inverted);
+      top.setInverted(!inverted);
+      top.set(0);
+      return false;
+    }
+    top.set(0);
     return cargo.pollFirst();
   }
 
