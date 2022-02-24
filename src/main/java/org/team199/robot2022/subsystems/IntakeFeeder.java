@@ -178,20 +178,66 @@ public class IntakeFeeder extends SubsystemBase {
     switch(feed)
     {
       case 0:
-        bottom.set(speed);
+        if (!isJammed(bottom))
+        {
+          bottom.set(speed);
+        }
+        else
+        {
+          timer.reset();
+          timer.start();
+          if(timer.get() < 1)
+          {
+            bottom.setInverted(inverted);
+            bottom.set(speed);
+          }
+          bottom.setInverted(!inverted);
+        }
         bottom.setInverted(!inverted);
         middle.set(0);
         break;
       case 1:
+      if (!isJammed(bottom))
+      {
         bottom.set(speed);
+      }
+      else
+      {
+        timer.reset();
+        timer.start();
+        if(timer.get() < 1)
+        {
+          bottom.setInverted(inverted);
+          bottom.set(speed);
+        }
+        bottom.setInverted(!inverted);
+      }
         bottom.setInverted(!inverted);
         if (!isBallThere(middle) && isBallThere(top))
         {
           middle.set(0);
           top.set(0);
         } else {
-          middle.set(speed);
-          top.set(speed);
+          if (!isJammed(middle) && isBallThere(middle))
+          {
+            middle.set(speed);
+            top.set(speed);
+          }
+          else if(isBallThere(middle))
+          {
+            timer.reset();
+            timer.start();
+            if(timer.get() < 1)
+            {
+              middle.setInverted(inverted);
+              middle.set(speed);
+            }
+            else
+            {
+              middle.setInverted(!inverted);
+              middle.set(0);
+            }
+          }
         }
         break;
       case 2:
@@ -222,8 +268,8 @@ public class IntakeFeeder extends SubsystemBase {
       // Tries to unjam by running motors opposite direction for one second
       while (timer.get() <= 1)
         top.setInverted(inverted);
-      top.setInverted(!inverted);
-      top.set(0);
+        top.setInverted(!inverted);
+        top.set(0);
       return false;
     }
     top.set(0);
