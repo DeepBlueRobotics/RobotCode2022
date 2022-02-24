@@ -127,11 +127,30 @@ public class IntakeFeeder extends SubsystemBase {
         // TODO : The ball might not reach the destination fast enough if second ball gets in
         if (!isBallThere(middle) && isBallThere(top))
         {
-          middle.set(0);
-          top.set(0);
-        } else {
-          middle.set(speed);
-          top.set(speed);
+            middle.set(0);
+            top.set(0);
+        } 
+        else {
+          if (!isJammed(middle) && isBallThere(middle))
+          {
+            middle.set(speed);
+            top.set(speed);
+          }
+          else if(isBallThere(middle))
+          {
+            timer.reset();
+            timer.start();
+            if(timer.get() < 1)
+            {
+              middle.setInverted(inverted);
+              middle.set(speed);
+            }
+            else
+            {
+              middle.setInverted(!inverted);
+              middle.set(0);
+            }
+          }
         }
       }
       // If this ball is the second ball in the feeder
