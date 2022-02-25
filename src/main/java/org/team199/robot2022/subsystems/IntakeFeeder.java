@@ -149,18 +149,7 @@ public class IntakeFeeder extends SubsystemBase {
           }
           else if(isBallThere(middle))
           {
-            timer.reset();
-            timer.start();
-            if(timer.get() < 1)
-            {
-              middle.setInverted(inverted);
-              middle.set(midSpeed);
-            }
-            else
-            {
-              middle.setInverted(!inverted);
-              middle.set(0);
-            }
+            unJam(middle, midSpeed);
           }
         }
       }
@@ -180,7 +169,7 @@ public class IntakeFeeder extends SubsystemBase {
    */
   public void manualPeriodic()
   {
-    feed = (int) SmartDashboard.getNumber("Size", 0);
+    feed = (int) SmartDashboard.getNumber("Size", feed);
     SmartDashboard.putString("Detected Color", "Disconnected");
     // Reset the balls in the cargo as color sensor no longer works and we cannot accurately record the cargo
     cargo = new LinkedList<>();
@@ -194,14 +183,7 @@ public class IntakeFeeder extends SubsystemBase {
         }
         else
         {
-          timer.reset();
-          timer.start();
-          if(timer.get() < 1)
-          {
-            bottom.setInverted(inverted);
-            bottom.set(botSpeed);
-          }
-          bottom.setInverted(!inverted);
+          unJam(bottom, botSpeed);
         }
         bottom.setInverted(!inverted);
         middle.set(0);
@@ -213,14 +195,7 @@ public class IntakeFeeder extends SubsystemBase {
         }
         else
         {
-          timer.reset();
-          timer.start();
-          if(timer.get() < 1)
-          {
-            bottom.setInverted(inverted);
-            bottom.set(botSpeed);
-          }
-          bottom.setInverted(!inverted);
+          unJam(bottom, botSpeed);
         }
         bottom.setInverted(!inverted);
         if (!isBallThere(middle) && isBallThere(top))
@@ -235,18 +210,7 @@ public class IntakeFeeder extends SubsystemBase {
           }
           else if(isBallThere(middle))
           {
-            timer.reset();
-            timer.start();
-            if(timer.get() < 1)
-            {
-              middle.setInverted(inverted);
-              middle.set(midSpeed);
-            }
-            else
-            {
-              middle.setInverted(!inverted);
-              middle.set(0);
-            }
+            unJam(middle, midSpeed);
           }
         }
         break;
@@ -376,6 +340,26 @@ public class IntakeFeeder extends SubsystemBase {
       return true;
     }
     return false;
+  }
+
+  public void unJam(CANSparkMax motor, double speed)
+  {
+    if (timer.get() == 0) {
+      timer.reset();
+      timer.start();
+    }
+    if(timer.get() < 1)
+    {
+      motor.setInverted(inverted);
+      motor.set(speed);
+    }
+    else
+    {
+      motor.setInverted(!inverted);
+      motor.set(0);
+      timer.stop();
+      timer.reset();
+    }
   }
 
   /**
