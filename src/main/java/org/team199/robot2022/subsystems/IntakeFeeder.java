@@ -197,18 +197,18 @@ public class IntakeFeeder extends SubsystemBase {
         {
           unJam(bottom, botSpeed);
         }
-        bottom.setInverted(!inverted);
+        
         if (!isBallThere(middle) && isBallThere(top))
         {
           middle.set(0);
           top.set(0);
         } else {
-          if (!isJammed(middle) && isBallThere(middle))
-          {
+          if (!isJammed(middle)) {
+            bottom.setInverted(!inverted);
             middle.set(midSpeed);
             top.set(topSpeed);
           }
-          else if(isBallThere(middle))
+          else if(isJammed(middle) && isBallThere(middle))
           {
             unJam(middle, midSpeed);
           }
