@@ -167,7 +167,7 @@ public class IntakeFeeder extends SubsystemBase {
   /**
    * Run only if color sensor is not working in replacement of the automous periodic method
    */
-  public void manualPeriodic()
+  public void manualPeriodic() // TODO : Need to convert all this into a command class to not interfere with shooter
   {
     feed = (int) SmartDashboard.getNumber("Size", feed);
     SmartDashboard.putString("Detected Color", "Disconnected");
@@ -177,6 +177,8 @@ public class IntakeFeeder extends SubsystemBase {
     switch(feed)
     {
       case 0:
+        bottom.setInverted(!inverted);
+        middle.set(0);
         if (!isJammed(bottom))
         {
           bottom.set(botSpeed);
@@ -185,10 +187,9 @@ public class IntakeFeeder extends SubsystemBase {
         {
           unJam(bottom, botSpeed);
         }
-        bottom.setInverted(!inverted);
-        middle.set(0);
         break;
       case 1:
+        bottom.setInverted(!inverted);
         if (!isJammed(bottom))
         {
           bottom.set(botSpeed);
@@ -204,11 +205,10 @@ public class IntakeFeeder extends SubsystemBase {
           top.set(0);
         } else {
           if (!isJammed(middle)) {
-            bottom.setInverted(!inverted);
             middle.set(midSpeed);
             top.set(topSpeed);
           }
-          else if(isJammed(middle) && isBallThere(middle))
+          else if(isJammed(middle))
           {
             unJam(middle, midSpeed);
           }
@@ -390,6 +390,8 @@ public class IntakeFeeder extends SubsystemBase {
 
     SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
     SmartDashboard.putNumber("Current", bottom.getOutputCurrent());
+    SmartDashboard.putNumber("Top current", top.getOutputCurrent());
+    SmartDashboard.putNumber("Middle current", middle.getOutputCurrent());
   }
 
   /**
