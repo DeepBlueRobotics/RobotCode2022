@@ -42,10 +42,11 @@ public class IntakeFeeder extends SubsystemBase {
   private double midSpeed = .333;
   private double botSpeed = .333;
   // Used to calculate whether there is a ball against the motor
-  private final double ampsThreshold = 7; // TODO : Get the best threshold that includes deflated balls
+  private final double ampsThreshold = 4; // TODO : Get the best threshold that includes deflated balls
   private final int minProxmity = 400; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
+  private boolean initRunMid = true;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
   private boolean overrideSensor = false;
 
@@ -136,13 +137,14 @@ public class IntakeFeeder extends SubsystemBase {
       if (cargo.size() == 1 && cargo.peekFirst()) {
         // while ball is still in color sensor range move the ball out to prevent jam
         // TODO : The ball might not reach the destination fast enough if second ball gets in
-        if (!isBallThere(middle) && isBallThere(top))
+        if ((!isBallThere(middle) && isBallThere(top)) || (middle.get() == 0 && top.get() == 0 && !initRunMid)) // TODO : Fix this, logic is wrong
         {
             middle.set(0);
             top.set(0);
         } 
         else {
-          if (!isJammed(middle) && isBallThere(middle))
+          initRunMid = false;
+          if (!isJammed(middle))
           {
             middle.set(midSpeed);
             top.set(topSpeed);
@@ -199,11 +201,12 @@ public class IntakeFeeder extends SubsystemBase {
           unJam(bottom, botSpeed);
         }
         
-        if (!isBallThere(middle) && isBallThere(top))
+        if ((!isBallThere(middle) && isBallThere(top)) || (middle.get() == 0 && top.get() == 0 && !initRunMid))
         {
           middle.set(0);
           top.set(0);
         } else {
+          initRunMid = false;
           if (!isJammed(middle)) {
             middle.set(midSpeed);
             top.set(topSpeed);
@@ -247,6 +250,7 @@ public class IntakeFeeder extends SubsystemBase {
       return false;
     }
     top.set(0);
+    initRunMid = true;
     return cargo.pollFirst();
   }
 
