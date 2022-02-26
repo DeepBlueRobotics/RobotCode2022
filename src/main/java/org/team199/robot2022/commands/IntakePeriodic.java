@@ -30,6 +30,7 @@ public class IntakePeriodic extends CommandBase {
 
   }
 
+  /*
   public void autonomousPeriodic()
   {
     feed = intakeFeeder.getCargo().size();
@@ -137,6 +138,7 @@ public class IntakePeriodic extends CommandBase {
         break;
     }
   }
+  */
 
   // Called once the command ends or is interrupted.
   @Override
