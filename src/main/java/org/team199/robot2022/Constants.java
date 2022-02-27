@@ -132,7 +132,7 @@ public final class Constants {
 
         public static final int kIntakeTop = 3;
         public static final int kIntakeMiddle = 4;
-        public static final int kIntakeBottom = 2;
+        public static final int kIntakeBottom = 5;
 
     }
 

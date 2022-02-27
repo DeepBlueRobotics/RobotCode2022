@@ -66,6 +66,7 @@ public class IntakeFeeder extends SubsystemBase {
 
   // if someone put the motor the wrong direction I don't have to manually switch the trues and falses
   boolean inverted = true;
+  boolean botInverted = false;
 
   private Timer timer = new Timer();
   // How many seconds need to pass to determine whether something is jammed
@@ -123,13 +124,13 @@ public class IntakeFeeder extends SubsystemBase {
       middle.set(0);
       // Regurgitate via intake
       if (!isJammed(bottom) && isBallThere(bottom)) {
-        bottom.setInverted(inverted);
+        bottom.setInverted(botInverted);
         bottom.set(botSpeed);
       } else {
         // TODO : cargo.removeFirst() may remove the red ball but the color sensor will not detect that the ball is not
         // regurgitated and will not add the ball
         cargo.removeFirst();
-        bottom.setInverted(!inverted);
+        bottom.setInverted(!botInverted);
         bottom.set(botSpeed);
       }
     }
@@ -161,7 +162,7 @@ public class IntakeFeeder extends SubsystemBase {
         top.set(0);
         middle.set(0);
         bottom.set(0);
-        bottom.setInverted(!inverted);
+        bottom.setInverted(!botInverted);
       } 
     }
   }
@@ -179,27 +180,27 @@ public class IntakeFeeder extends SubsystemBase {
     switch(feed)
     {
       case 0:
-        bottom.setInverted(!inverted);
+        bottom.setInverted(!botInverted);
         middle.set(0);
-        if (!isJammed(bottom))
-        {
+        // if (!isJammed(bottom))
+        // {
           bottom.set(botSpeed);
-        }
-        else
-        {
-          unJam(bottom, botSpeed);
-        }
+        // }
+        // else
+        // {
+        //   unJam(bottom, botSpeed);
+        // }
         break;
       case 1:
-        bottom.setInverted(!inverted);
-        if (!isJammed(bottom))
-        {
+        bottom.setInverted(!botInverted);
+        // if (!isJammed(bottom))
+        // {
           bottom.set(botSpeed);
-        }
-        else
-        {
-          unJam(bottom, botSpeed);
-        }
+        // }
+        // else
+        // {
+        //   unJam(bottom, botSpeed);
+        // }
         
         if ((!isBallThere(middle) && isBallThere(top)) || (middle.get() == 0 && top.get() == 0 && !initRunMid))
         {
@@ -207,21 +208,21 @@ public class IntakeFeeder extends SubsystemBase {
           top.set(0);
         } else {
           initRunMid = false;
-          if (!isJammed(middle)) {
+          // if (!isJammed(middle)) {
             middle.set(midSpeed);
             top.set(topSpeed);
-          }
-          else if(isJammed(middle))
-          {
-            unJam(middle, midSpeed);
-          }
+          // }
+          // else if(isJammed(middle))
+          // {
+          //   unJam(middle, midSpeed);
+          // }
         }
         break;
       case 2:
         bottom.set(0);
         middle.set(0);
         top.set(0);
-        bottom.setInverted(!inverted);
+        bottom.setInverted(!botInverted);
         break;
     }
   }
@@ -297,10 +298,10 @@ public class IntakeFeeder extends SubsystemBase {
     middle.set(0);
     while(isBallThere(bottom)) 
     {  
-      bottom.setInverted(inverted);
+      bottom.setInverted(botInverted);
       bottom.set(botSpeed);
     }
-    bottom.setInverted(!inverted);
+    bottom.setInverted(!botInverted);
     bottom.set(botSpeed);
   }
 
