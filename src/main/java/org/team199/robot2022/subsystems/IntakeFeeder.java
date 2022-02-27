@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
+import frc.robot.lib.SparkVelocityPIDController;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
-import com.revrobotics.REVLibError;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
@@ -37,16 +37,19 @@ public class IntakeFeeder extends SubsystemBase {
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
   private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop);
 
+  private final SparkVelocityPIDController middlePID;
+  private final SparkVelocityPIDController topPID;
+
   // Constant values that can be tweaked
-  private double topSpeed = .333;
-  private double midSpeed = .333;
+  private double topSpeed = 375;
+  private double midSpeed = 375;
   private double botSpeed = .333;
+  private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
   private final double ampsThreshold = 4; // TODO : Get the best threshold that includes deflated balls
   private final int minProxmity = 400; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
-  private boolean initRunMid = true;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
   private boolean overrideSensor = false;
 
@@ -65,11 +68,9 @@ public class IntakeFeeder extends SubsystemBase {
   private int feed = 0;
 
   // if someone put the motor the wrong direction I don't have to manually switch the trues and falses
-  boolean inverted = true;
-
-  private Timer timer = new Timer();
-  // How many seconds need to pass to determine whether something is jammed
-  private final int jamThreshold = 5;
+  boolean botInverted = false;
+  boolean midInverted = true;
+  boolean topInverted = false;
 
   public IntakeFeeder() {
     if (!m_colorSensor.isConnected())
@@ -77,7 +78,9 @@ public class IntakeFeeder extends SubsystemBase {
     m_colorMatcher.addColorMatch(Color.kBlue);
     m_colorMatcher.addColorMatch(Color.kRed);
 
-    bottom.set(botSpeed);
+    bottom.setInverted(botInverted);
+    middle.setInverted(midInverted);
+    top.setInverted(topInverted);
 
     color.setDefaultOption("Blue", 'B');
     color.addOption("Red", 'R');
@@ -88,8 +91,14 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Top Voltage", topSpeed);
     SmartDashboard.putNumber("Mid Voltage", midSpeed);
     SmartDashboard.putNumber("Bot Voltage", botSpeed);
+
+    middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, midSpeed, rpmTolerance);
+    topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0, 0, 0, 0, 0.0107, topSpeed, rpmTolerance);
+
+    middlePID.getEncoder().setVelocityConversionFactor(0.1);
+    topPID.getEncoder().setVelocityConversionFactor(0.1);
   }
-  
+
   @Override
   public void periodic() {
     // Ocassionally update the team color if the team put the wrong one by accident
@@ -98,132 +107,73 @@ public class IntakeFeeder extends SubsystemBase {
     midSpeed = SmartDashboard.getNumber("Mid Voltage", midSpeed);
     botSpeed = SmartDashboard.getNumber("Bot Voltage", botSpeed);
 
-    if (m_colorSensor.isConnected() && !overrideSensor) 
-      autonomousPeriodic();
-    else 
-      manualPeriodic();
-    
+    middlePID.periodic();
+    topPID.periodic();
+
+    SmartDashboard.putNumber("Size", feed);
+
     addBalls();
     debug();
   }
 
-  /**
-   * Run in the periodic method if color sensor is working
-   */
-  public void autonomousPeriodic()
-  {
-    feed = cargo.size();
-    if (cargo.size() < 2)
-    {
-      bottom.set(botSpeed);
-    }
-
-    if (cargo.size() > 0 && cargo.peekFirst() == false)
-    {
-      middle.set(0);
-      // Regurgitate via intake
-      if (!isJammed(bottom) && isBallThere(bottom)) {
-        bottom.setInverted(inverted);
-        bottom.set(botSpeed);
-      } else {
-        // TODO : cargo.removeFirst() may remove the red ball but the color sensor will not detect that the ball is not
-        // regurgitated and will not add the ball
-        cargo.removeFirst();
-        bottom.setInverted(!inverted);
-        bottom.set(botSpeed);
-      }
-    }
-    if (detectColor()) {
-      if (cargo.size() == 1 && cargo.peekFirst()) {
-        // while ball is still in color sensor range move the ball out to prevent jam
-        // TODO : The ball might not reach the destination fast enough if second ball gets in
-        if ((!isBallThere(middle) && isBallThere(top)) || (middle.get() == 0 && top.get() == 0 && !initRunMid)) // TODO : Fix this, logic is wrong
-        {
-            middle.set(0);
-            top.set(0);
-        } 
-        else {
-          initRunMid = false;
-          if (!isJammed(middle))
-          {
-            middle.set(midSpeed);
-            top.set(topSpeed);
-          }
-          else if(isBallThere(middle))
-          {
-            unJam(middle, midSpeed);
-          }
-        }
-      }
-      // If this ball is the second ball in the feeder
-      else {
-        // This is to prevent any more balls getting in
-        top.set(0);
-        middle.set(0);
-        bottom.set(0);
-        bottom.setInverted(!inverted);
-      } 
-    }
+  public boolean useAutonomousControl() {
+    return m_colorSensor.isConnected() && !overrideSensor;
   }
 
-  /**
-   * Run only if color sensor is not working in replacement of the automous periodic method
-   */
-  public void manualPeriodic() // TODO : Need to convert all this into a command class to not interfere with shooter
-  {
-    feed = (int) SmartDashboard.getNumber("Size", feed);
-    SmartDashboard.putString("Detected Color", "Disconnected");
-    // Reset the balls in the cargo as color sensor no longer works and we cannot accurately record the cargo
-    cargo = new LinkedList<>();
-    // Manually intake balls
-    switch(feed)
-    {
-      case 0:
-        bottom.setInverted(!inverted);
-        middle.set(0);
-        if (!isJammed(bottom))
-        {
-          bottom.set(botSpeed);
-        }
-        else
-        {
-          unJam(bottom, botSpeed);
-        }
+  public void clearCargo() {
+    cargo.clear();
+  }
+
+  public int getNumBalls() {
+    return feed;
+  }
+
+  public void run(Motor motor, boolean running) {
+    double speed = 0;
+    if(running)
+      switch(motor) {
+        case BOTTOM:
+          speed = botSpeed;
+          break;
+        case MIDDLE:
+          speed = midSpeed;
+          break;
+        case TOP:
+          speed = topSpeed;
+          break;
+      }
+      switch(motor) {
+        case BOTTOM:
+          bottom.set(speed);
+          break;
+        case MIDDLE:
+          middlePID.setTargetSpeed(speed);
+          break;
+        case TOP:
+          topPID.setTargetSpeed(speed);
+          break;
+      }
+  }
+
+  public void invert(Motor motor, boolean inverted) {
+    boolean isMotorInverted = false;
+    switch(motor) {
+      case BOTTOM:
+        isMotorInverted = botInverted;
         break;
-      case 1:
-        bottom.setInverted(!inverted);
-        if (!isJammed(bottom))
-        {
-          bottom.set(botSpeed);
-        }
-        else
-        {
-          unJam(bottom, botSpeed);
-        }
-        
-        if ((!isBallThere(middle) && isBallThere(top)) || (middle.get() == 0 && top.get() == 0 && !initRunMid))
-        {
-          middle.set(0);
-          top.set(0);
-        } else {
-          initRunMid = false;
-          if (!isJammed(middle)) {
-            middle.set(midSpeed);
-            top.set(topSpeed);
-          }
-          else if(isJammed(middle))
-          {
-            unJam(middle, midSpeed);
-          }
-        }
+      case MIDDLE:
+        isMotorInverted = midInverted;
         break;
-      case 2:
-        bottom.set(0);
-        middle.set(0);
-        top.set(0);
-        bottom.setInverted(!inverted);
+      case TOP:
+        isMotorInverted = topInverted;
         break;
     }
+    getMotor(motor).setInverted(isMotorInverted ? !inverted : inverted);
+  }
+
+  public void invertAndRun(Motor motor, boolean inverted, boolean isRunning) {
+    invert(motor, inverted);
+    run(motor, isRunning);
   }
 
   /**
@@ -234,24 +184,32 @@ public class IntakeFeeder extends SubsystemBase {
   {
     if (cargo.size() == 0)
       return false;
-    top.setInverted(!inverted);
-    while (isBallThere(top) && !isJammed(top))
-      top.set(topSpeed);
-    
-    if (isBallThere(top))
-    {
-      timer.reset();
-      timer.start();
-      // Tries to unjam by running motors opposite direction for one second
-      while (timer.get() <= 1)
-        top.setInverted(inverted);
-        top.setInverted(!inverted);
-        top.set(0);
-      return false;
-    }
+    top.setInverted(!topInverted);
+    // while (isBallThere(top))
+    //   top.set(topSpeed);
+
     top.set(0);
-    initRunMid = true;
     return cargo.pollFirst();
+  }
+
+  public void runForward() {
+    bottom.setInverted(botInverted);
+    middle.setInverted(midInverted);
+    top.setInverted(topInverted);
+
+    bottom.set(botSpeed);
+    middlePID.setTargetSpeed(midSpeed);
+    topPID.setTargetSpeed(topSpeed);
+  }
+
+  public void runBackward() {
+    bottom.setInverted(!botInverted);
+    middle.setInverted(!midInverted);
+    top.setInverted(!topInverted);
+
+    bottom.set(botSpeed);
+    middlePID.setTargetSpeed(midSpeed);
+    topPID.setTargetSpeed(topSpeed);
   }
 
   /**
@@ -295,12 +253,12 @@ public class IntakeFeeder extends SubsystemBase {
   public void regurgitate()
   {
     middle.set(0);
-    while(isBallThere(bottom)) 
-    {  
-      bottom.setInverted(inverted);
-      bottom.set(botSpeed);
-    }
-    bottom.setInverted(!inverted);
+    // while(isBallThere(bottom)) 
+    // {  
+    //   bottom.setInverted(botInverted);
+    //   bottom.set(botSpeed);
+    // }
+    bottom.setInverted(!botInverted);
     bottom.set(botSpeed);
   }
 
@@ -312,60 +270,30 @@ public class IntakeFeeder extends SubsystemBase {
     overrideSensor = !overrideSensor;
   }
 
-  /**
-   * @param motor
-   * @return whether ball is there
-   */
-  public boolean isBallThere(CANSparkMax motor) {
-    return motor.getOutputCurrent() > ampsThreshold;
-  }
-  
-  /**
-   * If motor is still trying to get a ball out for more than the number of seconds
-   * stated in jamThreshold constant, then the ball is jammed
-   * @param motor
-   * @return
-   */
-  public boolean isJammed(CANSparkMax motor)
-  {
-    if (timer.get() == 0) {
-      timer.start();
-    }
-    if (!isBallThere(motor))
-    {
-      timer.stop();
-      timer.reset();
-      return false;
-    }
-    if ((timer.get() > jamThreshold && isBallThere(motor)) || motor.getLastError() == REVLibError.kOk)
-    {
-      timer.stop();
-      timer.reset();
-      return true;
-    }
-    return false;
-  }
-
-  public void unJam(CANSparkMax motor, double speed)
-  {
-    if (timer.get() == 0) {
-      timer.reset();
-      timer.start();
-    }
-    if(timer.get() < 1)
-    {
-      motor.setInverted(inverted);
-      motor.set(speed);
-    }
-    else
-    {
-      motor.setInverted(!inverted);
-      motor.set(0);
-      timer.stop();
-      timer.reset();
+  public CANSparkMax getMotor(Motor motor) {
+    switch(motor) {
+      case BOTTOM:
+        return bottom;
+      case MIDDLE:
+        return middle;
+      case TOP:
+        return top;
+      default:
+        return bottom;
     }
   }
 
+  public boolean isBallThere(Motor motor) {
+    switch(motor) {
+      case MIDDLE:
+        return !middlePID.isAtTargetSpeed();
+      case TOP:
+        return !topPID.isAtTargetSpeed();
+      case BOTTOM:
+      default:
+        return false;
+    }
+  }
   /**
    * Puts whether the ball is the team color or not and whether its in the feeder or shooter
    * in "shooter" basically means the next ball to be shot
@@ -477,4 +405,9 @@ public class IntakeFeeder extends SubsystemBase {
 
     return color != 'U';
   }
+
+  public static enum Motor {
+    BOTTOM, MIDDLE, TOP;
+  }
+
 }
