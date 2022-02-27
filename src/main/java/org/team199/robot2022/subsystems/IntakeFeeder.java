@@ -41,8 +41,8 @@ public class IntakeFeeder extends SubsystemBase {
   private final SparkVelocityPIDController topPID;
 
   // Constant values that can be tweaked
-  private double topSpeed = 375;
-  private double midSpeed = 375;
+  private double topSpeed = 450;
+  private double midSpeed = 450;
   private double botSpeed = .333;
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
