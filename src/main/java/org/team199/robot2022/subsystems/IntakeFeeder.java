@@ -120,6 +120,16 @@ public class IntakeFeeder extends SubsystemBase {
     return m_colorSensor.isConnected() && !overrideSensor;
   }
 
+  public Deque<Boolean> getCargo()
+  {
+    return cargo;
+  }
+
+  public void popBall()
+  {
+    cargo.pop();
+  }
+
   public void clearCargo() {
     cargo.clear();
   }
@@ -184,11 +194,6 @@ public class IntakeFeeder extends SubsystemBase {
   {
     if (cargo.size() == 0)
       return false;
-    top.setInverted(!topInverted);
-    // while (isBallThere(top))
-    //   top.set(topSpeed);
-
-    top.set(0);
     return cargo.pollFirst();
   }
 
