@@ -17,13 +17,17 @@ public class Shooter extends SubsystemBase {
     private static final double kI = 0.0;
     private static final double kD = 0.005;
 
-    private double kTargetSpeed = 2000;
+    // Target speeds
+    private double kUpperHubTarget = 2400;
+    private double kLowerHubTarget = 1000;
+    private double kSoftShootTarget = 700;
     private final double speedOffsetMain = 100;
+    public double kTargetSpeed = kUpperHubTarget;
 
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
     private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
     private final SparkVelocityPIDController pidController = new SparkVelocityPIDController("Shooter", master, kP, kI, kD, kS, kV, kTargetSpeed, speedOffsetMain);
-    
+
     public Shooter() {
         master.setSmartCurrentLimit(40);
         slave.setSmartCurrentLimit(40);
@@ -36,8 +40,19 @@ public class Shooter extends SubsystemBase {
         pidController.periodic();
     }
 
-    public void setMainSpeed(double mainSpeed) {
-        kTargetSpeed = mainSpeed;
+    public void setMainSpeed(ShootMode mode) {
+        switch(mode)
+        {
+            case UPPER:
+                kTargetSpeed = kUpperHubTarget;
+                break;
+            case LOWER:
+                kTargetSpeed = kLowerHubTarget;
+                break;
+            case SOFT:
+                kTargetSpeed = kSoftShootTarget;
+                break;
+        }
     }
 
     public double getTargetSpeed() {
@@ -53,4 +68,9 @@ public class Shooter extends SubsystemBase {
         return !isAtTargetSpeed();
     }
 
+    public enum ShootMode {
+        UPPER,
+        LOWER,
+        SOFT
+    }
 }

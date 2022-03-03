@@ -5,84 +5,70 @@
 //Shoots one ball (is called with while pressed AND when pressed)
 package org.team199.robot2022.commands;
 
-import com.revrobotics.CANSparkMax;
-
-import org.team199.robot2022.Constants;
+import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
+import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
+import org.team199.robot2022.subsystems.Shooter.ShootMode;
 
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.lib.MotorControllerFactory;
 
 public class Shoot extends CommandBase {
   
   private final IntakeFeeder intakeFeeder;
   private final Shooter shooter;
+  private final Drivetrain dt;
+  private boolean detectedBall = false;
   
-  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter) {
+  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter, Drivetrain dt) {
     /**
      * takes in detectcolor method output from the sensor readings
      * 
      */
-    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
+    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter, this.dt = dt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //set initial # of balls in feeder
   }
-
-  // Called every time the scheduler runs while the command is scheduled.
-
 
   @Override
   //Shoots a ball forward/backwards depending on ball color
   public void execute() {
-    if (intakeFeeder.detectColor()){ //if color is correct
-     if (intakeFeeder.eject())
-      {
-       // Shoot the ball
-         if (shooter.isAtTargetSpeed()) {
-         // run feeder
-         }
+    if (intakeFeeder.eject()){ //if color is correct
+      // Shoot the ball
+      shooter.setMainSpeed(ShootMode.UPPER); // TODO : Determine when to shoot for lower goal
+      while (shooter.isAtTargetSpeed()) {
+        // TODO : Make sure that by the time the ball makes contact with shooter motors,
+        // that is is out of range of top motor
+        intakeFeeder.invertAndRun(Motor.TOP, false, true);
+      }
+    } else {
+      //turn around and soft shoot
+      shooter.setMainSpeed(ShootMode.SOFT);
+      while (shooter.isAtTargetSpeed()) {
+        intakeFeeder.invertAndRun(Motor.TOP, false, true);
       }
     }
-    
-    else if (!intakeFeeder.detectColor()){
-      if(intakeFeeder.eject()){
-       //if (shooter.isAtSoftShootSpped()){
-         //move to side
-         //run feeder
-         //move back to fender
-        //}
-      }
-    }
-    //update current # of balls
+    intakeFeeder.invertAndRun(Motor.TOP, false, false);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    /**
-     * will end when the ball is correct color again or the incorrect color
-     * is no longer read
-     * 
-     * **IMPORTANT NOTE**
 
-     * goint to use timing to detect when the ball has left the robot
-     */
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // after finished shooting once return true 
-      // if the initial #balls in feeder is == to current #balls in feeder, return false
-    
-    // not a serious comment
-    // 20 minutes of arguing, and all we learned is that we need programmer socks
+    if (shooter.isBallThere())
+      detectedBall = true;
+    if (detectedBall && !shooter.isBallThere()) {
+      detectedBall = false;
+      return true;
+    }
     return false;
   }
 }
