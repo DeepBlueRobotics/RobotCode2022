@@ -54,7 +54,7 @@ public class PassiveManualIntake extends CommandBase {
                 }
                 break;
             case 2:
-                intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);
+                intakeFeeder.invertAndRun(Motor.BOTTOM, false, false);
                 intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
                 intakeFeeder.invertAndRun(Motor.TOP, false, false);
                 break;
