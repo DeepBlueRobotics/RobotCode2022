@@ -12,6 +12,8 @@ import org.team199.robot2022.subsystems.Shooter;
 import java.io.IOException;
 
 import org.team199.robot2022.commands.Autonomous;
+import org.team199.robot2022.commands.PassiveAutomaticIntake;
+import org.team199.robot2022.commands.PassiveManualIntake;
 import org.team199.robot2022.commands.Shoot;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,7 +22,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.lib.path.RobotPath;
 
@@ -89,6 +93,8 @@ public class RobotContainer {
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.Y)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> leftJoy.getRawButton(1) || rightJoy.getRawButton(1)));
+
+    intakeFeeder.setDefaultCommand(new PerpetualCommand(new ConditionalCommand(new PassiveAutomaticIntake(intakeFeeder), new PassiveManualIntake(intakeFeeder), intakeFeeder::useAutonomousControl)));
   }
 
   private void configureButtonBindingsLeftJoy() {
@@ -100,6 +106,9 @@ public class RobotContainer {
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(intakeFeeder, shooter));
+
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whileHeld(new InstantCommand(intakeFeeder::runForward, intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whileHeld(new InstantCommand(intakeFeeder::runBackward, intakeFeeder));
   }
 
   private void configureButtonBindingsController() {
