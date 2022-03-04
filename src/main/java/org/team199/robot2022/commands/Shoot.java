@@ -39,7 +39,7 @@ public class Shoot extends CommandBase {
     if (intakeFeeder.eject()){ //if color is correct
       // Shoot the ball
       shooter.setMainSpeed(ShootMode.UPPER); // TODO : Determine when to shoot for lower goal
-      while (shooter.isAtTargetSpeed()) {
+      if (shooter.isAtTargetSpeed()) {
         // TODO : Make sure that by the time the ball makes contact with shooter motors,
         // that is is out of range of top motor
         intakeFeeder.invertAndRun(Motor.TOP, false, true);
@@ -47,17 +47,16 @@ public class Shoot extends CommandBase {
     } else {
       //turn around and soft shoot
       shooter.setMainSpeed(ShootMode.SOFT);
-      while (shooter.isAtTargetSpeed()) {
+      if (shooter.isAtTargetSpeed()) {
         intakeFeeder.invertAndRun(Motor.TOP, false, true);
       }
     }
-    intakeFeeder.invertAndRun(Motor.TOP, false, false);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    intakeFeeder.invertAndRun(Motor.TOP, false, false);
   }
 
   // Returns true when the command should end.
