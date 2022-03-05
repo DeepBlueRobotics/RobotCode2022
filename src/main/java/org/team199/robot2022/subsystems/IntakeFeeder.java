@@ -47,7 +47,7 @@ public class IntakeFeeder extends SubsystemBase {
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
   private final double ampsThreshold = 4; // TODO : Get the best threshold that includes deflated balls
-  private final int minProxmity = 400; // TODO : Accurately determine minProxmity constant
+  private final int minProxmity = 250; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
@@ -135,7 +135,7 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   public int getNumBalls() {
-    return feed;
+    return useAutonomousControl() ? cargo.size() : feed;
   }
 
   public void run(Motor motor, boolean running) {
@@ -224,11 +224,13 @@ public class IntakeFeeder extends SubsystemBase {
    */
   public void manualAdd()
   {
+    /*
     if (m_colorSensor.isConnected() && !overrideSensor)
     {
       System.err.println("Color sensor is connected");
       return;
     }
+    */
     if (feed == 2) {
       System.err.println("You can't add any more balls!");
       return;
@@ -238,11 +240,13 @@ public class IntakeFeeder extends SubsystemBase {
 
   public void manualSub()
   {
+    /*
     if (m_colorSensor.isConnected() && !overrideSensor)
     {
       System.err.println("Color sensor is connected");
       return;
     }
+    */
     if (feed == 0) {
       System.err.println("You can't subtract any more balls!");
       return;
