@@ -12,8 +12,10 @@ import org.team199.robot2022.subsystems.Shooter;
 import java.io.IOException;
 
 import org.team199.robot2022.commands.Autonomous;
+import org.team199.robot2022.commands.ManualSoftShoot;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
 import org.team199.robot2022.commands.PassiveManualIntake;
+import org.team199.robot2022.commands.RegurgitateOne;
 import org.team199.robot2022.commands.Shoot;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -47,6 +49,7 @@ public class RobotContainer {
   public final Drivetrain dt = new Drivetrain();
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
+
   public final IntakeFeeder intakeFeeder = new IntakeFeeder();
 
   public final DigitalInput[] autoSelectors;
@@ -99,13 +102,13 @@ public class RobotContainer {
   private void configureButtonBindingsLeftJoy() {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.regurgitatePort).whenPressed(new InstantCommand(intakeFeeder::regurgitate));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.regurgitateOnePort).whenPressed(new RegurgitateOne(intakeFeeder));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(intakeFeeder, shooter, dt));
-
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootSoftOnePort).whenPressed(new ManualSoftShoot(intakeFeeder, shooter));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whileHeld(new InstantCommand(intakeFeeder::runForward, intakeFeeder));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whileHeld(new InstantCommand(intakeFeeder::runBackward, intakeFeeder));
   }

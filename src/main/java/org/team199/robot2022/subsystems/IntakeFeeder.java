@@ -131,6 +131,11 @@ public class IntakeFeeder extends SubsystemBase {
     cargo.pop();
   }
 
+  public void pollBall()
+  {
+    cargo.poll();
+  }
+
   public void clearCargo() {
     cargo.clear();
   }
