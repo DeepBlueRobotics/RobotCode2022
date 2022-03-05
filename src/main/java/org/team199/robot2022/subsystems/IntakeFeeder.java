@@ -106,6 +106,7 @@ public class IntakeFeeder extends SubsystemBase {
     topSpeed = SmartDashboard.getNumber("Top Voltage", topSpeed);
     midSpeed = SmartDashboard.getNumber("Mid Voltage", midSpeed);
     botSpeed = SmartDashboard.getNumber("Bot Voltage", botSpeed);
+    SmartDashboard.putNumber("Bot Speed", bottom.getEncoder().getVelocity());
 
     middlePID.periodic();
     topPID.periodic();
