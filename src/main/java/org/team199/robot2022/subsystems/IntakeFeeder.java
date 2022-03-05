@@ -87,7 +87,7 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putData(color);
     SmartDashboard.putString("Add Ball to Queue", "");
     SmartDashboard.putNumber("Remove Ball from Queue", 0);
-    SmartDashboard.putNumber("Size", feed);
+    SmartDashboard.putNumber("Size", useAutonomousControl() ? cargo.size() : feed);
     SmartDashboard.putNumber("Top Voltage", topSpeed);
     SmartDashboard.putNumber("Mid Voltage", midSpeed);
     SmartDashboard.putNumber("Bot Voltage", botSpeed);
@@ -199,6 +199,7 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   public void runForward() {
+    cargo.clear();
     bottom.setInverted(botInverted);
     middle.setInverted(midInverted);
     top.setInverted(topInverted);
@@ -209,6 +210,7 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   public void runBackward() {
+    cargo.clear();
     bottom.setInverted(!botInverted);
     middle.setInverted(!midInverted);
     top.setInverted(!topInverted);
@@ -253,23 +255,6 @@ public class IntakeFeeder extends SubsystemBase {
       return;
     }
     --feed;
-  }
-
-  /**
-   * Regurgitates out of intake not shooter
-   * Only used when color sensor no work
-   * Does not automatically remove the ball from deque
-   */
-  public void regurgitate()
-  {
-    middle.set(0);
-    // while(isBallThere(bottom)) 
-    // {  
-    //   bottom.setInverted(botInverted);
-    //   bottom.set(botSpeed);
-    // }
-    bottom.setInverted(!botInverted);
-    bottom.set(botSpeed);
   }
 
   /**

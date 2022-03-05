@@ -14,6 +14,7 @@ import java.io.IOException;
 import org.team199.robot2022.commands.Autonomous;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
 import org.team199.robot2022.commands.PassiveManualIntake;
+import org.team199.robot2022.commands.RegurgitateOne;
 import org.team199.robot2022.commands.Shoot;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -100,7 +101,7 @@ public class RobotContainer {
   private void configureButtonBindingsLeftJoy() {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.regurgitatePort).whenPressed(new InstantCommand(intakeFeeder::regurgitate));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.regurgitateOnePort).whenPressed(new RegurgitateOne(intakeFeeder));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
 
