@@ -22,9 +22,9 @@ public class Autonomous extends SequentialCommandGroup {
             new InstantCommand(path1::initializeDrivetrainPosition),
             shootAtStart ? /* new Shoot1(intakeFeeder, shooter) */ new InstantCommand() : new InstantCommand(),
             runIntake ? /* new DeployIntake(intakeFeeder) */ new InstantCommand() : new InstantCommand(),
-            path1.getPathCommand(true, path2 == null),
+            path1.getPathCommand(false, path2 == null),
             runIntake ? /* new RetractIntake(intakeFeeder) */ new InstantCommand() : new InstantCommand(),
-            path2 == null ? new InstantCommand() : new SequentialCommandGroup(new InstantCommand(path2::initializeDrivetrainPosition), path2.getPathCommand(true, true)),
+            path2 == null ? new InstantCommand() : new SequentialCommandGroup(new InstantCommand(path2::initializeDrivetrainPosition), path2.getPathCommand(false, true)),
             shootAtEnd ? new SequentialCommandGroup(/* new Shoot1(intakeFeeder, shooter), new Shoot1(intakeFeeder, shooter) */) : new InstantCommand()
         );
     }
