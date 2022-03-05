@@ -126,8 +126,9 @@ public final class Constants {
         public static final int canCoderPortBL = 3;
         public static final int canCoderPortBR = 4;
 
-        public static final int kShooterMaster = 20;
-        public static final int kShooterSlave = 19;
+        public static final int kShooterMaster = 19;
+        public static final int kShooterSlave = 20;
+        public static final int kShooterTop = 99;
 
         public static final int kIntakeTop = 3;
         public static final int kIntakeMiddle = 4;
@@ -147,13 +148,14 @@ public final class Constants {
             public static final int port = 0;
             public static final int manualAddPort = 2; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
             public static final int manualSubtractPort = 3;
-            public static final int regurgitatePort = 4;
+            public static final int regurgitateOnePort = 4;
             public static final int overridePort = 5;
         }
 
         public static final class RightJoy {
             public static final int port = 1;
             public static final int shootPort = 2;
+            public static final int shootSoftOnePort = 4;
 
             public static final int runIntakeForwardPort = 5; // TODO: set correct port
             public static final int runIntakeBackwardPort = 3; // TODO: set correct port
