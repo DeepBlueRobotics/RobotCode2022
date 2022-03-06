@@ -141,7 +141,7 @@ public class IntakeFeeder extends SubsystemBase {
 
   public void run(Motor motor, boolean running) {
     double speed = 0;
-    if(running)
+    if(running){
       switch(motor) {
         case BOTTOM:
           speed = botSpeed;
@@ -153,6 +153,7 @@ public class IntakeFeeder extends SubsystemBase {
           speed = topSpeed;
           break;
       }
+    }
     switch(motor) {
       case BOTTOM:
         bottom.set(speed);

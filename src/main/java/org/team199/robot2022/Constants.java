@@ -98,7 +98,7 @@ public final class Constants {
         public static final double autoMaxVolt = 10.0;   // For Drivetrain voltage constraint in RobotPath.java
         // The maximum acceleration the robot can achieve is equal to the coefficient of static friction times the gravitational acceleration
         // a = mu * 9.8 m/s^2
-        public static final double autoCentripetalAccel = mu * g * 0.6;
+        public static final double autoCentripetalAccel = mu * g * 0.3;
 
         // PID values are listed in the order kP, kI, and kD
         public static final double[] xPIDController = {4, 0.0, 0.0};
