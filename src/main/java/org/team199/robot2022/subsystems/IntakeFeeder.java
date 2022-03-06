@@ -47,7 +47,7 @@ public class IntakeFeeder extends SubsystemBase {
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
   private final double ampsThreshold = 4; // TODO : Get the best threshold that includes deflated balls
-  private final int minProximity = 250; // TODO : Accurately determine minProxmity constant
+  private final int minProxmity = 250; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
@@ -381,7 +381,7 @@ public class IntakeFeeder extends SubsystemBase {
     char color = 'U';
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
     
-    if (m_colorSensor.getProximity() >= minProximity) {
+    if (m_colorSensor.getProximity() >= minProxmity) {
       if (match.color == Color.kBlue)
         color = 'B';
       else if (match.color == Color.kRed)

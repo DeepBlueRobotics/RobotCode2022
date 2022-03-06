@@ -17,23 +17,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TeleopDrive extends CommandBase {
-  //private static final double kSlowDriveSpeed = 0.6;
-  //private static final double kSlowDriveRotation = 0.6;
+  private static final double kSlowDriveSpeed = 0.6;
+  private static final double kSlowDriveRotation = 0.6;
 
   private final Drivetrain drivetrain;
   private Supplier<Double> fwd;
   private Supplier<Double> str;
   private Supplier<Double> rcw;
+  private Supplier<Boolean> slow;
   double currentForward = 0;
   double currentStrafe = 0;
   /**
    * Creates a new TeleopDrive.
    */
-  public TeleopDrive(Drivetrain drivetrain, Supplier<Double> fwd, Supplier<Double> str, Supplier<Double> rcw) {
+  public TeleopDrive(Drivetrain drivetrain, Supplier<Double> fwd, Supplier<Double> str, Supplier<Double> rcw, Supplier<Boolean> slow) {
     addRequirements(this.drivetrain = drivetrain);
     this.fwd = fwd;
     this.str = str;
     this.rcw = rcw;
+    this.slow = slow;
   }
 
   // Called when the command is initially scheduled.
@@ -76,7 +78,9 @@ public class TeleopDrive extends CommandBase {
       currentStrafe = 0;
     //SmartDashboard.putNumber("Forward (mps)", currentForward);
    // SmartDashboard.putNumber("Strafe (mps)", currentStrafe);
-    drivetrain.drive(currentForward, currentStrafe, rotateClockwise);
+    double driveMultiplier = slow.get() ? kSlowDriveSpeed : 1;
+    double rotationMultiplier = slow.get() ? kSlowDriveRotation : 1;
+    drivetrain.drive(currentForward * driveMultiplier, currentStrafe * driveMultiplier, rotateClockwise * rotationMultiplier);
   }
 
   /*
