@@ -148,7 +148,6 @@ public final class Constants {
             public static final int port = 0;
             public static final int manualAddPort = 2; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
             public static final int manualSubtractPort = 3;
-            public static final int regurgitatePort = 4;
             public static final int overridePort = 5;
         }
 
@@ -158,6 +157,7 @@ public final class Constants {
 
             public static final int runIntakeForwardPort = 5; // TODO: set correct port
             public static final int runIntakeBackwardPort = 3; // TODO: set correct port
+            public static final int regurgitatePort = 4;
 
         }
 

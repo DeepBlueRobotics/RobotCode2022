@@ -11,6 +11,7 @@ public class PassiveAutomaticIntake extends CommandBase {
 
     private final IntakeFeeder intakeFeeder;
     private boolean isRegurgitating = false;
+    private boolean overrideBottomRoller = true;
 
     public PassiveAutomaticIntake(IntakeFeeder intakeFeeder) {
         addRequirements(this.intakeFeeder = intakeFeeder);
@@ -18,15 +19,18 @@ public class PassiveAutomaticIntake extends CommandBase {
 
     @Override
     public void execute() {
+        SmartDashboard.putString("IntakeFeeder Default Type", "Automatic");
         intakeFeeder.detectColor();
         // Check for Regurgitation
-        if (intakeFeeder.getCargo().size() > 0 && !intakeFeeder.getCargo().peek())
+        if (intakeFeeder.getCargo().size() > 0 && !intakeFeeder.getCargo().peekLast())
         {
-            isRegurgitating = true;
-            intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);
+            // isRegurgitating = true;
+            // intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);
+        } else {
+            isRegurgitating = false;
         }
         if (isRegurgitating && !intakeFeeder.isBallThere(Motor.BOTTOM)){
-            intakeFeeder.popBall();
+            intakeFeeder.popSecondBall();
         }
         // Automatically intake balls
         if (!isRegurgitating) {
@@ -42,13 +46,18 @@ public class PassiveAutomaticIntake extends CommandBase {
                 case 1:
                     SmartDashboard.putBoolean("2 Balls in Motor", false);
                     intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
-                    intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
+                    intakeFeeder.invertAndRun(Motor.MIDDLE, false, true);
                     intakeFeeder.invertAndRun(Motor.TOP, false, false);
+                    overrideBottomRoller = true;
                     // The ball is already recorded
                     break;
                 case 2:
                     SmartDashboard.putBoolean("2 Balls in Motor", true);
-                    intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
+                    if(overrideBottomRoller) {
+                        intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
+                        if(!intakeFeeder.isBallThere(Motor.BOTTOM)) overrideBottomRoller = false;
+                    } else
+                        intakeFeeder.invertAndRun(Motor.BOTTOM, false, false);
                     intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
                     intakeFeeder.invertAndRun(Motor.TOP, false, false);
                     break;
