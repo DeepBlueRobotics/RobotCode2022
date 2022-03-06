@@ -126,6 +126,9 @@ public final class Constants {
         public static final int canCoderPortBL = 0;
         public static final int canCoderPortBR = 0;
 
+        public static final int kClimberLeft = 1; //random values pls change
+        public static final int kClimberRight = 2; 
+
     }
 
     public static final class OI {
@@ -138,6 +141,8 @@ public final class Constants {
         public static final double JOY_THRESH = 0.01;
         public static final class LeftJoy {
             public static final int port = 0;
+            public static final int runClimberForwardsPort = 2;
+            public static final int runClimberBackwardsPort = 3;
 
         }
 

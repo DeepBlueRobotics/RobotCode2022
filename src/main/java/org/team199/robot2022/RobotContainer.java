@@ -5,12 +5,18 @@
 package org.team199.robot2022;
 
 import org.team199.robot2022.commands.TeleopDrive;
+import org.team199.robot2022.subsystems.Climber;
 import org.team199.robot2022.subsystems.Drivetrain;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -28,6 +34,7 @@ public class RobotContainer {
   public final Joystick rightJoy = new Joystick(Constants.OI.RightJoy.port);
   public final Joystick controller = Constants.OI.Controller.controller;
 
+  public final Climber climber = new Climber();
   public final Drivetrain dt = new Drivetrain();
   public final PowerDistribution pdp = new PowerDistribution();
 
@@ -60,7 +67,8 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsLeftJoy() {
-
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.runClimberBackwardsPort).whenPressed(new InstantCommand(climber::runForwards));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.runClimberForwardsPort).whenPressed(new InstantCommand(climber::runForwards));
   }
 
   private void configureButtonBindingsRightJoy() {
@@ -116,7 +124,6 @@ public class RobotContainer {
         return 0;
     }
   }
-
   /**
    * Processes an input from the joystick into a value between -1 and 1
    * 
