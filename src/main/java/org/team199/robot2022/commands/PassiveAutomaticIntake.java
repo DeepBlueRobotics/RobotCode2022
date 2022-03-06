@@ -2,6 +2,8 @@ package org.team199.robot2022.commands;
 
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -31,25 +33,29 @@ public class PassiveAutomaticIntake extends CommandBase {
             // TODO : The ball might not reach the destination fast enough if second ball (Potential error when two balls are intaked instantly)
             switch (intakeFeeder.getNumBalls()) {
                 case 0:
+                    SmartDashboard.putBoolean("2 Balls in Motor", false);
                     intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
-                    intakeFeeder.invertAndRun(Motor.MIDDLE, false, true);
-                    intakeFeeder.invertAndRun(Motor.TOP, false, true);
+                    intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
+                    intakeFeeder.invertAndRun(Motor.TOP, false, false);
                     // We assume that the case that a ball is stuck after ejection is that it will never happen based on shoot command
                     break;
                 case 1:
+                    SmartDashboard.putBoolean("2 Balls in Motor", false);
                     intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
-                    intakeFeeder.invertAndRun(Motor.MIDDLE, false, true);
+                    intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
                     intakeFeeder.invertAndRun(Motor.TOP, false, false);
                     // The ball is already recorded
                     break;
                 case 2:
-                    intakeFeeder.invertAndRun(Motor.BOTTOM, false, false);
+                    SmartDashboard.putBoolean("2 Balls in Motor", true);
+                    intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
                     intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
                     intakeFeeder.invertAndRun(Motor.TOP, false, false);
                     break;
             }
 
         }
+        SmartDashboard.putBoolean("Regurgitating", isRegurgitating);
     }
 
     @Override

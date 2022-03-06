@@ -42,16 +42,12 @@ public class Shoot extends CommandBase {
   //Shoots a ball forward/backwards depending on ball color
   public void execute() {
     
-    if (intakeFeeder.eject())
-    {
       // Shoot the ball
-      if (shooter.isAtTargetSpeed()) {
+    if (shooter.isAtTargetSpeed()) {
         // run feeder
-      }
-    }
-    else
-    {
-
+        intakeFeeder.runForward();
+    } else{
+      intakeFeeder.stopRunningFeeder();
     }
     //update current # of balls
   }
@@ -67,6 +63,7 @@ public class Shoot extends CommandBase {
 
      * goint to use timing to detect when the ball has left the robot
      */
+    intakeFeeder.stopRunningFeeder();
   }
 
   // Returns true when the command should end.

@@ -107,7 +107,7 @@ public class RobotContainer {
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(intakeFeeder, shooter));
 
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whileHeld(new InstantCommand(intakeFeeder::runForward, intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whileHeld(new Shoot(intakeFeeder, shooter));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whileHeld(new InstantCommand(intakeFeeder::runBackward, intakeFeeder));
   }
 

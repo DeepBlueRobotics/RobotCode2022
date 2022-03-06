@@ -109,7 +109,7 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Bot Speed", bottom.getEncoder().getVelocity());
 
     middlePID.periodic();
-    topPID.periodic();
+    topPID.periodic(); 
 
     SmartDashboard.putNumber("Size", feed);
 
@@ -153,17 +153,17 @@ public class IntakeFeeder extends SubsystemBase {
           speed = topSpeed;
           break;
       }
-      switch(motor) {
-        case BOTTOM:
-          bottom.set(speed);
-          break;
-        case MIDDLE:
-          middlePID.setTargetSpeed(speed);
-          break;
-        case TOP:
-          topPID.setTargetSpeed(speed);
-          break;
-      }
+    switch(motor) {
+      case BOTTOM:
+        bottom.set(speed);
+        break;
+      case MIDDLE:
+        middlePID.setTargetSpeed(speed);
+        break;
+      case TOP:
+        topPID.setTargetSpeed(speed);
+        break;
+    }
   }
 
   public void invert(Motor motor, boolean inverted) {
@@ -216,6 +216,10 @@ public class IntakeFeeder extends SubsystemBase {
     bottom.set(botSpeed);
     middlePID.setTargetSpeed(midSpeed);
     topPID.setTargetSpeed(topSpeed);
+  }
+  public void stopRunningFeeder(){
+    middlePID.setTargetSpeed(0);
+    topPID.setTargetSpeed(0);
   }
 
   /**

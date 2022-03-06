@@ -28,9 +28,10 @@ public class PassiveManualIntake extends CommandBase {
         lastFeed = intakeFeeder.getNumBalls();
         switch (intakeFeeder.getNumBalls()) {
             case 0:
+                SmartDashboard.putBoolean("Manual sees 2 balls", false);
                 intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
-                intakeFeeder.invertAndRun(Motor.MIDDLE, false, true);
-                intakeFeeder.invertAndRun(Motor.TOP, false, true);
+                intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
+                intakeFeeder.invertAndRun(Motor.TOP, false, false);
 
                 if(intakeFeeder.isBallThere(Motor.TOP)) {
                     if(!isSpinningUp) {
@@ -41,8 +42,9 @@ public class PassiveManualIntake extends CommandBase {
                 }
                 break;
             case 1:
+                SmartDashboard.putBoolean("Manual sees 2 balls", false);
                 intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
-                intakeFeeder.invertAndRun(Motor.MIDDLE, false, true);
+                intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
                 intakeFeeder.invertAndRun(Motor.TOP, false, false);
 
                 if(intakeFeeder.isBallThere(Motor.MIDDLE)) {
@@ -54,7 +56,8 @@ public class PassiveManualIntake extends CommandBase {
                 }
                 break;
             case 2:
-                intakeFeeder.invertAndRun(Motor.BOTTOM, false, false);
+                SmartDashboard.putBoolean("Manual sees 2 balls", true);
+                intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
                 intakeFeeder.invertAndRun(Motor.MIDDLE, false, false);
                 intakeFeeder.invertAndRun(Motor.TOP, false, false);
                 break;
