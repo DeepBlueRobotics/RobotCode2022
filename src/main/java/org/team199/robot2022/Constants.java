@@ -134,8 +134,8 @@ public final class Constants {
         public static final int kIntakeMiddle = 4;
         public static final int kIntakeBottom = 5;
 
-        public static final int kClimberLeft = 1; //random values pls change
-        public static final int kClimberRight = 2; 
+        public static final int kClimberLeft = 4; //TODO: these two are for practiceboard testing
+        public static final int kClimberRight = 5; 
 
     }
 
@@ -149,8 +149,8 @@ public final class Constants {
         public static final double JOY_THRESH = 0.01;
         public static final class LeftJoy {
             public static final int port = 0;
-            public static final int runClimberForwardsPort = 2;
-            public static final int runClimberBackwardsPort = 3;
+            public static final int runClimberForwardsPort = 3;
+            public static final int runClimberBackwardsPort = 4;
 
             public static final int manualAddPort = 2; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
             public static final int manualSubtractPort = 3;
