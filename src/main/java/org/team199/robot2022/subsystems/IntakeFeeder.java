@@ -52,6 +52,7 @@ public class IntakeFeeder extends SubsystemBase {
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
   private boolean overrideSensor = false;
+  private boolean dumbMode = false;
 
   private volatile Alliance currentColor = Alliance.Invalid;
   private volatile boolean ballDetected = false;
@@ -115,6 +116,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     SmartDashboard.putNumber("Size", cargo.size());
     SmartDashboard.putBoolean("IntakeFeeder Autonomous Control", useAutonomousControl());
+    SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
 
     addBalls();
     debug();
@@ -299,6 +301,16 @@ public class IntakeFeeder extends SubsystemBase {
   public void override()
   {
     overrideSensor = !overrideSensor;
+  }
+
+  public void toggleDumbMode()
+  {
+    dumbMode = !dumbMode;
+  }
+
+  public boolean isDumbModeEnabled()
+  {
+    return dumbMode;
   }
 
   public CANSparkMax getMotor(Motor motor) {

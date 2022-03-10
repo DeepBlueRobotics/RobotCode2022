@@ -159,6 +159,8 @@ public final class Constants {
             public static final int runIntakeBackwardPort = 3; // TODO: set correct port
             public static final int regurgitatePort = 4;
 
+            public static final int dumbModeToggle = 6;
+
         }
 
         public static final class Controller {

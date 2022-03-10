@@ -95,7 +95,19 @@ public class RobotContainer {
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> leftJoy.getRawButton(1) || rightJoy.getRawButton(1)));
 
-    intakeFeeder.setDefaultCommand(new PerpetualCommand(new ConditionalCommand(new PassiveAutomaticIntake(intakeFeeder), new PassiveManualIntake(intakeFeeder), intakeFeeder::useAutonomousControl)));
+    intakeFeeder.setDefaultCommand(
+      new PerpetualCommand(
+        new ConditionalCommand(
+          new InstantCommand(),
+          new ConditionalCommand(
+            new PassiveAutomaticIntake(intakeFeeder),
+            new PassiveManualIntake(intakeFeeder),
+            intakeFeeder::useAutonomousControl
+          ),
+          intakeFeeder::isDumbModeEnabled
+        )
+      )
+    );
   }
 
   private void configureButtonBindingsLeftJoy() {
@@ -109,7 +121,8 @@ public class RobotContainer {
 
     new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whileHeld(new InstantCommand(intakeFeeder::runForward, intakeFeeder));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whileHeld(new InstantCommand(intakeFeeder::runBackward, intakeFeeder));
-    new JoystickButton(leftJoy, Constants.OI.RightJoy.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.dumbModeToggle).whenPressed(new InstantCommand(intakeFeeder::toggleDumbMode));
   }
 
   private void configureButtonBindingsController() {
