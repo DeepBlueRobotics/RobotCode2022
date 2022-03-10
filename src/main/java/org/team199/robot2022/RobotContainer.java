@@ -13,9 +13,11 @@ import org.team199.robot2022.subsystems.Shooter;
 import java.io.IOException;
 
 import org.team199.robot2022.commands.Autonomous;
+import org.team199.robot2022.commands.ExtendClimber;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
 import org.team199.robot2022.commands.PassiveManualIntake;
 import org.team199.robot2022.commands.RegurgitateOne;
+import org.team199.robot2022.commands.RetractClimber;
 import org.team199.robot2022.commands.Shoot;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -101,8 +103,8 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsLeftJoy() {
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.runClimberBackwardsPort).whenPressed(new InstantCommand(climber::runForwards));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.runClimberForwardsPort).whenPressed(new InstantCommand(climber::runForwards));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.runClimberBackwardsPort).whenPressed(new ExtendClimber(climber));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.runClimberForwardsPort).whenPressed(new ExtendClimber(climber));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.regurgitateOnePort).whenPressed(new RegurgitateOne(intakeFeeder));
