@@ -256,6 +256,11 @@ public class IntakeFeeder extends SubsystemBase {
     middlePID.setTargetSpeed(0);
     topPID.setTargetSpeed(0);
   }
+  public void stop(){
+    run(Motor.BOTTOM, false);
+    run(Motor.MIDDLE, false);
+    run(Motor.TOP, false);
+  }
 
   /**
    * Should only be used when color sensor is not working

@@ -98,7 +98,7 @@ public class RobotContainer {
     intakeFeeder.setDefaultCommand(
       new PerpetualCommand(
         new ConditionalCommand(
-          new InstantCommand(),
+          new InstantCommand(intakeFeeder::stop, intakeFeeder),
           new ConditionalCommand(
             new PassiveAutomaticIntake(intakeFeeder),
             new PassiveManualIntake(intakeFeeder),
