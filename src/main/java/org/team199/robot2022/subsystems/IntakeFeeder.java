@@ -3,17 +3,17 @@ package org.team199.robot2022.subsystems;
 import com.revrobotics.CANSparkMax;
 import org.team199.robot2022.Constants;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
@@ -27,10 +27,9 @@ public class IntakeFeeder extends SubsystemBase {
    * takes in what color the team is from smart dashboard to be checked
    * with color sensor
    */
-  SendableChooser<Character> color = new SendableChooser<>();
-  char teamColor;
+  Alliance teamColor;
 
-  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  private final I2C.Port i2cPort = I2C.Port.kMXP;
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
@@ -48,12 +47,15 @@ public class IntakeFeeder extends SubsystemBase {
   private double botSpeed = .333;
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
-  private final double ampsThreshold = 4; // TODO : Get the best threshold that includes deflated balls
-  private final int minProxmity = 250; // TODO : Accurately determine minProxmity constant
+  private final int minProxmity = 200; // TODO : Accurately determine minProxmity constant
+  private final int maxProxmity = 160; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
   private boolean overrideSensor = false;
+
+  private volatile Alliance currentColor = Alliance.Invalid;
+  private volatile boolean ballDetected = false;
 
   /* Concern:
    * Make sure that when the ball is going thru the feeder that there is enough space between the balls
@@ -64,10 +66,7 @@ public class IntakeFeeder extends SubsystemBase {
   // true = team color, false = not team color
   private Deque<Boolean> cargo = new LinkedList<>();
 
-  // Should the robot intake balls or not (should only be used when color sensor is not working)
-  // 0 = no balls, 1 = 1 ball, 2 = 2 balls
-  // THIS IS ONLY FOR INTAKE NOT THE SHOOTER
-  private int feed = 0;
+  private final Notifier colorSensorUpdater;
 
   // if someone put the motor the wrong direction I don't have to manually switch the trues and falses
   boolean botInverted = false;
@@ -80,16 +79,15 @@ public class IntakeFeeder extends SubsystemBase {
     m_colorMatcher.addColorMatch(Color.kBlue);
     m_colorMatcher.addColorMatch(Color.kRed);
 
+    teamColor = DriverStation.getAlliance();
+
     bottom.setInverted(botInverted);
     middle.setInverted(midInverted);
     top.setInverted(topInverted);
 
-    color.setDefaultOption("Blue", 'B');
-    color.addOption("Red", 'R');
-    SmartDashboard.putData(color);
     SmartDashboard.putString("Add Ball to Queue", "");
     SmartDashboard.putNumber("Remove Ball from Queue", 0);
-    SmartDashboard.putNumber("Size", useAutonomousControl() ? cargo.size() : feed);
+    SmartDashboard.putNumber("Size", 0);
     SmartDashboard.putNumber("Top Voltage", topSpeed);
     SmartDashboard.putNumber("Mid Voltage", midSpeed);
     SmartDashboard.putNumber("Bot Voltage", botSpeed);
@@ -100,12 +98,15 @@ public class IntakeFeeder extends SubsystemBase {
 
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);
+
+    colorSensorUpdater = new Notifier(this::updateColorSensor);
+    colorSensorUpdater.setName("Color Sensor Updater");
+    colorSensorUpdater.startPeriodic(0.005);
   }
 
   @Override
   public void periodic() {
     // Ocassionally update the team color if the team put the wrong one by accident
-    teamColor = color.getSelected();
     topSpeed = SmartDashboard.getNumber("Top Voltage", topSpeed);
     midSpeed = SmartDashboard.getNumber("Mid Voltage", midSpeed);
     botSpeed = SmartDashboard.getNumber("Bot Voltage", botSpeed);
@@ -115,10 +116,35 @@ public class IntakeFeeder extends SubsystemBase {
     middlePID.periodic();
     topPID.periodic();
 
-    SmartDashboard.putNumber("Size", feed);
+    SmartDashboard.putNumber("Size", cargo.size());
+    SmartDashboard.putBoolean("IntakeFeeder Autonomous Control", useAutonomousControl());
 
     addBalls();
     debug();
+  }
+
+  public void updateColorSensor() {
+    if(!m_colorSensor.isConnected()) return;
+
+    double proximity = m_colorSensor.getProximity();
+
+    if(proximity >= minProxmity) ballDetected = true;
+    else if(proximity < maxProxmity) ballDetected = false;
+
+    Color detectedColor = m_colorSensor.getColor();
+    ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+
+    if (ballDetected) {
+      if (match.color == Color.kBlue)
+        currentColor = Alliance.Blue;
+      else if (match.color == Color.kRed)
+        currentColor = Alliance.Red;
+    } else {
+      currentColor = Alliance.Invalid;
+    }
+
+    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
+    SmartDashboard.putString("Detected Color", currentColor.toString());
   }
 
   public boolean useAutonomousControl() {
@@ -130,14 +156,16 @@ public class IntakeFeeder extends SubsystemBase {
     return cargo;
   }
 
-  public void popBall()
+  public void popFirstBall()
   {
-    cargo.pop();
+    if (cargo.size() > 0)
+      cargo.pollFirst();
   }
 
-  public void pollBall()
+  public void popSecondBall()
   {
-    cargo.poll();
+    if (cargo.size() > 0)
+      cargo.pollLast();
   }
 
   public void clearCargo() {
@@ -145,12 +173,12 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   public int getNumBalls() {
-    return useAutonomousControl() ? cargo.size() : feed;
+    return cargo.size();
   }
 
   public void run(Motor motor, boolean running) {
     double speed = 0;
-    if(running)
+    if(running){
       switch(motor) {
         case BOTTOM:
           speed = botSpeed;
@@ -162,17 +190,18 @@ public class IntakeFeeder extends SubsystemBase {
           speed = topSpeed;
           break;
       }
-      switch(motor) {
-        case BOTTOM:
-          bottom.set(speed);
-          break;
-        case MIDDLE:
-          middlePID.setTargetSpeed(speed);
-          break;
-        case TOP:
-          topPID.setTargetSpeed(speed);
-          break;
-      }
+    }
+    switch(motor) {
+      case BOTTOM:
+        bottom.set(speed);
+        break;
+      case MIDDLE:
+        middlePID.setTargetSpeed(speed);
+        break;
+      case TOP:
+        topPID.setTargetSpeed(speed);
+        break;
+    }
   }
 
   public void invert(Motor motor, boolean inverted) {
@@ -200,12 +229,14 @@ public class IntakeFeeder extends SubsystemBase {
    * Will pop from the queue
    * @return the top-most ball (the ball about to be shot)
    */
+  /*
   public boolean eject()
   {
     if (cargo.size() == 0)
       return false;
     return cargo.pollFirst();
   }
+  */
 
   public void runForward() {
     cargo.clear();
@@ -228,6 +259,10 @@ public class IntakeFeeder extends SubsystemBase {
     middlePID.setTargetSpeed(midSpeed);
     topPID.setTargetSpeed(topSpeed);
   }
+  public void stopRunningFeeder(){
+    middlePID.setTargetSpeed(0);
+    topPID.setTargetSpeed(0);
+  }
 
   /**
    * Should only be used when color sensor is not working
@@ -243,11 +278,12 @@ public class IntakeFeeder extends SubsystemBase {
       return;
     }
     */
-    if (feed == 2) {
+    if (cargo.size() == 2) {
       System.err.println("You can't add any more balls!");
       return;
     }
-    ++feed;
+
+    cargo.addFirst(true);
   }
 
   public void manualSub()
@@ -259,11 +295,12 @@ public class IntakeFeeder extends SubsystemBase {
       return;
     }
     */
-    if (feed == 0) {
+    if (cargo.size() == 0) {
       System.err.println("You can't subtract any more balls!");
       return;
     }
-    --feed;
+    // assuming ball comes out of shooter
+    cargo.pollLast();
   }
 
   /**
@@ -294,6 +331,7 @@ public class IntakeFeeder extends SubsystemBase {
       case TOP:
         return !topPID.isAtTargetSpeed();
       case BOTTOM:
+        return m_colorSensor.isConnected() ? ballDetected : false;
       default:
         return false;
     }
@@ -324,10 +362,10 @@ public class IntakeFeeder extends SubsystemBase {
       SmartDashboard.putString("Upper Ball", "None");
     }
 
-    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
     SmartDashboard.putNumber("Current", bottom.getOutputCurrent());
     SmartDashboard.putNumber("Top current", top.getOutputCurrent());
     SmartDashboard.putNumber("Middle current", middle.getOutputCurrent());
+    SmartDashboard.putString("Current Command (IntakeFeeder)", getCurrentCommand() == null ? "<None>" : getCurrentCommand().getName());
   }
 
   /**
@@ -375,39 +413,21 @@ public class IntakeFeeder extends SubsystemBase {
    * sensor is no longer working. Regurgitation will only happen when the color
    * detected is incorrect. All the color of the balls are stored in the queue and
    * this method will insert values into the queue.
-   * 
-   * @return returns a boolean of whether or not the color is correct
    */
-  public boolean detectColor() {
+  public void detectColor() {
 
     // If the color sensor is disconnected, the driver still has the ability to shoot
     if (!m_colorSensor.isConnected()) {
       hasDetectedBall = false;
-      return true;
-    }
-    
-    Color detectedColor = m_colorSensor.getColor();
-    char color = 'U';
-    ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
-    
-    if (m_colorSensor.getProximity() >= minProxmity) {
-      if (match.color == Color.kBlue)
-        color = 'B';
-      else if (match.color == Color.kRed)
-        color = 'R';
-    } else {
-      color = 'U';
+      return;
     }
 
-    SmartDashboard.putString("Detected Color", Character.toString(color));
-    if (color != 'U' && !hasDetectedBall) {
-      cargo.addLast(color == teamColor);
+    if (ballDetected && !hasDetectedBall) {
+      cargo.addLast(currentColor == teamColor);
       hasDetectedBall = true;
     }
-    else if (color == 'U')
+    else if (!ballDetected)
       hasDetectedBall = false;
-
-    return color != 'U';
   }
 
   public static enum Motor {

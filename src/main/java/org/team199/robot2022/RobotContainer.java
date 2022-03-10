@@ -8,14 +8,14 @@ import org.team199.robot2022.commands.TeleopDrive;
 import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
+import org.team199.robot2022.subsystems.Shooter.ShootMode;
 
 import java.io.IOException;
 
 import org.team199.robot2022.commands.Autonomous;
-import org.team199.robot2022.commands.ManualSoftShoot;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
 import org.team199.robot2022.commands.PassiveManualIntake;
-import org.team199.robot2022.commands.RegurgitateOne;
+import org.team199.robot2022.commands.Regurgitate;
 import org.team199.robot2022.commands.Shoot;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -102,15 +102,15 @@ public class RobotContainer {
   private void configureButtonBindingsLeftJoy() {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.regurgitateOnePort).whenPressed(new RegurgitateOne(intakeFeeder));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whileHeld(new Shoot(intakeFeeder, shooter, dt));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootSoftOnePort).whenPressed(new ManualSoftShoot(intakeFeeder, shooter));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootSoftOnePort).whenPressed(new Shoot(intakeFeeder, shooter, dt, ShootMode.SOFT));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whileHeld(new InstantCommand(intakeFeeder::runForward, intakeFeeder));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whileHeld(new InstantCommand(intakeFeeder::runBackward, intakeFeeder));
+    new JoystickButton(leftJoy, Constants.OI.RightJoy.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
   }
 
   private void configureButtonBindingsController() {
