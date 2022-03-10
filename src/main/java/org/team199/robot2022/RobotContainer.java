@@ -50,7 +50,7 @@ public class RobotContainer {
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
 
-  public final IntakeFeeder intakeFeeder = new IntakeFeeder();
+  public final IntakeFeeder intakeFeeder;
 
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
@@ -58,7 +58,9 @@ public class RobotContainer {
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
-  public RobotContainer() {
+  public RobotContainer(Robot robot) {
+
+    intakeFeeder = new IntakeFeeder(robot);
 
     autoPaths = new AutoPath[] {
       new AutoPath(false, loadPath("Taxi1"), null, false, false),
