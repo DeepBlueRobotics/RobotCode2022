@@ -4,11 +4,6 @@
 
 package org.team199.robot2022;
 
-import org.team199.robot2022.commands.TeleopDrive;
-import org.team199.robot2022.subsystems.Drivetrain;
-import org.team199.robot2022.subsystems.IntakeFeeder;
-import org.team199.robot2022.subsystems.Shooter;
-
 import java.io.IOException;
 
 import org.team199.robot2022.commands.Autonomous;
@@ -16,6 +11,10 @@ import org.team199.robot2022.commands.PassiveAutomaticIntake;
 import org.team199.robot2022.commands.PassiveManualIntake;
 import org.team199.robot2022.commands.Regurgitate;
 import org.team199.robot2022.commands.Shoot;
+import org.team199.robot2022.commands.TeleopDrive;
+import org.team199.robot2022.subsystems.Drivetrain;
+import org.team199.robot2022.subsystems.IntakeFeeder;
+import org.team199.robot2022.subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -26,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.lib.path.RobotPath;
 
@@ -98,7 +98,7 @@ public class RobotContainer {
     intakeFeeder.setDefaultCommand(
       new PerpetualCommand(
         new ConditionalCommand(
-          new InstantCommand(intakeFeeder::stop, intakeFeeder),
+          new InstantCommand(() -> {}, intakeFeeder),
           new ConditionalCommand(
             new PassiveAutomaticIntake(intakeFeeder),
             new PassiveManualIntake(intakeFeeder),
@@ -119,8 +119,8 @@ public class RobotContainer {
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
 
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whileHeld(new InstantCommand(intakeFeeder::runForward, intakeFeeder));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whileHeld(new InstantCommand(intakeFeeder::runBackward, intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whenPressed(new RunCommand(intakeFeeder::runForward, intakeFeeder)).whenReleased(new RunCommand(intakeFeeder::stop, intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whenPressed(new RunCommand(intakeFeeder::runBackward, intakeFeeder)).whenReleased(new RunCommand(intakeFeeder::stop, intakeFeeder));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.dumbModeToggle).whenPressed(new InstantCommand(intakeFeeder::toggleDumbMode));
   }
