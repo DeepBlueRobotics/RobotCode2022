@@ -2,6 +2,7 @@ package org.team199.robot2022.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import org.team199.robot2022.Constants;
+import org.team199.robot2022.Robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -54,8 +55,8 @@ public class IntakeFeeder extends SubsystemBase {
   private boolean overrideSensor = false;
   private boolean dumbMode = false;
 
-  private volatile Alliance currentColor = Alliance.Invalid;
-  private volatile boolean ballDetected = false;
+  private Alliance currentColor = Alliance.Invalid;
+  private boolean ballDetected = false;
 
   /* Concern:
    * Make sure that when the ball is going thru the feeder that there is enough space between the balls
@@ -66,14 +67,12 @@ public class IntakeFeeder extends SubsystemBase {
   // true = team color, false = not team color
   private Deque<Boolean> cargo = new LinkedList<>();
 
-  private final Notifier colorSensorUpdater;
-
   // if someone put the motor the wrong direction I don't have to manually switch the trues and falses
   boolean botInverted = false;
   boolean midInverted = true;
   boolean topInverted = false;
 
-  public IntakeFeeder() {
+  public IntakeFeeder(Robot robot) {
     if (!m_colorSensor.isConnected())
       SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
     m_colorMatcher.addColorMatch(Color.kBlue);
@@ -98,9 +97,7 @@ public class IntakeFeeder extends SubsystemBase {
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);
 
-    colorSensorUpdater = new Notifier(this::updateColorSensor);
-    colorSensorUpdater.setName("Color Sensor Updater");
-    colorSensorUpdater.startPeriodic(0.005);
+    robot.addPeriodic(this::updateColorSensor, 0.005);
   }
 
   @Override
@@ -144,6 +141,10 @@ public class IntakeFeeder extends SubsystemBase {
 
     SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
     SmartDashboard.putString("Detected Color", currentColor.toString());
+  }
+
+  public void toggleIntake() {
+    invertAndRun(Motor.BOTTOM, false, bottom.get() == 0);
   }
 
   public boolean useAutonomousControl() {
