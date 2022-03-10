@@ -155,12 +155,6 @@ public final class Constants {
             public static final int port = 1;
             public static final int shootPort = 2;
 
-            public static final int runIntakeForwardPort = 5; // TODO: set correct port
-            public static final int runIntakeBackwardPort = 3; // TODO: set correct port
-            public static final int regurgitatePort = 4;
-
-            public static final int dumbModeToggle = 6;
-
         }
 
         public static final class Controller {
@@ -212,6 +206,12 @@ public final class Constants {
             public static final int midClimberRetract = LB;
             public static final int highClimberDeploy = RT;
             public static final int highClimberRetract = RB;
+
+            public static final int runIntakeForwardPort = A; // TODO: set correct port
+            public static final int runIntakeBackwardPort = X; // TODO: set correct port
+            public static final int regurgitatePort = B;
+            public static final int dumbModeToggle = Y;
+            public static final int toggleIntakePort = START;
         }
     }
 

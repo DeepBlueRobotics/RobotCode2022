@@ -146,6 +146,10 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putString("Detected Color", currentColor.toString());
   }
 
+  public void toggleIntake() {
+    invertAndRun(Motor.BOTTOM, false, bottom.get() == 0);
+  }
+
   public boolean useAutonomousControl() {
     return m_colorSensor.isConnected() && !overrideSensor;
   }

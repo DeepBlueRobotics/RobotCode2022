@@ -5,6 +5,7 @@
 package org.team199.robot2022;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import org.team199.robot2022.commands.Autonomous;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
@@ -118,15 +119,14 @@ public class RobotContainer {
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
-
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whenPressed(new RunCommand(intakeFeeder::runForward, intakeFeeder)).whenReleased(new RunCommand(intakeFeeder::stop, intakeFeeder));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whenPressed(new RunCommand(intakeFeeder::runBackward, intakeFeeder)).whenReleased(new RunCommand(intakeFeeder::stop, intakeFeeder));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.dumbModeToggle).whenPressed(new InstantCommand(intakeFeeder::toggleDumbMode));
   }
 
   private void configureButtonBindingsController() {
-
+    new JoystickButton(controller, Constants.OI.Controller.runIntakeForwardPort).whenPressed(new RunCommand(intakeFeeder::runForward, intakeFeeder)).whenReleased(new InstantCommand(intakeFeeder::stop, intakeFeeder));
+    new JoystickButton(controller, Constants.OI.Controller.runIntakeBackwardPort).whenPressed(new RunCommand(intakeFeeder::runBackward, intakeFeeder)).whenReleased(new InstantCommand(intakeFeeder::stop, intakeFeeder));
+    new JoystickButton(controller, Constants.OI.Controller.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
+    new JoystickButton(controller, Constants.OI.Controller.dumbModeToggle).whenPressed(new InstantCommand(intakeFeeder::toggleDumbMode, intakeFeeder));
+    new JoystickButton(controller, Constants.OI.Controller.toggleIntakePort).whenPressed(new InstantCommand(intakeFeeder::toggleIntake, intakeFeeder));
   }
 
   /**
