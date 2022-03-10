@@ -4,11 +4,13 @@
 
 package org.team199.robot2022.subsystems;
 
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import org.team199.robot2022.Constants;
+import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
 
 
 public class Climber extends SubsystemBase {
@@ -23,6 +25,11 @@ public class Climber extends SubsystemBase {
   //TODO : set these to correct forwards backwards values idk how the motors work
   public final boolean leftInverted = true;
   public final boolean rightInverted = false;
+
+  // TODO : SET THESE TO CORRECT VALUES
+  public final double extendPosition = 100;
+  public final double retractPosition = extendPosition/2;
+  public final double bottomPosition = 0;
 
   private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
   private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
@@ -58,14 +65,16 @@ public class Climber extends SubsystemBase {
 
   }
 
-  public void runForwards()
+  public void runLeft(double speed)
   {
     //TODO : Rotate motor
-    
-    left.set(kExtendSpeed);
-    right.set(kExtendSpeed);
+    left.set(speed);
+  }
 
-
+  public void runRight(double speed)
+  {
+    //TODO : Rotate motor
+    right.set(speed);
   }
 
   public void runBackwards()
@@ -83,5 +92,53 @@ public class Climber extends SubsystemBase {
 
     return 0;
   }
+  
+
+  //GETTERS
+  public double getMotorPosition(CANSparkMax motor)
+  {
+    return motor.getEncoder().getPosition();
+  }
+
+  public CANSparkMax getLeft()
+  {
+    return left;
+  }
+
+  public CANSparkMax getRight()
+  {
+    return right;
+  }
+
+  public boolean checkLeftExtend()
+  {
+    return left.getEncoder().getPosition() >= extendPosition;
+  }
+
+  public boolean checkRightExtend()
+  {
+    return right.getEncoder().getPosition() >= extendPosition;
+  }
+
+  public boolean checkLeftRetract()
+  {
+    return left.getEncoder().getPosition() <= retractPosition;
+  }
+
+  public boolean checkRightRetract()
+  {
+    return right.getEncoder().getPosition() <= retractPosition;
+  }
+
+  public double getExtendSpeed()
+  {
+    return kExtendSpeed;
+  }
+
+  public double getRetractSpeed()
+  {
+    return kRetractSpeed;
+  }
+
   
 }
