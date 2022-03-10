@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.RelativeEncoder;
@@ -37,12 +38,13 @@ public class IntakeFeeder extends SubsystemBase {
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
   private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop);
 
+  private final SparkVelocityPIDController bottomPID;
   private final SparkVelocityPIDController middlePID;
   private final SparkVelocityPIDController topPID;
 
   // Constant values that can be tweaked
-  private double topSpeed = 450;
-  private double midSpeed = 450;
+  private double topSpeed = .450;
+  private double midSpeed = .450;
   private double botSpeed = .333;
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
@@ -92,6 +94,7 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Mid Voltage", midSpeed);
     SmartDashboard.putNumber("Bot Voltage", botSpeed);
 
+    bottomPID = new SparkVelocityPIDController("Intake Feeder (Bottom)", bottom, 0, 0, 0, 0, 0.00285, botSpeed, rpmTolerance);
     middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, midSpeed, rpmTolerance);
     topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0, 0, 0, 0, 0.0107, topSpeed, rpmTolerance);
 
@@ -108,6 +111,7 @@ public class IntakeFeeder extends SubsystemBase {
     botSpeed = SmartDashboard.getNumber("Bot Voltage", botSpeed);
     SmartDashboard.putNumber("Bot Speed", bottom.getEncoder().getVelocity());
 
+    bottomPID.periodic();
     middlePID.periodic();
     topPID.periodic();
 
@@ -209,7 +213,7 @@ public class IntakeFeeder extends SubsystemBase {
     middle.setInverted(midInverted);
     top.setInverted(topInverted);
 
-    bottom.set(botSpeed);
+    bottomPID.setTargetSpeed(botSpeed);
     middlePID.setTargetSpeed(midSpeed);
     topPID.setTargetSpeed(topSpeed);
   }
@@ -220,7 +224,7 @@ public class IntakeFeeder extends SubsystemBase {
     middle.setInverted(!midInverted);
     top.setInverted(!topInverted);
 
-    bottom.set(botSpeed);
+    bottomPID.setTargetSpeed(botSpeed);
     middlePID.setTargetSpeed(midSpeed);
     topPID.setTargetSpeed(topSpeed);
   }
