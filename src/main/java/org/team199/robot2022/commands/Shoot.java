@@ -44,6 +44,8 @@ public class Shoot extends SequentialCommandGroup {
   @Override
   //Shoots a ball forward/backwards depending on ball color
   public void execute() { // TODO : Determine when to shoot for lower goal
+    if (intakeFeeder.getCargo().isEmpty())
+      return;
     if (intakeFeeder.getCargo().peekLast()){ //if color is correct
       // Shoot the ball
       shooter.setMainSpeed(shootMode == null ? ShootMode.UPPER : shootMode);
@@ -70,6 +72,8 @@ public class Shoot extends SequentialCommandGroup {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (intakeFeeder.getCargo().isEmpty())
+      return true;
     if (shooter.isBallThere())
       detectedBall = true;
     if (detectedBall && !shooter.isBallThere()) {

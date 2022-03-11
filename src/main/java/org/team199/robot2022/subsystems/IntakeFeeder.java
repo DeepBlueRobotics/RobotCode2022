@@ -390,7 +390,8 @@ public class IntakeFeeder extends SubsystemBase {
       //REMOVES BALLS
       for (int i = 0; i < numBallsRemoved; i++)
       {
-        cargo.pollFirst();
+        if (cargo.size() > 0)
+          cargo.pollFirst();
       }
 
       //ADDS BALLS
