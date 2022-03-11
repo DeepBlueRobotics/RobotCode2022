@@ -22,7 +22,7 @@ public class PassiveAutomaticIntake extends CommandBase {
         SmartDashboard.putString("IntakeFeeder Default Type", "Automatic");
         intakeFeeder.detectColor();
         // Check for Regurgitation
-        if (intakeFeeder.getCargo().size() > 0 && !intakeFeeder.getCargo().peekLast())
+        if (intakeFeeder.getCargo().size() > 0 && !intakeFeeder.getCargo().peekFirst())
         {
             // isRegurgitating = true;
             // intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);

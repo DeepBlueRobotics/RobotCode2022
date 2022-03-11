@@ -193,7 +193,7 @@ public class IntakeFeeder extends SubsystemBase {
     }
     switch(motor) {
       case BOTTOM:
-        bottom.set(speed);
+        bottomPID.setTargetSpeed(speed);
         break;
       case MIDDLE:
         middlePID.setTargetSpeed(speed);
@@ -331,7 +331,8 @@ public class IntakeFeeder extends SubsystemBase {
       case TOP:
         return !topPID.isAtTargetSpeed();
       case BOTTOM:
-        return m_colorSensor.isConnected() ? ballDetected : false;
+        return !bottomPID.isAtTargetSpeed();
+        //return m_colorSensor.isConnected() ? ballDetected : false;
       default:
         return false;
     }
