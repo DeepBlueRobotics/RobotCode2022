@@ -44,27 +44,17 @@ public class Shoot extends SequentialCommandGroup {
   @Override
   //Shoots a ball forward/backwards depending on ball color
   public void execute() { // TODO : Determine when to shoot for lower goal
-    if (shootMode != null)
-    {
-      shooter.setMainSpeed(shootMode);
-      if (shooter.isAtTargetSpeed())
-      {
+    if (intakeFeeder.getCargo().peekLast()){ //if color is correct
+      // Shoot the ball
+      shooter.setMainSpeed(shootMode == null ? ShootMode.UPPER : shootMode);
+      if (shooter.isAtTargetSpeed()) {
         intakeFeeder.invertAndRun(Motor.TOP, false, true);
       }
-
     } else {
-      if (intakeFeeder.getCargo().peekLast()){ //if color is correct
-        // Shoot the ball
-        shooter.setMainSpeed(ShootMode.UPPER);
-        if (shooter.isAtTargetSpeed()) {
-          intakeFeeder.invertAndRun(Motor.TOP, false, true);
-        }
-      } else {
-        // turn 90 degrees and soft shoot
-        shooter.setMainSpeed(ShootMode.SOFT);
-        if (shooter.isAtTargetSpeed()) {
-          intakeFeeder.invertAndRun(Motor.TOP, false, true);
-        }
+      // turn 90 degrees and soft shoot
+      shooter.setMainSpeed(ShootMode.SOFT);
+      if (shooter.isAtTargetSpeed()) {
+        intakeFeeder.invertAndRun(Motor.TOP, false, true);
       }
     }
   }
