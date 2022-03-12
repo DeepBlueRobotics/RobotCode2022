@@ -40,7 +40,7 @@ public class RegurgitateOne extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     if (intakeFeeder.getCargo().size() > 0)
-      intakeFeeder.popBall();
+      intakeFeeder.popSecondBall();
   }
 
   // Returns true when the command should end.
