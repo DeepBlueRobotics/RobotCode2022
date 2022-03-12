@@ -44,7 +44,7 @@ public final class Constants {
 
         public static final double NEOFreeSpeed = 5676 * (2 * Math.PI) / 60;    // radians/s
         // Angular speed to translational speed --> v = omega * r / gearing
-        public static final double maxSpeed = NEOFreeSpeed * (wheelDiameterMeters / 2.0) / driveGearing * 0.7;
+        public static final double maxSpeed = NEOFreeSpeed * (wheelDiameterMeters / 2.0) / driveGearing * 1.0;
         public static final double maxForward = maxSpeed;
         public static final double maxStrafe = maxSpeed;
         // maxRCW is the angular velocity of the robot.
@@ -94,11 +94,11 @@ public final class Constants {
         //public static final double[] kBackwardAccels = {0, 0, 0, 0};
 
         public static final double autoMaxSpeedMps = 0.35 * 4.4;  // Meters / second
-        public static final double autoMaxAccelMps2 = mu * g;  // Meters / seconds^2
+        public static final double autoMaxAccelMps2 = mu * g * 0.6;  // Meters / seconds^2
         public static final double autoMaxVolt = 10.0;   // For Drivetrain voltage constraint in RobotPath.java
         // The maximum acceleration the robot can achieve is equal to the coefficient of static friction times the gravitational acceleration
         // a = mu * 9.8 m/s^2
-        public static final double autoCentripetalAccel = mu * g * 2;
+        public static final double autoCentripetalAccel = mu * g * 0.3;
 
         // PID values are listed in the order kP, kI, and kD
         public static final double[] xPIDController = {4, 0.0, 0.0};
@@ -154,7 +154,6 @@ public final class Constants {
 
             public static final int manualAddPort = 2; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
             public static final int manualSubtractPort = 3;
-            public static final int regurgitateOnePort = 4;
             public static final int overridePort = 5;
             public static final int shootSoftOnePort = 6;
         }
@@ -162,9 +161,6 @@ public final class Constants {
         public static final class RightJoy {
             public static final int port = 1;
             public static final int shootPort = 2;
-
-            public static final int runIntakeForwardPort = 5; // TODO: set correct port
-            public static final int runIntakeBackwardPort = 3; // TODO: set correct port
 
         }
 
@@ -217,6 +213,12 @@ public final class Constants {
             public static final int midClimberRetract = LB;
             public static final int highClimberDeploy = RT;
             public static final int highClimberRetract = RB;
+
+            public static final int runIntakeForwardPort = A; // TODO: set correct port
+            public static final int runIntakeBackwardPort = X; // TODO: set correct port
+            public static final int regurgitatePort = B;
+            public static final int dumbModeToggle = Y;
+            public static final int toggleIntakePort = START;
         }
     }
 

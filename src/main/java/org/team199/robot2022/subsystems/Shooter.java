@@ -17,7 +17,7 @@ public class Shooter extends SubsystemBase {
     private static final double kI = 0.0;
     private static final double kD = 0.005;
 
-    private double kTargetSpeed = 2000;
+    private double kTargetSpeed = 2500;
     private final double speedOffsetMain = 100;
 
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);

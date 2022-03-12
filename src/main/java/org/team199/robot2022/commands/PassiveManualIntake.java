@@ -20,6 +20,7 @@ public class PassiveManualIntake extends CommandBase {
     public void execute() {
         // feed = (int) SmartDashboard.getNumber("Size", feed);
         SmartDashboard.putString("Detected Color", "Disconnected");
+        SmartDashboard.putString("IntakeFeeder Default Type", "Manual");
         // Reset the balls in the cargo as color sensor no longer works and we cannot
         // accurately record the cargo
         intakeFeeder.clearCargo();
