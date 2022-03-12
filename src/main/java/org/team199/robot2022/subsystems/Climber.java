@@ -23,8 +23,8 @@ public class Climber extends SubsystemBase {
   public static double kExtendSpeed = 0.05;
 
   //TODO : set these to correct forwards backwards values idk how the motors work
-  public final boolean leftInverted = true;
-  public final boolean rightInverted = false;
+  public final boolean leftInverted = false;
+  public final boolean rightInverted = true;
 
   // TODO : SET THESE TO CORRECT VALUES
   public final double extendPosition = 100;
@@ -48,7 +48,7 @@ public class Climber extends SubsystemBase {
      */
 
     //"for now I am just using setInverted for both" -> changed to only right inversion
-    //left.setInverted(leftInverted);
+    left.setInverted(leftInverted);
     right.setInverted(rightInverted);
 
   }
