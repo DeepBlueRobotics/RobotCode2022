@@ -4,141 +4,74 @@
 
 package org.team199.robot2022.subsystems;
 
-import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
-import org.team199.robot2022.Constants;
-import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 
+import org.team199.robot2022.Constants;
 
 public class Climber extends SubsystemBase {
-  /** Creates a new Climber. */
-  public static double kMidRungRotations = 133.7;
-  public static double kMidRungRetractions = 0;
-  //TODO : Set this
-  public static double kRetractSpeed = 0.4;
-  //TODO : Set this
-  public static double kExtendSpeed = 0.05;
 
-  //TODO : set these to correct forwards backwards values idk how the motors work
-  public final boolean leftInverted = false;
-  public final boolean rightInverted = true;
+    private static final double kRetractSpeed = 0.4;
+    private static final double kExtendSpeed = -0.1;
 
-  // TODO : SET THESE TO CORRECT VALUES
-  public final double extendPosition = 100;
-  public final double retractPosition = extendPosition/2;
-  public final double bottomPosition = 0;
+    private static final boolean leftInverted = true;
 
-  private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
-  private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
+    private static final double extendPosition = 6;
+    private static final double retractPosition = -1;
+    private static final double gearing = 9;
 
-  public Climber() {
-    
-    
-    /**
-     * not really sure what these do but they're probably important as
-     * climber is gonna have a lot of the same things as shooter
-     * 
-    left.setSmartCurrentLimit(40);
-    right.setSmartCurrentLimit(40);
-    left.follow(right, true);
-    left.setInverted(true);
-     */
+    private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
+    private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
+    private final RelativeEncoder encoder = left.getEncoder();
 
-    //"for now I am just using setInverted for both" -> changed to only right inversion
-    left.setInverted(leftInverted);
-    right.setInverted(rightInverted);
+    public Climber() {
+        left.setInverted(leftInverted);
+        right.follow(left, true);
 
-  }
+        encoder.setPositionConversionFactor(1 / gearing);
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Climber Position", getPosition());
+    }
 
-  public void climb(double speed) {
-    //TODO : Rotate motor
-    
-    left.set(kExtendSpeed);
+    public void extend() {
+        left.set(kExtendSpeed);
+        left.setIdleMode(IdleMode.kCoast);
+        right.setIdleMode(IdleMode.kCoast);
+    }
 
-  }
+    public void retract() {
+        left.setIdleMode(IdleMode.kBrake);
+        right.setIdleMode(IdleMode.kBrake);
+        left.set(kRetractSpeed);
+    }
 
-  public void runLeft(double speed)
-  {
-    //TODO : Rotate motor
-    left.set(speed);
-  }
+    public void stop() {
+        left.setIdleMode(IdleMode.kBrake);
+        right.setIdleMode(IdleMode.kBrake);
+        left.set(0);
+    }
 
-  public void runRight(double speed)
-  {
-    //TODO : Rotate motor
-    right.set(speed);
-  }
+    public void stop(boolean interrupted) {
+        stop();
+    }
 
-  public void runBackwards()
-  {
-    left.setInverted(!leftInverted);
-    right.setInverted(!rightInverted);
-    left.set(kRetractSpeed);
-    right.set(kRetractSpeed);
-    
-  }
+    public double getPosition() {
+        return encoder.getPosition();
+    }
 
-  public double getRotations() {
-    //TODO : Return how much the climber motor has rotated using encoders
-    //Should return a value where 1 = 1 whole rotation
+    public boolean isExtended() {
+        return getPosition() >= extendPosition;
+    }
 
-    return left.getEncoder().getPosition();
-  }
-  
+    public boolean isRetracted() {
+        return getPosition() <= retractPosition;
+    }
 
-  //GETTERS
-  public double getMotorPosition(CANSparkMax motor)
-  {
-    return motor.getEncoder().getPosition();
-  }
-
-  public CANSparkMax getLeft()
-  {
-    return left;
-  }
-
-  public CANSparkMax getRight()
-  {
-    return right;
-  }
-
-  public boolean checkLeftExtend()
-  {
-    return left.getEncoder().getPosition() >= extendPosition;
-  }
-
-  public boolean checkRightExtend()
-  {
-    return right.getEncoder().getPosition() >= extendPosition;
-  }
-
-  public boolean checkLeftRetract()
-  {
-    return left.getEncoder().getPosition() <= retractPosition;
-  }
-
-  public boolean checkRightRetract()
-  {
-    return right.getEncoder().getPosition() <= retractPosition;
-  }
-
-  public double getExtendSpeed()
-  {
-    return kExtendSpeed;
-  }
-
-  public double getRetractSpeed()
-  {
-    return kRetractSpeed;
-  }
-
-  
 }
