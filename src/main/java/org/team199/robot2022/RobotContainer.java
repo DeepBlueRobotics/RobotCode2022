@@ -59,9 +59,9 @@ public class RobotContainer {
     autoPaths = new AutoPath[] {
       new AutoPath(false, Arrays.asList(loadPath("Taxi1").reversed()), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi2").reversed()), false, false),
-      new AutoPath(true, Arrays.asList(loadPath("Path1").reversed()), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path2").reversed()), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path3").reversed()), true, true)
+      new AutoPath(true, Arrays.asList(loadPath("Path1(1)").reversed(), loadPath("Path1(2)").reversed(), loadPath("Path1(3)").reversed(), loadPath("Path1(4)").reversed(), loadPath("Path1(5)").reversed()), true, true),
+      new AutoPath(true, Arrays.asList(loadPath("Path2(1)").reversed(), loadPath("Path2(2)").reversed()), true, true),
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)").reversed(), loadPath("Path3(2)").reversed()), true, true)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 10)];
