@@ -90,7 +90,7 @@ public class Climber extends SubsystemBase {
     //TODO : Return how much the climber motor has rotated using encoders
     //Should return a value where 1 = 1 whole rotation
 
-    return 0;
+    return left.getEncoder().getPosition();
   }
   
 
