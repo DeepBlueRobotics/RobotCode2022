@@ -11,8 +11,8 @@ import frc.robot.lib.path.RobotPath;
 
 public class Autonomous extends SequentialCommandGroup {
 
-    public Autonomous(AutoPath path, boolean shootAtStart, boolean shootAtEnd, boolean runIntake, Drivetrain drivetrain, IntakeFeeder intakeFeeder, Shooter shooter) {
-        addRequirements(drivetrain, intakeFeeder, shooter);
+    public Autonomous(AutoPath path, boolean shootAtStart, boolean shootAtEnd, Drivetrain drivetrain, Shooter shooter) {
+        addRequirements(drivetrain, shooter);
 
         addCommands(
             new InstantCommand(path.path.get(0)::initializeDrivetrainPosition),
