@@ -149,8 +149,6 @@ public final class Constants {
         public static final double JOY_THRESH = 0.01;
         public static final class LeftJoy {
             public static final int port = 0;
-            public static final int runClimberForwardsPort = 9;
-            public static final int runClimberBackwardsPort = 8;
 
             public static final int manualAddPort = 2; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
             public static final int manualSubtractPort = 3;
@@ -160,8 +158,10 @@ public final class Constants {
 
         public static final class RightJoy {
             public static final int port = 1;
-            public static final int shootPort = 2;
 
+            public static final int shootPort = 2;
+            public static final int extendClimberPort = 5;
+            public static final int retractClimberPort = 3;
         }
 
         public static final class Controller {
