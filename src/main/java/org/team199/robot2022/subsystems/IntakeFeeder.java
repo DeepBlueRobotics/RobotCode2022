@@ -64,7 +64,7 @@ public class IntakeFeeder extends SubsystemBase {
 
   // Will store what color balls are in the feeder
   // true = team color, false = not team color
-  private Deque<Boolean> cargo = new LinkedList<>();
+  private Deque<Boolean> cargo;
 
   private final Notifier colorSensorUpdater;
 
@@ -102,6 +102,7 @@ public class IntakeFeeder extends SubsystemBase {
     colorSensorUpdater = new Notifier(this::updateColorSensor);
     colorSensorUpdater.setName("Color Sensor Updater");
     colorSensorUpdater.startPeriodic(0.005);
+    cargo = new LinkedList<>();
   }
 
   @Override
