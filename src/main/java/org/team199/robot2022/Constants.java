@@ -218,11 +218,11 @@ public final class Constants {
             public static final int highClimberDeploy = RT;
             public static final int highClimberRetract = RB;
 
-            public static final int runIntakeForwardPort = A; // TODO: set correct port
-            public static final int runIntakeBackwardPort = X; // TODO: set correct port
+            public static final int runIntakeForwardPort = Y; // TODO: set correct port
+            public static final int runIntakeBackwardPort = A; // TODO: set correct port
             public static final int regurgitatePort = B;
-            public static final int dumbModeToggle = Y;
-            public static final int toggleIntakePort = START;
+            public static final int dumbModeToggle = START;
+            public static final int toggleIntakePort = X;
         }
     }
 
