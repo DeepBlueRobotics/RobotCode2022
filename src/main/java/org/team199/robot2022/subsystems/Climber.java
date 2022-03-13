@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.team199.robot2022.Constants;
 
@@ -23,12 +22,12 @@ public class Climber extends SubsystemBase {
     // Torque is 2 * 9 * 0.5 = 9
     // Torque on the motor is Torque / ( gearing = 9 ) = 1
 
-    private static final double kVoltsToCounterTorque = (1D / 32) * 12;
+    private static final double kVoltsToCounterTorque = (1.1D / 32) * 12;
 
     private static final boolean leftInverted = false;
 
     private static final double extendPosition = 3.88;
-    private static final double retractPosition = -0.6;
+    private static final double retractPosition = -0.75;
     private static final double gearing = 9;
     private static final double kInPerSec = ( (kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60 );
 
@@ -37,57 +36,98 @@ public class Climber extends SubsystemBase {
 
     private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
     private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
-    private final RelativeEncoder encoder = right.getEncoder();
+    private final RelativeEncoder leftEncoder = left.getEncoder();
+    private final RelativeEncoder rightEncoder = right.getEncoder();
 
     public Climber() {
         left.setInverted(leftInverted);
-        right.follow(left, true);
+        right.setInverted(!leftInverted);
 
-        encoder.setPositionConversionFactor(1 / gearing);
-        encoder.setPosition(0);
-        SmartDashboard.putString("Climber is", "Stopped");
+        leftEncoder.setPositionConversionFactor(1 / gearing);
+        leftEncoder.setPosition(0);
+        rightEncoder.setPositionConversionFactor(1 / gearing);
+        rightEncoder.setPosition(0);
+        SmartDashboard.putString("Left climber is", "Stopped");
+        SmartDashboard.putString("Right climber is", "Stopped");
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Climber Position", getPosition());
+        SmartDashboard.putNumber("Left Climber Position", getLeftPosition());
+        SmartDashboard.putNumber("Right Climber Position", getRightPosition());
     }
 
-    public void extend() {
+    public void extendLeft() {
         left.set(kExtendSpeed);
-        SmartDashboard.putString("Climber is", "Extending");
-        // left.setIdleMode(IdleMode.kCoast);
-        // right.setIdleMode(IdleMode.kCoast);
+        SmartDashboard.putString("Left climber is", "Extending");
     }
 
-    public void retract() {
-        // left.setIdleMode(IdleMode.kBrake);
-        // right.setIdleMode(IdleMode.kBrake);
+    public void extendRight() {
+        right.set(kExtendSpeed);
+        SmartDashboard.putString("Right climber is", "Extending");
+    }
+
+    public void retractLeft() {
         left.set(kRetractSpeed);
-        SmartDashboard.putString("Climber is", "Retracting");
+        SmartDashboard.putString("Left climber is", "Retracting");
+    }
+
+    public void retractRight() {
+        right.set(kRetractSpeed);
+        SmartDashboard.putString("Right climber is", "Retracting");
     }
 
     public void stop() {
-        // left.setIdleMode(IdleMode.kBrake);
-        // right.setIdleMode(IdleMode.kBrake);
         left.set(0);
-        SmartDashboard.putString("Climber is", "Stopped");
+        right.set(0);
+        SmartDashboard.putString("Left climber is", "Stopped");
+        SmartDashboard.putString("Right climber is", "Stopped");
+    }
+
+    public void stopLeft() {
+        left.set(0);
+        SmartDashboard.putString("Left climber is", "Stopped");
+    }
+
+    public void stopRight() {
+        right.set(0);
+        SmartDashboard.putString("Right climber is", "Stopped");
     }
 
     public void stop(boolean interrupted) {
         stop();
     }
 
-    public double getPosition() {
-        return encoder.getPosition();
+    public void stopLeft(boolean interrupted) {
+        stopLeft();
     }
 
-    public boolean isExtended() {
-        return getPosition() >= extendPosition;
+    public void stopRight(boolean interrupted) {
+        stopRight();
     }
 
-    public boolean isRetracted() {
-        return getPosition() <= retractPosition;
+    public double getLeftPosition() {
+        return leftEncoder.getPosition();
+    }
+
+    public double getRightPosition() {
+        return rightEncoder.getPosition();
+    }
+
+    public boolean isLeftExtended() {
+        return getLeftPosition() >= extendPosition;
+    }
+
+    public boolean isRightExtended() {
+        return getRightPosition() >= extendPosition;
+    }
+
+    public boolean isLeftRetracted() {
+        return getLeftPosition() <= retractPosition;
+    }
+
+    public boolean isRightRetracted() {
+        return getRightPosition() <= retractPosition;
     }
 
 }
