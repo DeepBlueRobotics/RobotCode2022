@@ -33,6 +33,16 @@ public class Climber extends SubsystemBase {
 
     private static final double kRetractSpeed = -( ( kDesiredRetractSpeedInps / kInPerSec )  + ( kVoltsToCounterTorque / 12 ) ); // ~ -0.06151
     private static final double kExtendSpeed = ( kDesiredExtendSpeedInps / kInPerSec ); // ~0.30261
+    
+    private static final double kSlowDesiredRetractSpeedInps = 1;
+    private static final double kSlowDesiredExtendSpeedInps = 1;
+
+    // Torque is 2 * 9 * 0.5 = 9
+    // Torque on the motor is Torque / ( gearing = 9 ) = 1
+
+    private static final double kSlowVoltsToCounterTorque = (1D / 32) * 12;
+    private static final double kSlowRetractSpeed = -( ( kSlowDesiredRetractSpeedInps / kInPerSec )  + ( kSlowVoltsToCounterTorque / 12 ) ); // ~ -0.06151
+    private static final double kSlowExtendSpeed = ( kSlowDesiredExtendSpeedInps / kInPerSec ); // ~0.30261
 
     private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
     private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
@@ -75,6 +85,14 @@ public class Climber extends SubsystemBase {
     public void retractRight() {
         right.set(kRetractSpeed);
         SmartDashboard.putString("Right climber is", "Retracting");
+    }
+    public void slowExtend(){
+      left.set(kSlowExtendSpeed);
+      SmartDashboard.putString("Climber is", "Extending");
+    }
+    public void slowRetract(){
+      left.set(kSlowRetractSpeed);
+      SmartDashboard.putString("Climber is", "Extending");
     }
 
     public void stop() {
