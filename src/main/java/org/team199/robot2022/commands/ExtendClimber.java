@@ -7,17 +7,26 @@ package org.team199.robot2022.commands;
 import org.team199.robot2022.subsystems.Climber;
 
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
-public class ExtendClimber extends FunctionalCommand {
+public class ExtendClimber extends ParallelCommandGroup {
 
-    public ExtendClimber(Climber climber) {
+    public ExtendClimber(Climber climber, boolean isSlow) {
         super(
-            () -> {},
-            climber::extend,
-            climber::stop,
-            climber::isExtended,
-            climber
+            new FunctionalCommand(
+                () -> {},
+                climber::extendLeft,
+                climber::stop,
+                climber::isLeftExtended
+            ),
+            new FunctionalCommand(
+                () -> {},
+                climber::extendRight,
+                climber::stop,
+                climber::isRightExtended
+            )
         );
+        addRequirements(climber);
     }
 
 }
