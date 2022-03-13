@@ -124,8 +124,10 @@ public class RobotContainer {
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.extendClimberPort).whenPressed(new ExtendClimber(climber));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.retractClimberPort).whenPressed(new RetractClimber(climber));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.extendClimberPort).whenPressed(new ExtendClimber(climber, false));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.retractClimberPort).whenPressed(new RetractClimber(climber, false));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendClimberPort).whileHeld(new ExtendClimber(climber, true));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractClimberPort).whileHeld(new RetractClimber(climber, true));
   }
 
   private void configureButtonBindingsController() {

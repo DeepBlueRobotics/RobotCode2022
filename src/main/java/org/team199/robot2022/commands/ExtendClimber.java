@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 
 public class ExtendClimber extends FunctionalCommand {
 
-    public ExtendClimber(Climber climber) {
+    public ExtendClimber(Climber climber, boolean isSlow) {
         super(
             () -> {},
-            climber::extend,
+            isSlow ? climber::slowExtend : climber::extend,
             climber::stop,
             climber::isExtended,
             climber

@@ -10,10 +10,10 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 
 public class RetractClimber extends FunctionalCommand {
 
-    public RetractClimber(Climber climber) {
+    public RetractClimber(Climber climber, boolean isSlow) {
         super(
             () -> {},
-            climber::retract,
+            isSlow ? climber::slowRetract : climber::retract,
             climber::stop,
             climber::isRetracted,
             climber
