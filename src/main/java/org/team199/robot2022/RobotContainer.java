@@ -170,11 +170,12 @@ public class RobotContainer {
   }
 
   public AutoPath getAutoPath() {
-    for(int i = 0; i < autoSelectors.length; i++) {
-      if(autoSelectors[i].get())
-        return autoPaths[i];
-    }
-    return null;
+    return autoPaths[3];
+    // for(int i = 0; i < autoSelectors.length; i++) {
+    //   if(autoSelectors[i].get())
+    //     return autoPaths[i];
+    // }
+    // return null;
   }
 
   public RobotPath loadPath(String pathName) {
