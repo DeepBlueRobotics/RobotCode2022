@@ -26,13 +26,17 @@ public final class Constants {
 
     public static final class DriveConstants {
 
-        public static final double wheelBase = Units.inchesToMeters(25.0);
-        public static final double trackWidth = Units.inchesToMeters(21.5);
+        public static final double wheelBase = Units.inchesToMeters(20.0);
+        public static final double trackWidth = Units.inchesToMeters(21.0);
         // "swerveRadius" is the distance from the center of the robot to one of the modules
         public static final double swerveRadius = Math.sqrt(Math.pow(wheelBase / 2, 2) + Math.pow(trackWidth / 2, 2));
         // The gearing reduction from the drive motor controller to the wheels
-        // "Fast" gearing for the MK3 Swerve Module is 6.86 : 1
-        public static final double driveGearing = 6.86;
+        // Gearing for the Swerve Modules is 6.75 : 1
+        public static final double driveGearing = 6.75;
+        public static final double driveToRungDist = 0;
+        //TODO : this is not 0, find and set
+        public static final double driveToRungSpeed = 0;
+        //TODO : this is not 0, find and set
 
         public static final double driveModifier = 1;
         public static final double wheelDiameterMeters = Units.inchesToMeters(4.0) * 7.36/7.65 /* empirical correction */;
@@ -51,7 +55,7 @@ public final class Constants {
 
         public static final boolean[] reversed = {false, false, false, false};
         // Determine correct turnZero constants (FL, FR, BL, BR)
-        public static final double[] turnZero = {141.24, -154.69, 173.144, -43.154};
+        public static final double[] turnZero = {-72.861, 47.549, -178.505, 66.885};
 
         // kP, kI, and kD constants for turn motor controllers in the order of front-left, front-right, back-left, back-right.
         // Determine correct turn PID constants
@@ -107,20 +111,28 @@ public final class Constants {
 
     public static final class DrivePorts {
 
-        public static final int driveFrontLeft = 0;
-        public static final int driveFrontRight = 0;
-        public static final int driveBackLeft = 0;
-        public static final int driveBackRight = 0;
+        public static final int driveFrontLeft = 10;
+        public static final int driveFrontRight = 2;
+        public static final int driveBackLeft = 11;
+        public static final int driveBackRight = 17;
 
-        public static final int turnFrontLeft = 0;
-        public static final int turnFrontRight = 0;
-        public static final int turnBackLeft = 0;
-        public static final int turnBackRight = 0;
+        public static final int turnFrontLeft = 9;
+        public static final int turnFrontRight = 1;
+        public static final int turnBackLeft = 12;
+        public static final int turnBackRight = 18;
 
-        public static final int canCoderPortFL = 0;
-        public static final int canCoderPortFR = 0;
-        public static final int canCoderPortBL = 0;
-        public static final int canCoderPortBR = 0;
+        public static final int canCoderPortFL = 1;
+        public static final int canCoderPortFR = 2;
+        public static final int canCoderPortBL = 3;
+        public static final int canCoderPortBR = 4;
+
+        public static final int kShooterMaster = 20;
+        public static final int kShooterSlave = 19;
+        public static final int kShooterTop = 99;
+
+        public static final int kIntakeTop = 3;
+        public static final int kIntakeMiddle = 4;
+        public static final int kIntakeBottom = 5;
 
     }
 
@@ -130,20 +142,24 @@ public final class Constants {
         public static enum StickType {LEFT, RIGHT};
         public static enum StickDirection {X, Y};
 
-        public static ControlType CONTROL_TYPE = ControlType.GAMEPAD;
+        public static ControlType CONTROL_TYPE = ControlType.JOYSTICKS;
         public static final double JOY_THRESH = 0.01;
         public static final class LeftJoy {
             public static final int port = 0;
-
+            public static final int manualAddPort = 1; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
+            public static final int manualSubtractPort = 2;
+            public static final int regurgitatePort = 3;
+            public static final int overridePort = 4;
         }
 
         public static final class RightJoy {
             public static final int port = 1;
+            public static final int shootPort = 2;
 
         }
 
         public static final class Controller {
-            public static final int port = 0;
+            public static final int port = 2;
 
             public static Joystick controller = new Joystick(port);
 
@@ -187,7 +203,10 @@ public final class Constants {
                 }
             }
 
-
+            public static final int midClimberDeploy = LT;
+            public static final int midClimberRetract = LB;
+            public static final int highClimberDeploy = RT;
+            public static final int highClimberRetract = RB;
         }
     }
 
