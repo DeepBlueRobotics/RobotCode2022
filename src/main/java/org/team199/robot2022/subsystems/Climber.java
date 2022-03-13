@@ -29,11 +29,12 @@ public class Climber extends SubsystemBase {
     private static final double extendPosition = 3.88;
     private static final double retractPosition = -0.75;
     private static final double gearing = 9;
-    private static final double kInPerSec = ( (kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60 );
+    private static final double kInPerSec = ((kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60);
 
-    private static final double kRetractSpeed = -( ( kDesiredRetractSpeedInps / kInPerSec )  + ( kVoltsToCounterTorque / 12 ) ); // ~ -0.06151
-    private static final double kExtendSpeed = ( kDesiredExtendSpeedInps / kInPerSec ); // ~0.30261
-    
+    private static final double kRetractSpeed = -((kDesiredRetractSpeedInps / kInPerSec)
+            + (kVoltsToCounterTorque / 12)); // ~ -0.06151
+    private static final double kExtendSpeed = (kDesiredExtendSpeedInps / kInPerSec); // ~0.30261
+
     private static final double kSlowDesiredRetractSpeedInps = 1;
     private static final double kSlowDesiredExtendSpeedInps = 1;
 
@@ -41,8 +42,9 @@ public class Climber extends SubsystemBase {
     // Torque on the motor is Torque / ( gearing = 9 ) = 1
 
     private static final double kSlowVoltsToCounterTorque = (1D / 32) * 12;
-    private static final double kSlowRetractSpeed = -( ( kSlowDesiredRetractSpeedInps / kInPerSec )  + ( kSlowVoltsToCounterTorque / 12 ) ); // ~ -0.06151
-    private static final double kSlowExtendSpeed = ( kSlowDesiredExtendSpeedInps / kInPerSec ); // ~0.30261
+    private static final double kSlowRetractSpeed = -((kSlowDesiredRetractSpeedInps / kInPerSec)
+            + (kSlowVoltsToCounterTorque / 12)); // ~ -0.06151
+    private static final double kSlowExtendSpeed = (kSlowDesiredExtendSpeedInps / kInPerSec); // ~0.30261
 
     private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
     private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
@@ -67,6 +69,16 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("Right Climber Position", getRightPosition());
     }
 
+    public void resetEncodersToExtended() {
+        leftEncoder.setPosition(extendPosition);
+        rightEncoder.setPosition(extendPosition);
+    }
+
+    public void resetEncodersToRetracted() {
+        leftEncoder.setPosition(retractPosition);
+        rightEncoder.setPosition(retractPosition);
+    }
+
     public void extendLeft() {
         left.set(kExtendSpeed);
         SmartDashboard.putString("Left climber is", "Extending");
@@ -86,13 +98,24 @@ public class Climber extends SubsystemBase {
         right.set(kRetractSpeed);
         SmartDashboard.putString("Right climber is", "Retracting");
     }
-    public void slowExtend(){
-      left.set(kSlowExtendSpeed);
-      SmartDashboard.putString("Climber is", "Extending");
+
+    public void slowExtendLeft() {
+        left.set(kSlowExtendSpeed);
+        SmartDashboard.putString("Climber is", "Extending");
     }
-    public void slowRetract(){
-      left.set(kSlowRetractSpeed);
-      SmartDashboard.putString("Climber is", "Extending");
+
+    public void slowExtendRight() {
+        right.set(kSlowExtendSpeed);
+        SmartDashboard.putString("Climber is", "Extending");
+    }
+    public void slowRetractLeft() {
+        left.set(kSlowRetractSpeed);
+        SmartDashboard.putString("Climber is", "Extending");
+    }
+
+    public void slowRetractRight() {
+        right.set(kSlowRetractSpeed);
+        SmartDashboard.putString("Climber is", "Extending");
     }
 
     public void stop() {
@@ -146,6 +169,22 @@ public class Climber extends SubsystemBase {
 
     public boolean isRightRetracted() {
         return getRightPosition() <= retractPosition;
+    }
+
+    public boolean isRightResetExtended() {
+        return getRightPosition() >= 0;
+    }
+
+    public boolean isLeftResetExtended() {
+        return getRightPosition() >= 0;
+    }
+
+    public boolean isRightResetRetracted() {
+        return getRightPosition() <= 0;
+    }
+
+    public boolean isLeftResetRetracted() {
+        return getRightPosition() <= 0;
     }
 
 }

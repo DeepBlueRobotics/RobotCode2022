@@ -11,6 +11,8 @@ import org.team199.robot2022.commands.ExtendClimber;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
 import org.team199.robot2022.commands.PassiveManualIntake;
 import org.team199.robot2022.commands.Regurgitate;
+import org.team199.robot2022.commands.ResetAndExtendClimber;
+import org.team199.robot2022.commands.ResetAndRetractClimber;
 import org.team199.robot2022.commands.RetractClimber;
 import org.team199.robot2022.commands.Shoot;
 import org.team199.robot2022.commands.TeleopDrive;
@@ -120,6 +122,8 @@ public class RobotContainer {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetAndExtendClimberPort).whenPressed(new ResetAndExtendClimber(climber));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetAndRetractClimberPort).whenPressed(new ResetAndRetractClimber(climber));
   }
 
   private void configureButtonBindingsRightJoy() {
