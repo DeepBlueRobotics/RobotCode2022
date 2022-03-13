@@ -15,24 +15,37 @@ import org.team199.robot2022.Constants;
 
 public class Climber extends SubsystemBase {
 
-    private static final double kRetractSpeed = 0.4;
-    private static final double kExtendSpeed = -0.1;
+    private static final double kNEOFreeSpeedRPM = 5680;
+    private static final double kDiameterIn = 1;
+    private static final double kDesiredRetractSpeedInps = 1;
+    private static final double kDesiredExtendSpeedInps = 1;
 
-    private static final boolean leftInverted = true;
+    // Torque is 2 * 9 * 0.5 = 9
+    // Torque on the motor is Torque / ( gearing = 9 ) = 1
 
-    private static final double extendPosition = 6;
-    private static final double retractPosition = -1;
+    private static final double kVoltsToCounterTorque = (1D / 32) * 12;
+
+    private static final boolean leftInverted = false;
+
+    private static final double extendPosition = 3.88;
+    private static final double retractPosition = -0.6;
     private static final double gearing = 9;
+    private static final double kInPerSec = ( (kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60 );
+
+    private static final double kRetractSpeed = -( ( kDesiredRetractSpeedInps / kInPerSec )  + ( kVoltsToCounterTorque / 12 ) ); // ~ -0.06151
+    private static final double kExtendSpeed = ( kDesiredExtendSpeedInps / kInPerSec ); // ~0.30261
 
     private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
     private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
-    private final RelativeEncoder encoder = left.getEncoder();
+    private final RelativeEncoder encoder = right.getEncoder();
 
     public Climber() {
         left.setInverted(leftInverted);
         right.follow(left, true);
 
         encoder.setPositionConversionFactor(1 / gearing);
+        encoder.setPosition(0);
+        SmartDashboard.putString("Climber is", "Stopped");
     }
 
     @Override
@@ -42,20 +55,23 @@ public class Climber extends SubsystemBase {
 
     public void extend() {
         left.set(kExtendSpeed);
-        left.setIdleMode(IdleMode.kCoast);
-        right.setIdleMode(IdleMode.kCoast);
+        SmartDashboard.putString("Climber is", "Extending");
+        // left.setIdleMode(IdleMode.kCoast);
+        // right.setIdleMode(IdleMode.kCoast);
     }
 
     public void retract() {
-        left.setIdleMode(IdleMode.kBrake);
-        right.setIdleMode(IdleMode.kBrake);
+        // left.setIdleMode(IdleMode.kBrake);
+        // right.setIdleMode(IdleMode.kBrake);
         left.set(kRetractSpeed);
+        SmartDashboard.putString("Climber is", "Retracting");
     }
 
     public void stop() {
-        left.setIdleMode(IdleMode.kBrake);
-        right.setIdleMode(IdleMode.kBrake);
+        // left.setIdleMode(IdleMode.kBrake);
+        // right.setIdleMode(IdleMode.kBrake);
         left.set(0);
+        SmartDashboard.putString("Climber is", "Stopped");
     }
 
     public void stop(boolean interrupted) {
