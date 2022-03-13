@@ -150,8 +150,8 @@ public final class Constants {
         public static final class LeftJoy {
             public static final int port = 0;
 
-            public static final int manualAddPort = 2; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
-            public static final int manualSubtractPort = 3;
+            public static final int manualAddPort = 3; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
+            public static final int manualSubtractPort = 2;
             public static final int overridePort = 5;
             public static final int shootSoftOnePort = 6;
             public static final int resetAndExtendClimberPort = 9;
