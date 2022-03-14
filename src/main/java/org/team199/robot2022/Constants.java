@@ -44,7 +44,7 @@ public final class Constants {
 
         public static final double NEOFreeSpeed = 5676 * (2 * Math.PI) / 60;    // radians/s
         // Angular speed to translational speed --> v = omega * r / gearing
-        public static final double maxSpeed = NEOFreeSpeed * (wheelDiameterMeters / 2.0) / driveGearing * 0.7;
+        public static final double maxSpeed = NEOFreeSpeed * (wheelDiameterMeters / 2.0) / driveGearing * 1.0;
         public static final double maxForward = maxSpeed;
         public static final double maxStrafe = maxSpeed;
         // maxRCW is the angular velocity of the robot.
@@ -156,12 +156,15 @@ public final class Constants {
             public static final int shootPort = 2;
             public static final int shootSoftOnePort = 4;
 
+<<<<<<< HEAD
             public static final int runIntakeForwardPort = 5; // TODO: set correct port
             public static final int runIntakeBackwardPort = 3; // TODO: set correct port
             public static final int regurgitatePort = 6;
             public static final int shootLowerHubPort = 7;
 
 
+=======
+>>>>>>> cb2357b7e97bf63e61066024ea248674a7d40475
         }
 
         public static final class Controller {
@@ -213,6 +216,12 @@ public final class Constants {
             public static final int midClimberRetract = LB;
             public static final int highClimberDeploy = RT;
             public static final int highClimberRetract = RB;
+
+            public static final int runIntakeForwardPort = A; // TODO: set correct port
+            public static final int runIntakeBackwardPort = X; // TODO: set correct port
+            public static final int regurgitatePort = B;
+            public static final int dumbModeToggle = Y;
+            public static final int toggleIntakePort = START;
         }
     }
 
