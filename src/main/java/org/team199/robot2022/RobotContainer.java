@@ -128,9 +128,9 @@ public class RobotContainer {
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter, dt));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootSoftOnePort).whenPressed(new Shoot(intakeFeeder, shooter, dt, ShootMode.SOFT));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeForwardPort).whileHeld(new InstantCommand(intakeFeeder::runForward, intakeFeeder));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.runIntakeBackwardPort).whileHeld(new InstantCommand(intakeFeeder::runBackward, intakeFeeder));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.Controller.runIntakeForwardPort).whileHeld(new InstantCommand(intakeFeeder::runForward, intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.Controller.runIntakeBackwardPort).whileHeld(new InstantCommand(intakeFeeder::runBackward, intakeFeeder));
+    new JoystickButton(rightJoy, Constants.OI.Controller.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootLowerHubPort).whenPressed(new Shoot(intakeFeeder, shooter, dt, ShootMode.LOWER));
   }
 

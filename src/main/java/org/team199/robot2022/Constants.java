@@ -155,10 +155,6 @@ public final class Constants {
             public static final int port = 1;
             public static final int shootPort = 2;
             public static final int shootSoftOnePort = 4;
-
-            public static final int runIntakeForwardPort = 5; // TODO: set correct port
-            public static final int runIntakeBackwardPort = 3; // TODO: set correct port
-            public static final int regurgitatePort = 6;
             public static final int shootLowerHubPort = 7;
 
 

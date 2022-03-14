@@ -11,7 +11,6 @@ import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
@@ -43,9 +42,9 @@ public class IntakeFeeder extends SubsystemBase {
   private final SparkVelocityPIDController topPID;
 
   // Constant values that can be tweaked
-  private double topSpeed = .450;
-  private double midSpeed = .450;
-  private double botSpeed = .333;
+  private double topSpeed = 450;
+  private double midSpeed = 450;
+  private double botSpeed = 1100;
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
   private final int minProxmity = 200; // TODO : Accurately determine minProxmity constant
