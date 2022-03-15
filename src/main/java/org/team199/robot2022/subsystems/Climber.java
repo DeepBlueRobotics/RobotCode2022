@@ -78,6 +78,10 @@ public class Climber extends SubsystemBase {
         leftEncoder.setPosition(retractPosition);
         rightEncoder.setPosition(retractPosition);
     }
+    public void resetEncodersToZero() {
+        leftEncoder.setPosition(0);
+        rightEncoder.setPosition(0);
+    }
 
     public void extendLeft() {
         left.set(kExtendSpeed);
