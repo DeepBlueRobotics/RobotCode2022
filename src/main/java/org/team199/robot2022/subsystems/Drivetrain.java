@@ -15,7 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
@@ -25,7 +25,7 @@ import frc.robot.lib.path.SwerveDriveInterface;
 public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     // compassOffset is magnetic north relative to the current heading
     private final double compassOffset;
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP); // Also try kUSB and kUSB2
+    private final AHRS gyro = new AHRS(SerialPort.Port.kUSB1); // Also try kUSB and kUSB2
 
     private SwerveDriveKinematics kinematics = null;
     private SwerveDriveOdometry odometry = null;
@@ -114,7 +114,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         // SmartDashboard.putNumber("Odometry Y",
         // odometry.getPoseMeters().getTranslation().getY());;
         // SmartDashboard.putNumber("Raw gyro angle", gyro.getAngle());
-        // SmartDashboard.putNumber("Robot Heading", getHeading());
+        SmartDashboard.putNumber("Robot Heading", getHeading());
         // SmartDashboard.putNumber("Gyro Compass Heading", gyro.getCompassHeading());
         // SmartDashboard.putNumber("Compass Offset", compassOffset);
         // SmartDashboard.putBoolean("Current Magnetic Field Disturbance",
