@@ -30,10 +30,9 @@ public class Climber extends SubsystemBase {
     private static final double retractPosition = -0.75;
     private static final double gearing = 9;
     private static final double kInPerSec = ((kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60);
-
-    private static final double kRetractSpeed = -((kDesiredRetractSpeedInps / kInPerSec)
+    private static double kRetractSpeed = -((SmartDashboard.getNumber("kDesiredRetractSpeedInps", 1) / kInPerSec)
             + (kVoltsToCounterTorque / 12)); // ~ -0.06151
-    private static final double kExtendSpeed = (kDesiredExtendSpeedInps / kInPerSec); // ~0.30261
+    private static double kExtendSpeed = (SmartDashboard.getNumber("kDesiredExtendSpeedInps", 1) / kInPerSec); // ~0.30261
 
     private static final double kSlowDesiredRetractSpeedInps = 1;
     private static final double kSlowDesiredExtendSpeedInps = 1;
@@ -61,6 +60,8 @@ public class Climber extends SubsystemBase {
         rightEncoder.setPosition(0);
         SmartDashboard.putString("Left climber is", "Stopped");
         SmartDashboard.putString("Right climber is", "Stopped");
+        SmartDashboard.putNumber("kDesiredExtendSpeedInps", kDesiredExtendSpeedInps);
+        SmartDashboard.putNumber("kDesiredRetractSpeedInps", kDesiredRetractSpeedInps);
     }
 
     @Override
