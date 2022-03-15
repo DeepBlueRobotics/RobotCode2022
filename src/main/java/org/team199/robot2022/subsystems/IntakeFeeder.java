@@ -87,9 +87,9 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putString("Add Ball to Queue", "");
     SmartDashboard.putNumber("Remove Ball from Queue", 0);
     SmartDashboard.putNumber("Size", 0);
-    SmartDashboard.putNumber("Top Voltage", topSpeed);
-    SmartDashboard.putNumber("Mid Voltage", midSpeed);
-    SmartDashboard.putNumber("Bot Voltage", botSpeed);
+    SmartDashboard.putNumber("Top Speed", topSpeed);
+    SmartDashboard.putNumber("Mid Speed", midSpeed);
+    SmartDashboard.putNumber("Bot Speed", botSpeed);
 
     bottomPID = new SparkVelocityPIDController("Intake Feeder (Bottom)", bottom, 0, 0, 0, 0, 0.00285, botSpeed, rpmTolerance);
     middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, midSpeed, rpmTolerance);
@@ -105,10 +105,10 @@ public class IntakeFeeder extends SubsystemBase {
   @Override
   public void periodic() {
     // Ocassionally update the team color if the team put the wrong one by accident
-    topSpeed = SmartDashboard.getNumber("Top Voltage", topSpeed);
-    midSpeed = SmartDashboard.getNumber("Mid Voltage", midSpeed);
-    botSpeed = SmartDashboard.getNumber("Bot Voltage", botSpeed);
-    SmartDashboard.putNumber("Bot Speed", bottom.getEncoder().getVelocity());
+    topSpeed = SmartDashboard.getNumber("Top Speed", topSpeed);
+    midSpeed = SmartDashboard.getNumber("Mid Speed", midSpeed);
+    botSpeed = SmartDashboard.getNumber("Bot Speed", botSpeed);
+    //SmartDashboard.putNumber("Bot Speed", bottom.getEncoder().getVelocity());
 
     bottomPID.periodic();
     middlePID.periodic();

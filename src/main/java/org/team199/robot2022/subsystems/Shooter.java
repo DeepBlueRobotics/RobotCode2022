@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 
 import org.team199.robot2022.Constants;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.SpeedController;
 //import java.lang.AutoCloseable;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,6 +33,9 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         master.setSmartCurrentLimit(40);
         slave.setSmartCurrentLimit(40);
+        SmartDashboard.putNumber("kUpperHubTarget", kUpperHubTarget);
+        SmartDashboard.putNumber("kLowerHubTarget", kLowerHubTarget);
+        SmartDashboard.putNumber("kSoftShootTarget", kSoftShootTarget);
 
         slave.follow(master, true);
         master.setInverted(true);
@@ -39,6 +43,9 @@ public class Shooter extends SubsystemBase {
 
     public void periodic()  {
         pidController.periodic();
+        SmartDashboard.getNumber("kUpperHubTarget", kUpperHubTarget);
+        SmartDashboard.getNumber("kLowerHubTarget", kLowerHubTarget);
+        SmartDashboard.getNumber("kSoftShootTarget", kSoftShootTarget);
     }
 
     public void setMainSpeed(ShootMode mode) {
