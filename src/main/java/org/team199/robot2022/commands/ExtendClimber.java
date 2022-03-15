@@ -15,15 +15,15 @@ public class ExtendClimber extends ParallelCommandGroup {
         super(
             new FunctionalCommand(
                 () -> {},
-                climber::extendLeft,
-                climber::stop,
-                climber::isLeftExtended
+                isSlow ? climber::slowExtendLeft : climber::extendLeft,
+                isSlow ? interrupted -> {} : climber::stopLeft,
+                isSlow ? () -> true : climber::isLeftExtended
             ),
             new FunctionalCommand(
                 () -> {},
-                climber::extendRight,
-                climber::stop,
-                climber::isRightExtended
+                isSlow ? climber::slowExtendRight : climber::extendRight,
+                isSlow ? interrupted -> {} : climber::stopRight,
+                isSlow ? () -> true : climber::isRightExtended
             )
         );
         addRequirements(climber);

@@ -15,15 +15,15 @@ public class RetractClimber extends ParallelCommandGroup {
         super(
             new FunctionalCommand(
                 () -> {},
-                climber::retractLeft,
-                climber::stopLeft,
-                climber::isLeftRetracted
+                isSlow ? climber::slowRetractLeft : climber::retractLeft,
+                isSlow ? interrupted -> {} : climber::stopLeft,
+                isSlow ? () -> true : climber::isLeftRetracted
             ),
             new FunctionalCommand(
                 () -> {},
-                climber::retractRight,
-                climber::stopRight,
-                climber::isRightRetracted
+                isSlow ? climber::slowRetractRight : climber::retractRight,
+                isSlow ? interrupted -> {} : climber::stopRight,
+                isSlow ? () -> true : climber::isRightRetracted
             )
         );
         addRequirements(climber);

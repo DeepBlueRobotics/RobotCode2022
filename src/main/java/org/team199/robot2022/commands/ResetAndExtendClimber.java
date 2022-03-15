@@ -10,13 +10,13 @@ public class ResetAndExtendClimber extends ParallelCommandGroup{
             new FunctionalCommand(
                 climber::resetEncodersToRetracted,
                 climber::slowExtendLeft,
-                climber::stop,
+                climber::stopLeft,
                 climber::isLeftResetExtended
             ),
             new FunctionalCommand(
                 climber::resetEncodersToRetracted,
                 climber::slowExtendRight,
-                climber::stop,
+                climber::stopRight,
                 climber::isRightResetExtended
             )
         );
