@@ -24,14 +24,15 @@ public class PassiveAutomaticIntake extends CommandBase {
         // Check for Regurgitation
         if (intakeFeeder.getCargo().size() > 0 && !intakeFeeder.getCargo().peekFirst())
         {
-            // isRegurgitating = true;
-            // intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);
+            isRegurgitating = true;
+            intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);
+            if (!intakeFeeder.isBallThere(Motor.BOTTOM)){
+                intakeFeeder.popFirstBall();
+            }
         } else {
             isRegurgitating = false;
         }
-        if (isRegurgitating && !intakeFeeder.isBallThere(Motor.BOTTOM)){
-            intakeFeeder.popFirstBall();
-        }
+        
         // Automatically intake balls
         if (!isRegurgitating) {
             // TODO : The ball might not reach the destination fast enough if second ball (Potential error when two balls are intaked instantly)
