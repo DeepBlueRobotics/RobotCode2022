@@ -47,8 +47,8 @@ public class IntakeFeeder extends SubsystemBase {
   private double botSpeed = 1100;
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
-  private final int minProxmity = 200; // TODO : Accurately determine minProxmity constant
-  private final int maxProxmity = 160; // TODO : Accurately determine minProxmity constant
+  private int minProxmity = 200; // TODO : Accurately determine minProxmity constant
+  private int maxProxmity = 150; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
@@ -74,7 +74,7 @@ public class IntakeFeeder extends SubsystemBase {
 
   public IntakeFeeder(Robot robot) {
     if (!m_colorSensor.isConnected())
-      SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
+      SmartDashboard.putString("Detected Color", "Disconnected");
     m_colorMatcher.addColorMatch(Color.kBlue);
     m_colorMatcher.addColorMatch(Color.kRed);
 
@@ -90,6 +90,8 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Top Speed", topSpeed);
     SmartDashboard.putNumber("Mid Speed", midSpeed);
     SmartDashboard.putNumber("Bot Speed", botSpeed);
+    SmartDashboard.putNumber("Min Proxmity", minProxmity);
+    SmartDashboard.putNumber("Max Proxmity", maxProxmity);
 
     bottomPID = new SparkVelocityPIDController("Intake Feeder (Bottom)", bottom, 0, 0, 0, 0, 0.00285, botSpeed, rpmTolerance);
     middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, midSpeed, rpmTolerance);
@@ -117,6 +119,8 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Size", cargo.size());
     SmartDashboard.putBoolean("IntakeFeeder Autonomous Control", useAutonomousControl());
     SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
+    minProxmity = (int) SmartDashboard.getNumber("Min Proxmity", minProxmity);
+    maxProxmity = (int) SmartDashboard.getNumber("Max Proxmity", maxProxmity);
 
     addBalls();
     debug();
