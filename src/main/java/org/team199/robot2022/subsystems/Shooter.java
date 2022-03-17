@@ -19,7 +19,7 @@ public class Shooter extends SubsystemBase {
     private static final double kD = 0.005;
 
     // Target speeds
-    private double kUpperHubTarget = 2400;
+    private double kUpperHubTarget = 2500;
     private double kLowerHubTarget = 1000;
     private double kSoftShootTarget = 700;
     //private double kTargetSpeed = 2500;
