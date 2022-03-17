@@ -126,13 +126,15 @@ public final class Constants {
         public static final int canCoderPortBL = 3;
         public static final int canCoderPortBR = 4;
 
-        public static final int kShooterMaster = 20;
-        public static final int kShooterSlave = 19;
-        public static final int kShooterTop = 99;
+        public static final int kShooterMaster = 19;
+        public static final int kShooterSlave = 20;
 
         public static final int kIntakeTop = 3;
         public static final int kIntakeMiddle = 4;
         public static final int kIntakeBottom = 5;
+
+        public static final int kClimberLeft = 15;
+        public static final int kClimberRight = 6;
 
     }
 
@@ -146,16 +148,24 @@ public final class Constants {
         public static final double JOY_THRESH = 0.01;
         public static final class LeftJoy {
             public static final int port = 0;
-            public static final int manualAddPort = 1; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
+
+            public static final int manualAddPort = 3;
             public static final int manualSubtractPort = 2;
-            public static final int regurgitatePort = 3;
-            public static final int overridePort = 4;
+            public static final int overridePort = 5;
+            public static final int shootSoftOnePort = 6;
+            public static final int resetAndExtendClimberPort = 9;
+            public static final int resetAndRetractClimberPort = 8;
+            public static final int resetClimberEncoders = 7;
         }
 
         public static final class RightJoy {
             public static final int port = 1;
-            public static final int shootPort = 2;
 
+            public static final int shootPort = 2;
+            public static final int slowExtendLeftClimberPort = 6;
+            public static final int slowRetractLeftClimberPort = 4;
+            public static final int slowExtendRightClimberPort = 5;
+            public static final int slowRetractRightClimberPort = 3;
         }
 
         public static final class Controller {
@@ -203,10 +213,13 @@ public final class Constants {
                 }
             }
 
-            public static final int midClimberDeploy = LT;
-            public static final int midClimberRetract = LB;
-            public static final int highClimberDeploy = RT;
-            public static final int highClimberRetract = RB;
+            public static final int runIntakeForwardPort = Y; // TODO: set correct port
+            public static final int runIntakeBackwardPort = A; // TODO: set correct port
+            public static final int regurgitatePort = B;
+            public static final int dumbModeToggle = START;
+            public static final int toggleIntakePort = X;
+            public static final int extendClimberPort = RB;
+            public static final int retractClimberPort = LB;
         }
     }
 
