@@ -44,7 +44,7 @@ public final class Constants {
 
         public static final double NEOFreeSpeed = 5676 * (2 * Math.PI) / 60;    // radians/s
         // Angular speed to translational speed --> v = omega * r / gearing
-        public static final double maxSpeed = NEOFreeSpeed * (wheelDiameterMeters / 2.0) / driveGearing * 1.0;
+        public static final double maxSpeed = NEOFreeSpeed * (wheelDiameterMeters / 2.0) / driveGearing * 0.7;
         public static final double maxForward = maxSpeed;
         public static final double maxStrafe = maxSpeed;
         // maxRCW is the angular velocity of the robot.
@@ -94,11 +94,11 @@ public final class Constants {
         //public static final double[] kBackwardAccels = {0, 0, 0, 0};
 
         public static final double autoMaxSpeedMps = 0.35 * 4.4;  // Meters / second
-        public static final double autoMaxAccelMps2 = mu * g * 0.6;  // Meters / seconds^2
+        public static final double autoMaxAccelMps2 = mu * g;  // Meters / seconds^2
         public static final double autoMaxVolt = 10.0;   // For Drivetrain voltage constraint in RobotPath.java
         // The maximum acceleration the robot can achieve is equal to the coefficient of static friction times the gravitational acceleration
         // a = mu * 9.8 m/s^2
-        public static final double autoCentripetalAccel = mu * g * 0.3;
+        public static final double autoCentripetalAccel = mu * g * 2;
 
         // PID values are listed in the order kP, kI, and kD
         public static final double[] xPIDController = {4, 0.0, 0.0};
@@ -149,7 +149,7 @@ public final class Constants {
         public static final class LeftJoy {
             public static final int port = 0;
 
-            public static final int manualAddPort = 3; // TODO: Set correct port for addPort, subtractPort, regurgitatePort, and overridePort
+            public static final int manualAddPort = 3;
             public static final int manualSubtractPort = 2;
             public static final int overridePort = 5;
             public static final int shootSoftOnePort = 6;

@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.lib.path.RobotPath;
+import java.util.Arrays;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -69,11 +70,13 @@ public class RobotContainer {
     intakeFeeder = new IntakeFeeder(robot);
 
     autoPaths = new AutoPath[] {
-      new AutoPath(false, loadPath("Taxi1").reversed(), null, false, false),
-      new AutoPath(false, loadPath("Taxi2").reversed(), null, false, false),
-      new AutoPath(true, loadPath("Path1").reversed(), null, true, true),
-      new AutoPath(true, loadPath("Path2").reversed(), null, true, true),
-      new AutoPath(true, loadPath("Path3").reversed(), null, true, true)
+      new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
+      new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
+      new AutoPath(false, Arrays.asList(loadPath("Taxi1").reversed()), false, false),
+      new AutoPath(false, Arrays.asList(loadPath("Taxi2").reversed()), false, false),
+      new AutoPath(true, Arrays.asList(loadPath("Path1(1)").reversed(), loadPath("Path1(2)").reversed(), loadPath("Path1(3)").reversed(), loadPath("Path1(4)").reversed(), loadPath("Path1(5)").reversed()), true, true),
+      new AutoPath(true, Arrays.asList(loadPath("Path2(1)").reversed(), loadPath("Path2(2)").reversed()), true, true),
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)").reversed(), loadPath("Path3(2)").reversed()), true, true)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 10)];
@@ -153,7 +156,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     AutoPath path = getAutoPath();
-    return path == null ? new InstantCommand() : new Autonomous(path, dt, intakeFeeder, shooter);
+    return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter);
   }
 
   private double getStickValue(Constants.OI.StickType stick, Constants.OI.StickDirection dir) {
@@ -191,6 +194,7 @@ public class RobotContainer {
         return 0;
     }
   }
+
   /**
    * Processes an input from the joystick into a value between -1 and 1
    * 
