@@ -11,19 +11,19 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 public class ExtendClimber extends ParallelCommandGroup {
 
-    public ExtendClimber(Climber climber, boolean isSlow) {
+    public ExtendClimber(Climber climber) {
         super(
             new FunctionalCommand(
                 () -> {},
-                isSlow ? climber::slowExtendLeft : climber::extendLeft,
-                isSlow ? interrupted -> {} : climber::stopLeft,
-                isSlow ? () -> true : climber::isLeftExtended
+                climber::extendLeft,
+                climber::stopLeft,
+                climber::isLeftExtended
             ),
             new FunctionalCommand(
                 () -> {},
-                isSlow ? climber::slowExtendRight : climber::extendRight,
-                isSlow ? interrupted -> {} : climber::stopRight,
-                isSlow ? () -> true : climber::isRightExtended
+                climber::extendRight,
+                climber::stopRight,
+                climber::isRightExtended
             )
         );
         addRequirements(climber);

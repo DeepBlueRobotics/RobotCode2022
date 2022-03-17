@@ -130,10 +130,10 @@ public class RobotContainer {
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.extendClimberPort).whenPressed(new ExtendClimber(climber, false));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.retractClimberPort).whenPressed(new RetractClimber(climber, false));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendClimberPort).whileHeld(new ExtendClimber(climber, true)).whenReleased(new InstantCommand(climber::stop));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractClimberPort).whileHeld(new RetractClimber(climber, true)).whenReleased(new InstantCommand(climber::stop));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).whileHeld(new InstantCommand(climber::slowExtendLeft)).whenReleased(new InstantCommand(climber::stopLeft));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(new InstantCommand(climber::slowRetractLeft)).whenReleased(new InstantCommand(climber::stopLeft));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(new InstantCommand(climber::slowExtendRight)).whenReleased(new InstantCommand(climber::stopRight));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
   }
 
   private void configureButtonBindingsController() {
@@ -142,6 +142,8 @@ public class RobotContainer {
     new JoystickButton(controller, Constants.OI.Controller.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
     new JoystickButton(controller, Constants.OI.Controller.dumbModeToggle).whenPressed(new InstantCommand(intakeFeeder::toggleDumbMode, intakeFeeder));
     new JoystickButton(controller, Constants.OI.Controller.toggleIntakePort).whenPressed(new InstantCommand(intakeFeeder::toggleIntake, intakeFeeder));
+    new JoystickButton(controller, Constants.OI.Controller.extendClimberPort).whenPressed(new ExtendClimber(climber));
+    new JoystickButton(controller, Constants.OI.Controller.retractClimberPort).whenPressed(new RetractClimber(climber));
   }
 
   /**

@@ -11,19 +11,19 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 public class RetractClimber extends ParallelCommandGroup {
 
-    public RetractClimber(Climber climber, boolean isSlow) {
+    public RetractClimber(Climber climber) {
         super(
             new FunctionalCommand(
                 () -> {},
-                isSlow ? climber::slowRetractLeft : climber::retractLeft,
-                isSlow ? interrupted -> {} : climber::stopLeft,
-                isSlow ? () -> true : climber::isLeftRetracted
+                climber::retractLeft,
+                climber::stopLeft,
+                climber::isLeftRetracted
             ),
             new FunctionalCommand(
                 () -> {},
-                isSlow ? climber::slowRetractRight : climber::retractRight,
-                isSlow ? interrupted -> {} : climber::stopRight,
-                isSlow ? () -> true : climber::isRightRetracted
+                climber::retractRight,
+                climber::stopRight,
+                climber::isRightRetracted
             )
         );
         addRequirements(climber);

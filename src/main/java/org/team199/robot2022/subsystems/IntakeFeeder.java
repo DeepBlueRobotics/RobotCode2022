@@ -46,8 +46,8 @@ public class IntakeFeeder extends SubsystemBase {
   private double botSpeed = .333;
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
-  private final int minProxmity = 200; // TODO : Accurately determine minProxmity constant
-  private final int maxProxmity = 160; // TODO : Accurately determine minProxmity constant
+  private final int minProxmity = 170; // TODO : Accurately determine minProxmity constant
+  private final int maxProxmity = 150; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions

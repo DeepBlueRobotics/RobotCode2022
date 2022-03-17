@@ -17,7 +17,7 @@ public class Climber extends SubsystemBase {
     private static final double kNEOFreeSpeedRPM = 5680;
     private static final double kDiameterIn = 1;
     private static final double kDesiredRetractSpeedInps = 1;
-    private static final double kDesiredExtendSpeedInps = 1;
+    private static final double kDesiredExtendSpeedInps = 6;
 
     // Torque is 2 * 9 * 0.5 = 9
     // Torque on the motor is Torque / ( gearing = 9 ) = 1
@@ -26,13 +26,16 @@ public class Climber extends SubsystemBase {
 
     private static final boolean leftInverted = false;
 
-    private static final double extendPosition = 3.88;
-    private static final double retractPosition = -0.75;
+    private static final double extendPositionLeft = 5.317;
+    private static final double extendPositionRight = 5.315;
+
+    private static final double retractPositionLeft = -1.151;
+    private static final double retractPositionRight = -1.172;
     private static final double gearing = 9;
     private static final double kInPerSec = ((kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60);
-    private static double kRetractSpeed = -((SmartDashboard.getNumber("kDesiredRetractSpeedInps", 1) / kInPerSec)
+    private static double kRetractSpeed = -((kDesiredRetractSpeedInps / kInPerSec)
             + (kVoltsToCounterTorque / 12)); // ~ -0.06151
-    private static double kExtendSpeed = (SmartDashboard.getNumber("kDesiredExtendSpeedInps", 1) / kInPerSec); // ~0.30261
+    private static double kExtendSpeed = (kDesiredExtendSpeedInps / kInPerSec); // ~0.30261
 
     private static final double kSlowDesiredRetractSpeedInps = 1;
     private static final double kSlowDesiredExtendSpeedInps = 1;
@@ -71,13 +74,13 @@ public class Climber extends SubsystemBase {
     }
 
     public void resetEncodersToExtended() {
-        leftEncoder.setPosition(extendPosition);
-        rightEncoder.setPosition(extendPosition);
+        leftEncoder.setPosition(extendPositionLeft);
+        rightEncoder.setPosition(extendPositionRight);
     }
 
     public void resetEncodersToRetracted() {
-        leftEncoder.setPosition(retractPosition);
-        rightEncoder.setPosition(retractPosition);
+        leftEncoder.setPosition(retractPositionLeft);
+        rightEncoder.setPosition(retractPositionRight);
     }
     public void resetEncodersToZero() {
         leftEncoder.setPosition(0);
@@ -161,19 +164,19 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isLeftExtended() {
-        return getLeftPosition() >= extendPosition;
+        return getLeftPosition() >= extendPositionLeft;
     }
 
     public boolean isRightExtended() {
-        return getRightPosition() >= extendPosition;
+        return getRightPosition() >= extendPositionRight;
     }
 
     public boolean isLeftRetracted() {
-        return getLeftPosition() <= retractPosition;
+        return getLeftPosition() <= retractPositionLeft;
     }
 
     public boolean isRightRetracted() {
-        return getRightPosition() <= retractPosition;
+        return getRightPosition() <= retractPositionRight;
     }
 
     public boolean isRightResetExtended() {
