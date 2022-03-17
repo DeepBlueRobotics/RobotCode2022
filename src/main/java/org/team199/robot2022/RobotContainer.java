@@ -57,6 +57,8 @@ public class RobotContainer {
   public RobotContainer() {
 
     autoPaths = new AutoPath[] {
+      new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
+      new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi1").reversed()), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi2").reversed()), false, false),
       new AutoPath(true, Arrays.asList(loadPath("Path1(1)").reversed(), loadPath("Path1(2)").reversed(), loadPath("Path1(3)").reversed(), loadPath("Path1(4)").reversed(), loadPath("Path1(5)").reversed()), true, true),
@@ -170,12 +172,11 @@ public class RobotContainer {
   }
 
   public AutoPath getAutoPath() {
-    return autoPaths[3];
-    // for(int i = 0; i < autoSelectors.length; i++) {
-    //   if(autoSelectors[i].get())
-    //     return autoPaths[i];
-    // }
-    // return null;
+    for(int i = 0; i < autoSelectors.length; i++) {
+      if(autoSelectors[i].get())
+        return autoPaths[i];
+    }
+    return null;
   }
 
   public RobotPath loadPath(String pathName) {
