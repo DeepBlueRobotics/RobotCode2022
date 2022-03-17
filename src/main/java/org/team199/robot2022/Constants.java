@@ -156,6 +156,7 @@ public final class Constants {
             public static final int shootSoftOnePort = 6;
             public static final int resetAndExtendClimberPort = 9;
             public static final int resetAndRetractClimberPort = 8;
+            public static final int resetClimberEncoders = 7;
         }
 
         public static final class RightJoy {
