@@ -4,11 +4,13 @@ import com.revrobotics.CANSparkMax;
 
 import org.team199.robot2022.Constants;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.SpeedController;
 //import java.lang.AutoCloseable;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
+import frc.robot.lib.logging.Log;
 
 public class Shooter extends SubsystemBase {
     private static double kV = 0.129 / 60;
@@ -17,8 +19,8 @@ public class Shooter extends SubsystemBase {
     private static final double kI = 0.0;
     private static final double kD = 0.005;
 
-    private double kTargetSpeed = 2500;
-    private final double speedOffsetMain = 100;
+    private double kTargetSpeed = 2800;
+    private final double speedOffsetMain = 0;
 
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
     private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
@@ -31,10 +33,18 @@ public class Shooter extends SubsystemBase {
 
         slave.follow(master, true);
         master.setInverted(true);
+
+        Log.registerDoubleVar("Shooter RPM", () -> pidController.getEncoder().getVelocity());
+        Log.registerDoubleVar("Shooter Current Master", () -> master.getOutputCurrent());
+        Log.registerDoubleVar("Shooter Current Slave", () -> slave.getOutputCurrent());
     }
 
     public void periodic()  {
         pidController.periodic();
+        SmartDashboard.putNumber("Actual Speed: ", master.getEncoder().getVelocity());
+        SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
+        SmartDashboard.putNumber("kTargetSpeed", kTargetSpeed);
+        kTargetSpeed = SmartDashboard.getNumber("kTargetSpeed", kTargetSpeed);
     }
 
     public void setMainSpeed(double mainSpeed) {
@@ -46,7 +56,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isAtTargetSpeed() {
-        return pidController.isAtTargetSpeed();
+        //return pidController.isAtTargetSpeed();
+        return master.getEncoder().getVelocity() > kTargetSpeed - speedOffsetMain;
     }
 
     //if motor velocity is slower than usual, returns a boolean

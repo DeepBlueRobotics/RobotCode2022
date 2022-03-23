@@ -7,12 +7,15 @@ package org.team199.robot2022.commands;
 
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
+import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
 
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
-public class Shoot extends SequentialCommandGroup {
+public class Shoot extends ParallelRaceGroup {
 
   private final IntakeFeeder intakeFeeder;
   private final Shooter shooter;
@@ -21,21 +24,25 @@ public class Shoot extends SequentialCommandGroup {
     /**
      * takes in detectcolor method output from the sensor readings
      */
-    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
 
     addCommands(
-      new WaitUntilCommand(shooter::isAtTargetSpeed),
-      new FunctionalCommand(
-        () -> {},
-        intakeFeeder::runForward,
-        interrupted -> {
-          if(interrupted) return;
-          intakeFeeder.stopRunningFeeder();
-          intakeFeeder.popFirstBall();
-        },
-        () -> !shooter.isAtTargetSpeed(),
-        intakeFeeder
-      )
+      new SequentialCommandGroup(
+        new WaitCommand(1.5),
+        new WaitUntilCommand(shooter::isAtTargetSpeed),
+        new FunctionalCommand(
+          () -> {},
+          () -> {intakeFeeder.invertAndRun(Motor.TOP, false, true);},
+          interrupted -> {
+            if(interrupted) return;
+            intakeFeeder.stopRunningFeeder();
+            intakeFeeder.popFirstBall();
+          },
+          () -> !shooter.isAtTargetSpeed(),
+          intakeFeeder
+        )
+      ),
+      new WaitCommand(5.5)
     );
+    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
   }
 }

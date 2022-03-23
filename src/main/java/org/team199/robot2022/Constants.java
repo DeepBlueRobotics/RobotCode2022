@@ -162,10 +162,10 @@ public final class Constants {
             public static final int port = 1;
 
             public static final int shootPort = 2;
-            public static final int slowExtendLeftClimberPort = 6;
-            public static final int slowRetractLeftClimberPort = 4;
-            public static final int slowExtendRightClimberPort = 5;
-            public static final int slowRetractRightClimberPort = 3;
+            public static final int slowExtendLeftClimberPort = 5;
+            public static final int slowRetractLeftClimberPort = 3;
+            public static final int slowExtendRightClimberPort = 6;
+            public static final int slowRetractRightClimberPort = 4;
         }
 
         public static final class Controller {
@@ -206,10 +206,8 @@ public final class Constants {
                     Y = 4;
                     LB = 5;
                     RB = 6;
-                    LT = 7;
-                    RT = 8;
-                    BACK = 9;
-                    START = 10;
+                    BACK = 7;
+                    START = 8;
                 }
             }
 

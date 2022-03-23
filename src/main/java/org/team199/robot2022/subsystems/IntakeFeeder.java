@@ -89,13 +89,15 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Top Voltage", topSpeed);
     SmartDashboard.putNumber("Mid Voltage", midSpeed);
     SmartDashboard.putNumber("Bot Voltage", botSpeed);
+    SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
 
-    middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, midSpeed, rpmTolerance);
-    topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0, 0, 0, 0, 0.0107, topSpeed, rpmTolerance);
+    middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, 0, rpmTolerance); //TODO: make sure feeder runs later
+    topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0, 0, 0, 0, 0.0107, 0, rpmTolerance); //TODO: make sure feeder runs later
 
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);
 
+    cargo.add(true);
     robot.addPeriodic(this::updateColorSensor, 0.005);
   }
 
@@ -112,7 +114,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     SmartDashboard.putNumber("Size", cargo.size());
     SmartDashboard.putBoolean("IntakeFeeder Autonomous Control", useAutonomousControl());
-    SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
+    dumbMode = SmartDashboard.getBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
 
     addBalls();
     debug();
@@ -157,12 +159,14 @@ public class IntakeFeeder extends SubsystemBase {
 
   public void popFirstBall()
   {
-    cargo.pollLast();
+    if (cargo.size() > 0)
+      cargo.pollLast();
   }
 
   public void popSecondBall()
   {
-    cargo.pollLast();
+    if (cargo.size() > 0)
+      cargo.pollFirst();
   }
 
   public void clearCargo() {
@@ -234,7 +238,7 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   public void runForward() {
-    cargo.clear();
+    //cargo.clear();
     bottom.setInverted(botInverted);
     middle.setInverted(midInverted);
     top.setInverted(topInverted);
@@ -313,6 +317,8 @@ public class IntakeFeeder extends SubsystemBase {
   public void toggleDumbMode()
   {
     dumbMode = !dumbMode;
+    if(!dumbMode) cargo.clear();
+    SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
   }
 
   public boolean isDumbModeEnabled()

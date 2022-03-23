@@ -26,10 +26,10 @@ public class Climber extends SubsystemBase {
 
     private static final boolean leftInverted = false;
 
-    private static final double extendPositionLeft = 5.317;
+    private static final double extendPositionLeft = 4.16;
     private static final double extendPositionRight = 5.315;
 
-    private static final double retractPositionLeft = -1.151;
+    private static final double retractPositionLeft = -0.8;
     private static final double retractPositionRight = -1.172;
     private static final double gearing = 9;
     private static final double kInPerSec = ((kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60);

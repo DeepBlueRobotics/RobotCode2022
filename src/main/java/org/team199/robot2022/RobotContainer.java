@@ -22,6 +22,7 @@ import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -60,6 +61,7 @@ public class RobotContainer {
 
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
+  private final boolean inCompetition = true;
   
 
   /**
@@ -71,32 +73,35 @@ public class RobotContainer {
 
     autoPaths = new AutoPath[] {
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
+      new AutoPath(false, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
-      new AutoPath(false, Arrays.asList(loadPath("Taxi1").reversed()), false, false),
-      new AutoPath(false, Arrays.asList(loadPath("Taxi2").reversed()), false, false),
-      new AutoPath(true, Arrays.asList(loadPath("Path1(1)").reversed(), loadPath("Path1(2)").reversed(), loadPath("Path1(3)").reversed(), loadPath("Path1(4)").reversed(), loadPath("Path1(5)").reversed()), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path2(1)").reversed(), loadPath("Path2(2)").reversed()), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path3(1)").reversed(), loadPath("Path3(2)").reversed()), true, true)
+      new AutoPath(false, Arrays.asList(loadPath("Taxi1")), false, false),
+      new AutoPath(false, Arrays.asList(loadPath("Taxi2")), false, false),
+      new AutoPath(true, Arrays.asList(loadPath("Path1(1)"), loadPath("Path1(2)"), loadPath("Path1(3)"), loadPath("Path1(4)"), loadPath("Path1(5)")), true, true),
+      new AutoPath(true, Arrays.asList(loadPath("Path2(1)"), loadPath("Path2(2)")), true, true),
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true)
     };
 
-    autoSelectors = new DigitalInput[Math.min(autoPaths.length, 10)];
+    autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
     for(int i = 0; i < autoSelectors.length; i++) {
       autoSelectors[i] = new DigitalInput(i);
     }
 
-    if (DriverStation.isJoystickConnected(Constants.OI.LeftJoy.port)) {
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
+
+    if (DriverStation.isJoystickConnected(Constants.OI.LeftJoy.port) || inCompetition) {
       configureButtonBindingsLeftJoy();
     } else {
       System.err.println("ERROR: Dude, you're missing the left joystick.");
     }
 
-    if (DriverStation.isJoystickConnected(Constants.OI.RightJoy.port)) {
+    if (DriverStation.isJoystickConnected(Constants.OI.RightJoy.port) || inCompetition) {
       configureButtonBindingsRightJoy();
     } else {
       System.err.println("ERROR: Dude, you're missing the right joystick.");
     }
 
-    if (DriverStation.isJoystickConnected(Constants.OI.Controller.port)) {
+    if (DriverStation.isJoystickConnected(Constants.OI.Controller.port) || inCompetition) {
       configureButtonBindingsController();
     } else {
       System.err.println("ERROR: Dude, you're missing the controller.");
@@ -156,7 +161,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     AutoPath path = getAutoPath();
-    return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter);
+    return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter, intakeFeeder);
   }
 
   private double getStickValue(Constants.OI.StickType stick, Constants.OI.StickDirection dir) {
@@ -212,7 +217,7 @@ public class RobotContainer {
 
   public AutoPath getAutoPath() {
     for(int i = 0; i < autoSelectors.length; i++) {
-      if(autoSelectors[i].get())
+      if(!autoSelectors[i].get())
         return autoPaths[i];
     }
     return null;
