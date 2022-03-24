@@ -43,16 +43,14 @@ public class Shooter extends SubsystemBase {
         pidController.periodic();
         SmartDashboard.putNumber("Actual Speed: ", master.getEncoder().getVelocity());
         SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
-        SmartDashboard.putNumber("kTargetSpeed", kTargetSpeed);
-        kTargetSpeed = SmartDashboard.getNumber("kTargetSpeed", kTargetSpeed);
     }
 
     public void setMainSpeed(double mainSpeed) {
-        kTargetSpeed = mainSpeed;
+        pidController.setTargetSpeed(mainSpeed);
     }
 
     public double getTargetSpeed() {
-        return kTargetSpeed;
+        return pidController.getTargetSpeed();
     }
 
     public boolean isAtTargetSpeed() {
