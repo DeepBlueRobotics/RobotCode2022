@@ -56,8 +56,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isAtTargetSpeed() {
-        //return pidController.isAtTargetSpeed();
-        return master.getEncoder().getVelocity() > kTargetSpeed - speedOffsetMain;
+        return pidController.isAtTargetSpeed();
     }
 
     //if motor velocity is slower than usual, returns a boolean
