@@ -30,12 +30,13 @@ public class Regurgitate extends CommandBase {
     public void end(boolean interrupted) {
         if(interrupted) return;
         intakeFeeder.stopRunningFeeder();
-        intakeFeeder.popSecondBall();
+        intakeFeeder.popFirstBall();
     }
 
     @Override
     public boolean isFinished() {
-        return intakeFeeder.useAutonomousControl() ? ballDetected && !intakeFeeder.isBallThere(IntakeFeeder.Motor.BOTTOM) : true;
+        //return intakeFeeder.useAutonomousControl() ? ballDetected && !intakeFeeder.isBallThere(IntakeFeeder.Motor.BOTTOM) : true;
+        return ballDetected && !intakeFeeder.isBallThere(IntakeFeeder.Motor.BOTTOM);
     }
 
 }

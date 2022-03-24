@@ -5,11 +5,17 @@
 //Shoots one ball (is called with while pressed AND when pressed)
 package org.team199.robot2022.commands;
 
+import static org.mockito.ArgumentMatchers.nullable;
+
+import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
+import org.team199.robot2022.subsystems.Shooter.ShootMode;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -19,15 +25,79 @@ public class Shoot extends ParallelRaceGroup {
 
   private final IntakeFeeder intakeFeeder;
   private final Shooter shooter;
+  private boolean detectedBall = false;
+  private ShootMode shootMode = null;
+  private Boolean color;
+  
+  /*
+  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter, Drivetrain dt) {
+    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter, this.dt = dt);
+  }
 
-  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter) {
-    /**
-     * takes in detectcolor method output from the sensor readings
-     */
+  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter, Drivetrain dt, ShootMode mode)
+  {
+    addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter, this.dt = dt);
+    shootMode = mode;
+  }
 
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    detectedBall = false;
+  }
+
+  @Override
+  //Shoots a ball forward/backwards depending on ball color
+  public void execute() { // TODO : Determine when to shoot for lower goal
+    if (intakeFeeder.getCargo().isEmpty())
+      return;
+    if (intakeFeeder.getCargo().peekLast()){ //if color is correct
+      // Shoot the ball
+      shooter.setMainSpeed(shootMode == null ? ShootMode.UPPER : shootMode);
+      if (shooter.isAtTargetSpeed()) {
+        intakeFeeder.invertAndRun(Motor.TOP, false, true);
+      }
+    } else {
+      // turn 90 degrees and soft shoot
+      shooter.setMainSpeed(ShootMode.SOFT);
+      if (shooter.isAtTargetSpeed()) {
+        intakeFeeder.invertAndRun(Motor.TOP, false, true);
+      }
+    }
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    if (interrupted) return;
+    intakeFeeder.invertAndRun(Motor.TOP, false, false);
+    intakeFeeder.popSecondBall();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    if (intakeFeeder.getCargo().isEmpty())
+      return true;
+    if (shooter.isBallThere())
+      detectedBall = true;
+    if (detectedBall && !shooter.isBallThere()) {
+      detectedBall = false;
+      return true;
+    }
+    return false;
+  }
+  */
+  
+  public Shoot(IntakeFeeder intakeFeeder, Shooter shooter, ShootMode mode) {
     addCommands(
       new SequentialCommandGroup(
         new WaitCommand(1.5),
+        new InstantCommand(() -> { 
+          color = intakeFeeder.peekFirstBall();
+          shootMode = (color == null || color == false) ? ShootMode.SOFT : mode;
+          shooter.setMainSpeed(shootMode);
+        }),
         new WaitUntilCommand(shooter::isAtTargetSpeed),
         new FunctionalCommand(
           () -> {},
@@ -45,4 +115,6 @@ public class Shoot extends ParallelRaceGroup {
     );
     addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
   }
+  
+  
 }

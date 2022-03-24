@@ -22,16 +22,17 @@ public class PassiveAutomaticIntake extends CommandBase {
         SmartDashboard.putString("IntakeFeeder Default Type", "Automatic");
         intakeFeeder.detectColor();
         // Check for Regurgitation
-        if (intakeFeeder.getCargo().size() > 0 && !intakeFeeder.getCargo().peekLast())
+        if (intakeFeeder.getCargo().size() > 0 && !intakeFeeder.getCargo().peekFirst())
         {
-            // isRegurgitating = true;
-            // intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);
+            isRegurgitating = true;
+            intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);
+            if (!intakeFeeder.isBallThere(Motor.BOTTOM)){
+                intakeFeeder.popFirstBall();
+            }
         } else {
             isRegurgitating = false;
         }
-        if (isRegurgitating && !intakeFeeder.isBallThere(Motor.BOTTOM)){
-            intakeFeeder.popSecondBall();
-        }
+        
         // Automatically intake balls
         if (!isRegurgitating) {
             // TODO : The ball might not reach the destination fast enough if second ball (Potential error when two balls are intaked instantly)
@@ -53,7 +54,7 @@ public class PassiveAutomaticIntake extends CommandBase {
                     break;
                 case 2:
                     SmartDashboard.putBoolean("2 Balls in Motor", true);
-                    if(overrideBottomRoller) {
+                    if(overrideBottomRoller) { // make sure that the ball gets into the roller
                         intakeFeeder.invertAndRun(Motor.BOTTOM, false, true);
                         if(!intakeFeeder.isBallThere(Motor.BOTTOM)) overrideBottomRoller = false;
                     } else

@@ -4,6 +4,12 @@
 
 package org.team199.robot2022;
 
+import org.team199.robot2022.commands.TeleopDrive;
+import org.team199.robot2022.subsystems.Drivetrain;
+import org.team199.robot2022.subsystems.IntakeFeeder;
+import org.team199.robot2022.subsystems.Shooter;
+import org.team199.robot2022.subsystems.Shooter.ShootMode;
+
 import java.io.IOException;
 
 import org.team199.robot2022.commands.Autonomous;
@@ -137,11 +143,13 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsRightJoy() {
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter, ShootMode.UPPER));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).whileHeld(new InstantCommand(climber::slowExtendLeft)).whenReleased(new InstantCommand(climber::stopLeft));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(new InstantCommand(climber::slowRetractLeft)).whenReleased(new InstantCommand(climber::stopLeft));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(new InstantCommand(climber::slowExtendRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootSoftOnePort).whenPressed(new Shoot(intakeFeeder, shooter, ShootMode.SOFT));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootLowerHubPort).whenPressed(new Shoot(intakeFeeder, shooter, ShootMode.LOWER));
   }
 
   private void configureButtonBindingsController() {

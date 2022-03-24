@@ -37,17 +37,18 @@ public class IntakeFeeder extends SubsystemBase {
   private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
   private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop);
 
+  private final SparkVelocityPIDController bottomPID;
   private final SparkVelocityPIDController middlePID;
   private final SparkVelocityPIDController topPID;
 
   // Constant values that can be tweaked
   private double topSpeed = 450;
   private double midSpeed = 450;
-  private double botSpeed = .333;
+  private double botSpeed = 1100;
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
-  private final int minProxmity = 170; // TODO : Accurately determine minProxmity constant
-  private final int maxProxmity = 150; // TODO : Accurately determine minProxmity constant
+  private int minProxmity = 170; // TODO : Accurately determine minProxmity constant
+  private int maxProxmity = 150; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
@@ -73,7 +74,7 @@ public class IntakeFeeder extends SubsystemBase {
 
   public IntakeFeeder(Robot robot) {
     if (!m_colorSensor.isConnected())
-      SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
+      SmartDashboard.putString("Detected Color", "Disconnected");
     m_colorMatcher.addColorMatch(Color.kBlue);
     m_colorMatcher.addColorMatch(Color.kRed);
 
@@ -89,11 +90,18 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Top Voltage", topSpeed);
     SmartDashboard.putNumber("Mid Voltage", midSpeed);
     SmartDashboard.putNumber("Bot Voltage", botSpeed);
+    SmartDashboard.putNumber("Top Speed", topSpeed);
+    SmartDashboard.putNumber("Mid Speed", midSpeed);
+    SmartDashboard.putNumber("Bot Speed", botSpeed);
+    SmartDashboard.putNumber("Min Proxmity", minProxmity);
+    SmartDashboard.putNumber("Max Proxmity", maxProxmity);
     SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
 
+    bottomPID = new SparkVelocityPIDController("Intake Feeder (Bottom)", bottom, 0, 0, 0, 0, 0.00285, 0, rpmTolerance);
     middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, 0, rpmTolerance); //TODO: make sure feeder runs later
     topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0, 0, 0, 0, 0.0107, 0, rpmTolerance); //TODO: make sure feeder runs later
 
+    // No need to set conversion factor for bottom
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);
 
@@ -104,17 +112,20 @@ public class IntakeFeeder extends SubsystemBase {
   @Override
   public void periodic() {
     // Ocassionally update the team color if the team put the wrong one by accident
-    topSpeed = SmartDashboard.getNumber("Top Voltage", topSpeed);
-    midSpeed = SmartDashboard.getNumber("Mid Voltage", midSpeed);
-    botSpeed = SmartDashboard.getNumber("Bot Voltage", botSpeed);
-    SmartDashboard.putNumber("Bot Speed", bottom.getEncoder().getVelocity());
+    topSpeed = SmartDashboard.getNumber("Top Speed", topSpeed);
+    midSpeed = SmartDashboard.getNumber("Mid Speed", midSpeed);
+    botSpeed = SmartDashboard.getNumber("Bot Speed", botSpeed);
+    //SmartDashboard.putNumber("Bot Speed", bottom.getEncoder().getVelocity());
 
+    bottomPID.periodic();
     middlePID.periodic();
     topPID.periodic();
 
     SmartDashboard.putNumber("Size", cargo.size());
     SmartDashboard.putBoolean("IntakeFeeder Autonomous Control", useAutonomousControl());
     dumbMode = SmartDashboard.getBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
+    minProxmity = (int) SmartDashboard.getNumber("Min Proxmity", minProxmity);
+    maxProxmity = (int) SmartDashboard.getNumber("Max Proxmity", maxProxmity);
 
     addBalls();
     debug();
@@ -157,6 +168,13 @@ public class IntakeFeeder extends SubsystemBase {
     return cargo;
   }
 
+  public Boolean peekFirstBall()
+  {
+    if (cargo.size() > 0)
+      return cargo.peekLast();
+    return null;
+  }
+
   public void popFirstBall()
   {
     if (cargo.size() > 0)
@@ -194,7 +212,7 @@ public class IntakeFeeder extends SubsystemBase {
     }
     switch(motor) {
       case BOTTOM:
-        bottom.set(speed);
+        bottomPID.setTargetSpeed(speed);
         break;
       case MIDDLE:
         middlePID.setTargetSpeed(speed);
@@ -230,12 +248,14 @@ public class IntakeFeeder extends SubsystemBase {
    * Will pop from the queue
    * @return the top-most ball (the ball about to be shot)
    */
+  /*
   public boolean eject()
   {
     if (cargo.size() == 0)
       return false;
     return cargo.pollFirst();
   }
+  */
 
   public void runForward() {
     //cargo.clear();
@@ -243,7 +263,7 @@ public class IntakeFeeder extends SubsystemBase {
     middle.setInverted(midInverted);
     top.setInverted(topInverted);
 
-    bottom.set(botSpeed);
+    bottomPID.setTargetSpeed(botSpeed);
     middlePID.setTargetSpeed(midSpeed);
     topPID.setTargetSpeed(topSpeed);
   }
@@ -254,7 +274,7 @@ public class IntakeFeeder extends SubsystemBase {
     middle.setInverted(!midInverted);
     top.setInverted(!topInverted);
 
-    bottom.set(botSpeed);
+    bottomPID.setTargetSpeed(botSpeed);
     middlePID.setTargetSpeed(midSpeed);
     topPID.setTargetSpeed(topSpeed);
   }
@@ -287,7 +307,7 @@ public class IntakeFeeder extends SubsystemBase {
       return;
     }
 
-    cargo.addLast(true);
+    cargo.addFirst(true);
   }
 
   public void manualSub()
@@ -346,7 +366,8 @@ public class IntakeFeeder extends SubsystemBase {
       case TOP:
         return !topPID.isAtTargetSpeed();
       case BOTTOM:
-        return m_colorSensor.isConnected() ? ballDetected : false;
+        return !bottomPID.isAtTargetSpeed();
+        //return m_colorSensor.isConnected() ? ballDetected : false;
       default:
         return false;
     }
@@ -377,9 +398,6 @@ public class IntakeFeeder extends SubsystemBase {
       SmartDashboard.putString("Upper Ball", "None");
     }
 
-    SmartDashboard.putNumber("Current", bottom.getOutputCurrent());
-    SmartDashboard.putNumber("Top current", top.getOutputCurrent());
-    SmartDashboard.putNumber("Middle current", middle.getOutputCurrent());
     SmartDashboard.putString("Current Command (IntakeFeeder)", getCurrentCommand() == null ? "<None>" : getCurrentCommand().getName());
   }
 
@@ -404,7 +422,8 @@ public class IntakeFeeder extends SubsystemBase {
       //REMOVES BALLS
       for (int i = 0; i < numBallsRemoved; i++)
       {
-        cargo.pollFirst();
+        if (cargo.size() > 0)
+          cargo.pollFirst();
       }
 
       //ADDS BALLS
