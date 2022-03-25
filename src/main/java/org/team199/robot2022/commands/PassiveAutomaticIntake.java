@@ -24,14 +24,19 @@ public class PassiveAutomaticIntake extends CommandBase {
         // Check for Regurgitation
         if (intakeFeeder.getCargo().size() > 0 && !intakeFeeder.getCargo().peekFirst())
         {
+            new Regurgitate(intakeFeeder).schedule();
+            
             isRegurgitating = true;
+            /*
             intakeFeeder.invertAndRun(Motor.BOTTOM, true, true);
             if (!intakeFeeder.isBallThere(Motor.BOTTOM)){
                 intakeFeeder.popFirstBall();
             }
-        } else {
+            */
+        } /* else {
             isRegurgitating = false;
         }
+        */
         
         // Automatically intake balls
         if (!isRegurgitating) {
@@ -66,6 +71,7 @@ public class PassiveAutomaticIntake extends CommandBase {
 
         }
         SmartDashboard.putBoolean("Regurgitating", isRegurgitating);
+        isRegurgitating = false;
     }
 
     @Override
