@@ -140,7 +140,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
 
     public double getHeading() {
         double x = gyro.getAngle();
-        if (SmartDashboard.getBoolean("Field Oriented", false) && false) { //TODO: field oriented
+        if (SmartDashboard.getBoolean("Field Oriented", false)) { //TODO: field oriented
             x -= SmartDashboard.getNumber("Field Offset from North (degrees)", 0);
         }
         return Math.IEEEremainder(x * (isGyroReversed ? -1.0 : 1.0), 360);
@@ -190,7 +190,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
      */
     private ChassisSpeeds getChassisSpeeds(double forward, double strafe, double rotation) {
         ChassisSpeeds speeds;
-        if (SmartDashboard.getBoolean("Field Oriented", false) && false) { //TODO: field oriented
+        if (SmartDashboard.getBoolean("Field Oriented", false)) { //TODO: field oriented
             // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()));
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, odometry.getPoseMeters().getRotation().rotateBy(DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(Math.PI) : new Rotation2d()));
         } else {
