@@ -26,8 +26,9 @@ public class Shooter extends SubsystemBase {
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
     private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
     private final SparkVelocityPIDController pidController = new SparkVelocityPIDController("Shooter", master, kP, kI, kD, kS, kV, kTargetSpeed, speedOffsetMain) {
+        @Override
         public void setTargetSpeed(double targetSpeed) {
-            if(!dutyCycleMode) super.setTargetSpeed(targetSpeed);
+            if(!isDutyCycleMode()) super.setTargetSpeed(targetSpeed);
         }
     };
 
@@ -53,9 +54,11 @@ public class Shooter extends SubsystemBase {
         pidController.periodic();
         SmartDashboard.putNumber("Actual Speed: ", master.getEncoder().getVelocity());
         SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
+        SmartDashboard.putString("Shooter: Mode", dutyCycleMode ? "Duty Cycle" : "PID");
+        SmartDashboard.putBoolean("Shooter Disabled", shooterDisabled);
 
         if(dutyCycleMode) {
-            if(!isAtTargetSpeed() && !shooterDisabled) {
+            if(!pidController.isAtTargetSpeed() && !shooterDisabled) {
                 master.set(kV * getTargetSpeed() / 12D);
             } else {
                 master.set(0);
@@ -72,7 +75,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isAtTargetSpeed() {
-        return pidController.isAtTargetSpeed();
+        return dutyCycleMode ? pidController.getEncoder().getVelocity() + 100 >= pidController.getTargetSpeed() : pidController.isAtTargetSpeed();
     }
 
     public void toggleDutyCycleMode() {
@@ -85,6 +88,10 @@ public class Shooter extends SubsystemBase {
 
     public void enableShooter() {
         shooterDisabled = false;
+    }
+
+    public boolean isDutyCycleMode() {
+        return dutyCycleMode;
     }
 
     //if motor velocity is slower than usual, returns a boolean

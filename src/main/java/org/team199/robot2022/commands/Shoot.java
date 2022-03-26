@@ -10,7 +10,6 @@ import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
 
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -28,7 +27,6 @@ public class Shoot extends ParallelRaceGroup {
 
     addCommands(
       new SequentialCommandGroup(
-        new WaitCommand(1.5),
         new WaitUntilCommand(shooter::isAtTargetSpeed),
         new FunctionalCommand(
           shooter::disableShooter,
@@ -41,11 +39,16 @@ public class Shoot extends ParallelRaceGroup {
           () -> !shooter.isAtTargetSpeed(),
           intakeFeeder
         ),
-        new WaitCommand(1),
-        new InstantCommand(shooter::enableShooter)
+        new WaitCommand(1)
       ),
       new WaitCommand(5.5)
     );
     addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+      super.end(interrupted);
+      shooter.enableShooter();
   }
 }
