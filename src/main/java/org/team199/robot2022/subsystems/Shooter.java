@@ -55,7 +55,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
 
         if(dutyCycleMode) {
-            if(isAtTargetSpeed() && !shooterDisabled) {
+            if(!isAtTargetSpeed() && !shooterDisabled) {
                 master.set(1);
             } else {
                 master.set(0);
