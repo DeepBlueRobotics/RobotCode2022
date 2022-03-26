@@ -37,8 +37,8 @@ public class Climber extends SubsystemBase {
             + (kVoltsToCounterTorque / 12)); // ~ -0.06151
     private static double kExtendSpeed = (kDesiredExtendSpeedInps / kInPerSec); // ~0.30261
 
-    private static final double kSlowDesiredRetractSpeedInps = 1;
-    private static final double kSlowDesiredExtendSpeedInps = 1;
+    private static final double kSlowDesiredRetractSpeedInps = 2;
+    private static final double kSlowDesiredExtendSpeedInps = 2;
 
     // Torque is 2 * 9 * 0.5 = 9
     // Torque on the motor is Torque / ( gearing = 9 ) = 1
