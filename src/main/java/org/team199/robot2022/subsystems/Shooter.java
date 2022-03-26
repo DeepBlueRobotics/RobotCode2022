@@ -56,7 +56,7 @@ public class Shooter extends SubsystemBase {
 
         if(dutyCycleMode) {
             if(!isAtTargetSpeed() && !shooterDisabled) {
-                master.set(1);
+                master.set(kV * getTargetSpeed());
             } else {
                 master.set(0);
             }
