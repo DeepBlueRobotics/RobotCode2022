@@ -166,6 +166,7 @@ public final class Constants {
             public static final int slowRetractLeftClimberPort = 3;
             public static final int slowExtendRightClimberPort = 6;
             public static final int slowRetractRightClimberPort = 4;
+            public static final int toggleShooterModePort = 12;
         }
 
         public static final class Controller {
