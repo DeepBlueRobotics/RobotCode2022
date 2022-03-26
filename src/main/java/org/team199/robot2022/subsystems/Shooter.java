@@ -1,6 +1,7 @@
 package org.team199.robot2022.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.team199.robot2022.Constants;
 
@@ -39,6 +40,9 @@ public class Shooter extends SubsystemBase {
 
         slave.follow(master, true);
         master.setInverted(true);
+
+        master.setIdleMode(IdleMode.kCoast);
+        slave.setIdleMode(IdleMode.kCoast);
 
         Log.registerDoubleVar("Shooter RPM", () -> pidController.getEncoder().getVelocity());
         Log.registerDoubleVar("Shooter Current Master", () -> master.getOutputCurrent());
