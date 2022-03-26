@@ -27,10 +27,9 @@ public class Shoot extends ParallelRaceGroup {
 
     addCommands(
       new SequentialCommandGroup(
-        new WaitCommand(1.5),
         new WaitUntilCommand(shooter::isAtTargetSpeed),
         new FunctionalCommand(
-          () -> {},
+          shooter::disableShooter,
           () -> {intakeFeeder.invertAndRun(Motor.TOP, false, true);},
           interrupted -> {
             if(interrupted) return;
@@ -39,10 +38,17 @@ public class Shoot extends ParallelRaceGroup {
           },
           () -> !shooter.isAtTargetSpeed(),
           intakeFeeder
-        )
+        ),
+        new WaitCommand(1)
       ),
       new WaitCommand(5.5)
     );
     addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+      super.end(interrupted);
+      shooter.enableShooter();
   }
 }
