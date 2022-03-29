@@ -34,7 +34,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private SwerveModule modules[];
     private static final boolean isGyroReversed = true;
 
-    public Drivetrain() {
+    public Drivetrain(double initAutoPosDegs) {
         gyro.calibrate();
         while (gyro.isCalibrating()) {
             try {
@@ -50,7 +50,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         SmartDashboard.putBoolean("Magnetic Field Disturbance", gyro.isMagneticDisturbance());
         System.out.println("Magnetometer is calibrated: " + gyro.isMagnetometerCalibrated());
         compassOffset = gyro.getCompassHeading();
-        SmartDashboard.putNumber("Field Offset from North (degrees)", 0);
+        SmartDashboard.putNumber("Field Offset from North (degrees)", initAutoPosDegs);
 
         // Define the corners of the robot relative to the center of the robot using
         // Translation2d objects.
@@ -140,7 +140,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
 
     public double getHeading() {
         double x = gyro.getAngle();
-        if (SmartDashboard.getBoolean("Field Oriented", false) && false) { //TODO: field oriented
+        if (SmartDashboard.getBoolean("Field Oriented", false)) { //TODO: field oriented
             x -= SmartDashboard.getNumber("Field Offset from North (degrees)", 0);
         }
         return Math.IEEEremainder(x * (isGyroReversed ? -1.0 : 1.0), 360);
@@ -190,7 +190,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
      */
     private ChassisSpeeds getChassisSpeeds(double forward, double strafe, double rotation) {
         ChassisSpeeds speeds;
-        if (SmartDashboard.getBoolean("Field Oriented", false) && false) { //TODO: field oriented
+        if (SmartDashboard.getBoolean("Field Oriented", false)) { //TODO: field oriented
             // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()));
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, odometry.getPoseMeters().getRotation().rotateBy(DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(Math.PI) : new Rotation2d()));
         } else {

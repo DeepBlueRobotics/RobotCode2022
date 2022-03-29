@@ -53,7 +53,7 @@ public class RobotContainer {
   public final Joystick controller = Constants.OI.Controller.controller;
 
   public final Climber climber = new Climber();
-  public final Drivetrain dt = new Drivetrain();
+  public final Drivetrain dt = new Drivetrain(getAutoPath().path.get(0).getRotation2d(0).getDegrees());
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
 
