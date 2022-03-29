@@ -96,6 +96,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         modules = new SwerveModule[] { moduleFL, moduleFR, moduleBL, moduleBR };
 
         SmartDashboard.putBoolean("Teleop Face Direction of Travel", false);
+        SmartDashboard.putBoolean("Field Oriented", true);
     }
 
     @Override
