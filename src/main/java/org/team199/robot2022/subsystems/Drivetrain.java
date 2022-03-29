@@ -191,8 +191,8 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private ChassisSpeeds getChassisSpeeds(double forward, double strafe, double rotation) {
         ChassisSpeeds speeds;
         if (SmartDashboard.getBoolean("Field Oriented", false)) { //TODO: field oriented
-            // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()));
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, odometry.getPoseMeters().getRotation().rotateBy(DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(Math.PI) : new Rotation2d()));
+            //speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()));
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()).rotateBy(DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(Math.PI) : new Rotation2d()));
         } else {
             speeds = new ChassisSpeeds(forward, strafe, rotation);
         }
