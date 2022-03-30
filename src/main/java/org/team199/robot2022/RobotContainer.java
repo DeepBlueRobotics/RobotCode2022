@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -53,7 +54,7 @@ public class RobotContainer {
   public final Joystick controller = Constants.OI.Controller.controller;
 
   public final Climber climber = new Climber();
-  public final Drivetrain dt = new Drivetrain(getAutoPath().path.get(0).getRotation2d(0).getDegrees() + 90);
+  public final Drivetrain dt = new Drivetrain();
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
 
@@ -62,22 +63,18 @@ public class RobotContainer {
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
   private final boolean inCompetition = true;
-  
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer(Robot robot) {
-
     intakeFeeder = new IntakeFeeder(robot);
-
     autoPaths = new AutoPath[] {
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi1")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi2")), false, false),
-      new AutoPath(true, Arrays.asList(loadPath("Path1(1)"), loadPath("Path1(2)"), loadPath("Path1(3)"), loadPath("Path1(4)"), loadPath("Path1(5)")), true, true),
+      new AutoPath(false, Arrays.asList(loadPath("Path1(1)")), true, true),
       new AutoPath(true, Arrays.asList(loadPath("Path2(1)"), loadPath("Path2(2)")), true, true),
       new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true)
     };
@@ -86,6 +83,7 @@ public class RobotContainer {
     for(int i = 0; i < autoSelectors.length; i++) {
       autoSelectors[i] = new DigitalInput(i);
     }
+    SmartDashboard.putNumber("Field Offset from North (degrees)", getAutoPath() == null ? 180 : getAutoPath().path.get(0).getRotation2d(0).getDegrees() + 180);
 
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
 

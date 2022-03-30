@@ -6,6 +6,8 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
 import org.team199.robot2022.Constants;
+import org.team199.robot2022.Robot;
+import org.team199.robot2022.RobotContainer;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,7 +36,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private SwerveModule modules[];
     private static final boolean isGyroReversed = true;
 
-    public Drivetrain(double initAutoPosDegs) {
+    public Drivetrain() {
         gyro.calibrate();
         while (gyro.isCalibrating()) {
             try {
@@ -50,8 +52,6 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         SmartDashboard.putBoolean("Magnetic Field Disturbance", gyro.isMagneticDisturbance());
         System.out.println("Magnetometer is calibrated: " + gyro.isMagnetometerCalibrated());
         compassOffset = gyro.getCompassHeading();
-        SmartDashboard.putNumber("Field Offset from North (degrees)", initAutoPosDegs);
-
         // Define the corners of the robot relative to the center of the robot using
         // Translation2d objects.
         // Positive x-values represent moving toward the front of the robot whereas
