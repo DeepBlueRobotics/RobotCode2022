@@ -35,6 +35,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private SwerveDriveOdometry odometry = null;
     private SwerveModule modules[];
     private static final boolean isGyroReversed = true;
+    private static boolean fieldOriented = true;
 
     public Drivetrain() {
         gyro.calibrate();
@@ -97,6 +98,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
 
         SmartDashboard.putBoolean("Teleop Face Direction of Travel", false);
         SmartDashboard.putBoolean("Field Oriented", true);
+        fieldOriented = SmartDashboard.getBoolean("Field Oriented", true);
     }
 
     @Override
@@ -118,6 +120,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         // odometry.getPoseMeters().getTranslation().getY());;
         // SmartDashboard.putNumber("Raw gyro angle", gyro.getAngle());
         SmartDashboard.putNumber("Robot Heading", getHeading());
+        fieldOriented = SmartDashboard.getBoolean("Field Oriented", true);
         // SmartDashboard.putNumber("Gyro Compass Heading", gyro.getCompassHeading());
         // SmartDashboard.putNumber("Compass Offset", compassOffset);
         // SmartDashboard.putBoolean("Current Magnetic Field Disturbance",
@@ -141,7 +144,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
 
     public double getHeading() {
         double x = gyro.getAngle();
-        if (SmartDashboard.getBoolean("Field Oriented", false)) { //TODO: field oriented
+        if (fieldOriented) { //TODO: field oriented
             x -= SmartDashboard.getNumber("Field Offset from North (degrees)", 0);
         }
         return Math.IEEEremainder(x * (isGyroReversed ? -1.0 : 1.0), 360);
@@ -191,11 +194,11 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
      */
     private ChassisSpeeds getChassisSpeeds(double forward, double strafe, double rotation) {
         ChassisSpeeds speeds;
-        if (SmartDashboard.getBoolean("Field Oriented", false)) { //TODO: field oriented
+        if (fieldOriented) { //TODO: field oriented
             //speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()));
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()).rotateBy(DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(Math.PI) : new Rotation2d()));
         } else {
-            speeds = new ChassisSpeeds(forward, strafe, rotation);
+            speeds = new ChassisSpeeds(-1 * forward, -1 * strafe, rotation); //Forward and Strafe are switched to negative so forward is facing intake (robot oreinted specific)
         }
         return speeds;
     }
