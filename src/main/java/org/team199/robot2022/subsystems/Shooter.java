@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.SpeedController;
 //import java.lang.AutoCloseable;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.lib.LinearActuator;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
 import frc.robot.lib.logging.Log;
@@ -26,9 +27,20 @@ public class Shooter extends SubsystemBase {
     //private double kTargetSpeed = 2500;
     public double kTargetSpeed = kUpperHubTarget;
 
+    private double linearActuatorPos = 0;
+    private final LinearActuator linearActuator = new LinearActuator(0, 0, 50);
+
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
     private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
-    private final SparkVelocityPIDController pidController = new SparkVelocityPIDController("Shooter", master, kP, kI, kD, kS, kV, kTargetSpeed, speedOffsetMain);
+    private final SparkVelocityPIDController pidController = new SparkVelocityPIDController("Shooter", master, kP, kI, kD, kS, kV, kTargetSpeed, speedOffsetMain) {
+        @Override
+        public void setTargetSpeed(double targetSpeed) {
+            if(!isDutyCycleMode()) super.setTargetSpeed(targetSpeed);
+        }
+    };
+
+    private boolean dutyCycleMode = false;
+    private boolean shooterDisabled = false;
 
     public Shooter() {
         master.setSmartCurrentLimit(40);
@@ -50,10 +62,22 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Actual Speed: ", master.getEncoder().getVelocity());
         SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
         SmartDashboard.putNumber("kTargetSpeed", kTargetSpeed);
+        SmartDashboard.putString("Shooter: Mode", dutyCycleMode ? "Duty Cycle" : "PID");
+        SmartDashboard.putBoolean("Shooter Disabled", shooterDisabled);
+        linearActuatorPos = SmartDashboard.getNumber("Linear Actuator Position", linearActuatorPos);
+        SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
+        linearActuator.set(linearActuatorPos);
         kTargetSpeed = SmartDashboard.getNumber("kTargetSpeed", kTargetSpeed);
         SmartDashboard.getNumber("kUpperHubTarget", kUpperHubTarget);
         SmartDashboard.getNumber("kLowerHubTarget", kLowerHubTarget);
         SmartDashboard.getNumber("kSoftShootTarget", kSoftShootTarget);
+        if(dutyCycleMode) {
+            if(!pidController.isAtTargetSpeed() && !shooterDisabled) {
+                master.set(kV * getTargetSpeed() / 12D);
+            } else {
+                master.set(0);
+            }
+        }
     }
 
     public void setMainSpeed(ShootMode mode) {
@@ -80,6 +104,22 @@ public class Shooter extends SubsystemBase {
         return master.getEncoder().getVelocity() > kTargetSpeed - speedOffsetMain;
     }
 
+    public void toggleDutyCycleMode() {
+        dutyCycleMode = !dutyCycleMode;
+    }
+
+    public void disableShooter() {
+        shooterDisabled = true;
+    }
+
+    public void enableShooter() {
+        shooterDisabled = false;
+    }
+
+    public boolean isDutyCycleMode() {
+        return dutyCycleMode;
+    }
+    
     //if motor velocity is slower than usual, returns a boolean
     public boolean isBallThere() {
         return !isAtTargetSpeed();
