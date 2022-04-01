@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
+import frc.robot.lib.LinearActuator;
 import frc.robot.lib.logging.Log;
 
 public class Shooter extends SubsystemBase {
@@ -22,6 +23,8 @@ public class Shooter extends SubsystemBase {
 
     private double kTargetSpeed = 2800;
     private final double speedOffsetMain = 0;
+    private double linearActuatorPos = 0;
+    private final LinearActuator linearActuator = new LinearActuator(0, 0, 50);
 
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
     private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
@@ -56,6 +59,9 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
         SmartDashboard.putString("Shooter: Mode", dutyCycleMode ? "Duty Cycle" : "PID");
         SmartDashboard.putBoolean("Shooter Disabled", shooterDisabled);
+        SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
+        linearActuatorPos = SmartDashboard.getNumber("Linear Actuator Position", linearActuatorPos);
+        linearActuator.set(linearActuatorPos);
 
         if(dutyCycleMode) {
             if(!pidController.isAtTargetSpeed() && !shooterDisabled) {
