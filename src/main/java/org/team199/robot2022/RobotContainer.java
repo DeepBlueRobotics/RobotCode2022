@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.lib.path.RobotPath;
 import java.util.Arrays;
 
@@ -124,7 +125,6 @@ public class RobotContainer {
       )
     );
   }
-
   private void configureButtonBindingsLeftJoy() {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
@@ -152,6 +152,10 @@ public class RobotContainer {
     new JoystickButton(controller, Constants.OI.Controller.toggleIntakePort).whenPressed(new InstantCommand(intakeFeeder::toggleIntake, intakeFeeder));
     new JoystickButton(controller, Constants.OI.Controller.extendClimberPort).whenPressed(new ExtendClimber(climber));
     new JoystickButton(controller, Constants.OI.Controller.retractClimberPort).whenPressed(new RetractClimber(climber));
+    new POVButton(controller, 0).whenPressed(new InstantCommand( () ->{shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() + 0.1);}));
+    new POVButton(controller, 180).whenPressed(new InstantCommand( () ->{shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() - 0.1);}));
+    new POVButton(controller, 90).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() + 100);}));
+    new POVButton(controller, 270).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() - 100);}));
   }
 
   /**
@@ -162,6 +166,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     AutoPath path = getAutoPath();
     return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter, intakeFeeder);
+  }
+  private double getPOV(){
+    return controller.getPOV();
   }
 
   private double getStickValue(Constants.OI.StickType stick, Constants.OI.StickDirection dir) {

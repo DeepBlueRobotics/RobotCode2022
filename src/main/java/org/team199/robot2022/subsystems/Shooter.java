@@ -25,6 +25,8 @@ public class Shooter extends SubsystemBase {
     private final double speedOffsetMain = 0;
     private double linearActuatorPos = 0;
     private final LinearActuator linearActuator = new LinearActuator(0, 0, 50);
+    private final double linearActuatorMaxPos = 50;
+    private final double linearActuatorMinPos = 0;
 
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
     private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
@@ -73,7 +75,27 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setMainSpeed(double mainSpeed) {
-        pidController.setTargetSpeed(mainSpeed);
+        if (mainSpeed > 3200){
+            pidController.setTargetSpeed(3200);
+        }else if (mainSpeed < 2300){
+            pidController.setTargetSpeed(2300);
+        }else{
+            pidController.setTargetSpeed(mainSpeed);
+        }
+    }
+
+    public void setLinearActuatorPos(double value){
+        if (value > linearActuatorMaxPos){
+            linearActuatorPos = linearActuatorMaxPos;
+        }else if (value < linearActuatorMinPos){
+            linearActuatorPos = linearActuatorMinPos;
+        }else{
+            linearActuatorPos = value;
+        }
+        SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
+    }
+    public double getLinearActuatorPos(){
+        return linearActuatorPos;
     }
 
     public double getTargetSpeed() {
