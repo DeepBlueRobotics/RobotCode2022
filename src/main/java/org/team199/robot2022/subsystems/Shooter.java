@@ -59,8 +59,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
         SmartDashboard.putString("Shooter: Mode", dutyCycleMode ? "Duty Cycle" : "PID");
         SmartDashboard.putBoolean("Shooter Disabled", shooterDisabled);
-        SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
         linearActuatorPos = SmartDashboard.getNumber("Linear Actuator Position", linearActuatorPos);
+        SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
         linearActuator.set(linearActuatorPos);
 
         if(dutyCycleMode) {
