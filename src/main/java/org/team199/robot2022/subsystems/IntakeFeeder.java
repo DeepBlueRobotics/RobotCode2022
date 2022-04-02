@@ -41,9 +41,10 @@ public class IntakeFeeder extends SubsystemBase {
   private final SparkVelocityPIDController topPID;
 
   // Constant values that can be tweaked
-  private double topSpeed = 450;
-  private double midSpeed = 450;
+  private double topSpeed = 400;
+  private double midSpeed = 400;
   private double botSpeed = .333;
+
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
   private final int minProxmity = 170; // TODO : Accurately determine minProxmity constant
@@ -86,13 +87,13 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putString("Add Ball to Queue", "");
     SmartDashboard.putNumber("Remove Ball from Queue", 0);
     SmartDashboard.putNumber("Size", 0);
-    SmartDashboard.putNumber("Top Voltage", topSpeed);
-    SmartDashboard.putNumber("Mid Voltage", midSpeed);
-    SmartDashboard.putNumber("Bot Voltage", botSpeed);
+    SmartDashboard.putNumber("Top Speed", topSpeed);
+    SmartDashboard.putNumber("Mid Speed", midSpeed);
+    SmartDashboard.putNumber("Bot Speed", botSpeed);
     SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
 
-    middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, 0, rpmTolerance); //TODO: make sure feeder runs later
-    topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0, 0, 0, 0, 0.0107, 0, rpmTolerance); //TODO: make sure feeder runs later
+    middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0.01, 0.001, 0, 0, 0.0106, 0, rpmTolerance); //TODO: make sure feeder runs later
+    topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0.01, 0.001, 0, 0, 0.0107, 0, rpmTolerance); //TODO: make sure feeder runs later
 
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);
@@ -104,10 +105,12 @@ public class IntakeFeeder extends SubsystemBase {
   @Override
   public void periodic() {
     // Ocassionally update the team color if the team put the wrong one by accident
-    topSpeed = SmartDashboard.getNumber("Top Voltage", topSpeed);
-    midSpeed = SmartDashboard.getNumber("Mid Voltage", midSpeed);
-    botSpeed = SmartDashboard.getNumber("Bot Voltage", botSpeed);
-    SmartDashboard.putNumber("Bot Speed", bottom.getEncoder().getVelocity());
+    topSpeed = SmartDashboard.getNumber("Top Speed", topSpeed);
+    midSpeed = SmartDashboard.getNumber("Mid Speed", midSpeed);
+    botSpeed = SmartDashboard.getNumber("Bot Speed", botSpeed);
+    SmartDashboard.putNumber("Top Actual Speed", top.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Mid Actual Speed", middle.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Bot Actual Speed", bottom.getEncoder().getVelocity());
 
     middlePID.periodic();
     topPID.periodic();
