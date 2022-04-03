@@ -53,6 +53,9 @@ public class Climber extends SubsystemBase {
     private final RelativeEncoder leftEncoder = left.getEncoder();
     private final RelativeEncoder rightEncoder = right.getEncoder();
 
+    private boolean keepPosition = true;
+    private double holdTolerance = 0.05;
+
     public Climber() {
         left.setInverted(leftInverted);
         right.setInverted(!leftInverted);
@@ -71,6 +74,23 @@ public class Climber extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Left Climber Position", getLeftPosition());
         SmartDashboard.putNumber("Right Climber Position", getRightPosition());
+        holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
+        SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
+    }
+
+    public void keepZeroed() {
+        if(keepPosition) {
+            if(Math.abs(getLeftPosition()) > holdTolerance) {
+                left.set(Math.signum(getLeftPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
+            } else {
+                left.set(0);
+            }
+            if(Math.abs(getRightPosition()) > holdTolerance) {
+                right.set(Math.signum(getRightPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
+            } else {
+                right.set(0);
+            }
+        }
     }
 
     public void resetEncodersToExtended() {
@@ -90,40 +110,48 @@ public class Climber extends SubsystemBase {
     public void extendLeft() {
         left.set(kExtendSpeed);
         SmartDashboard.putString("Left climber is", "Extending");
+        keepPosition = false;
     }
 
     public void extendRight() {
         right.set(kExtendSpeed);
         SmartDashboard.putString("Right climber is", "Extending");
+        keepPosition = false;
     }
 
     public void retractLeft() {
         left.set(kRetractSpeed);
         SmartDashboard.putString("Left climber is", "Retracting");
+        keepPosition = false;
     }
 
     public void retractRight() {
         right.set(kRetractSpeed);
         SmartDashboard.putString("Right climber is", "Retracting");
+        keepPosition = false;
     }
 
     public void slowExtendLeft() {
         left.set(kSlowExtendSpeed);
         SmartDashboard.putString("Left climber is", "Extending");
+        keepPosition = false;
     }
 
     public void slowExtendRight() {
         right.set(kSlowExtendSpeed);
         SmartDashboard.putString("Right climber is", "Extending");
+        keepPosition = false;
     }
     public void slowRetractLeft() {
         left.set(kSlowRetractSpeed);
         SmartDashboard.putString("Left climber is", "Retracting");
+        keepPosition = false;
     }
 
     public void slowRetractRight() {
         right.set(kSlowRetractSpeed);
         SmartDashboard.putString("Right climber is", "Retracting");
+        keepPosition = false;
     }
 
     public void stop() {
