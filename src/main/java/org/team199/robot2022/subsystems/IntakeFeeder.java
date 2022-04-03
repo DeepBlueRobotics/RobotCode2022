@@ -93,7 +93,7 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
 
     middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, 0, rpmTolerance); //TODO: make sure feeder runs later
-    topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0.01, 0, 0, 0, 0.0107, 0, rpmTolerance); //TODO: make sure feeder runs later
+    topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0, 0, 0, 0, 0.0107, 0, rpmTolerance); //TODO: make sure feeder runs later
 
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);

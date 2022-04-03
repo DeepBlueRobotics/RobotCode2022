@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
     private final double speedOffsetMain = 0;
     private double linearActuatorPos = 0;
     private final LinearActuator linearActuator = new LinearActuator(0, 0, 50);
-    private final double linearActuatorMaxPos = 50;
+    private final double linearActuatorMaxPos = 1;
     private final double linearActuatorMinPos = 0;
 
     private ShotPosition shotPosition = ShotPosition.FENDER;
