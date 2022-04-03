@@ -128,11 +128,11 @@ public class RobotContainer {
   private void configureButtonBindingsLeftJoy() {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetAndExtendClimberPort).whenPressed(new ResetAndExtendClimber(climber));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetAndRetractClimberPort).whenPressed(new ResetAndRetractClimber(climber));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetClimberEncoders). whenPressed(new InstantCommand(climber::resetEncodersToZero));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleDriveMode).whenPressed(new InstantCommand( () -> {SmartDashboard.putBoolean("Field Oriented", SmartDashboard.getBoolean("Field Oriented", true) ? false : true);}));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleLongShot).whenPressed(new InstantCommand(shooter::toggleLongShot));
   }
 
   private void configureButtonBindingsRightJoy() {
@@ -142,6 +142,7 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(new InstantCommand(climber::slowExtendRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
 
   private void configureButtonBindingsController() {
@@ -166,9 +167,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     AutoPath path = getAutoPath();
     return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter, intakeFeeder);
-  }
-  private double getPOV(){
-    return controller.getPOV();
   }
 
   private double getStickValue(Constants.OI.StickType stick, Constants.OI.StickDirection dir) {

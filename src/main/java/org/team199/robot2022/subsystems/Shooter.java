@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
 import frc.robot.lib.LinearActuator;
+import frc.robot.lib.LinearInterpolation;
 import frc.robot.lib.logging.Log;
 
 public class Shooter extends SubsystemBase {
@@ -27,6 +28,16 @@ public class Shooter extends SubsystemBase {
     private final LinearActuator linearActuator = new LinearActuator(0, 0, 50);
     private final double linearActuatorMaxPos = 50;
     private final double linearActuatorMinPos = 0;
+
+    private ShotPosition shotPosition = ShotPosition.FENDER;
+    private double ballPSI = 3;
+    private final double maxMidShotPSI = 2.51;
+    private final LinearInterpolation fenderRPM = new LinearInterpolation("fenderRPMs.csv");
+    private final LinearInterpolation awayFenderRPM = new LinearInterpolation("awayFenderRPMs.csv");
+    private final LinearInterpolation tarmacRPM = new LinearInterpolation("tarmacRPMs.csv");
+    private final LinearInterpolation fenderPos = new LinearInterpolation("fenderPos.csv");
+    private final LinearInterpolation awayFenderPos = new LinearInterpolation("awayFenderPoss.csv");
+    private final LinearInterpolation tarmacPos = new LinearInterpolation("tarmacPoss.csv");
 
     private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
     private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
@@ -50,9 +61,32 @@ public class Shooter extends SubsystemBase {
         master.setIdleMode(IdleMode.kCoast);
         slave.setIdleMode(IdleMode.kCoast);
 
+        SmartDashboard.putNumber("Ball PSI", ballPSI);
+        ballPSI = SmartDashboard.getNumber("Ball PSI", ballPSI);
+        SmartDashboard.putBoolean("Long Shot", shotPosition != ShotPosition.FENDER);
+
         Log.registerDoubleVar("Shooter RPM", () -> pidController.getEncoder().getVelocity());
         Log.registerDoubleVar("Shooter Current Master", () -> master.getOutputCurrent());
         Log.registerDoubleVar("Shooter Current Slave", () -> slave.getOutputCurrent());
+    }
+
+    public void updateFromPSI() {
+        double targetPID = chooseFromPosition(fenderRPM, awayFenderRPM, tarmacRPM).calculate(ballPSI);
+        pidController.setTargetSpeed(targetPID == 0 ? kTargetSpeed : targetPID);
+        SmartDashboard.putNumber("Linear Actuator Position", chooseFromPosition(fenderPos, awayFenderPos, tarmacPos).calculate(ballPSI));
+    }
+
+    public void setShotPosition(ShotPosition pos) {
+        this.shotPosition = pos;
+        updateFromPSI();
+    }
+
+    public void toggleLongShot() {
+        if(shotPosition == ShotPosition.FENDER) {
+            shotPosition = ballPSI <= maxMidShotPSI ? ShotPosition.AWAY_FROM_FENDER : ShotPosition.TARMAC;
+        } else {
+            shotPosition = ShotPosition.FENDER;
+        }
     }
 
     public void periodic()  {
@@ -64,6 +98,8 @@ public class Shooter extends SubsystemBase {
         linearActuatorPos = SmartDashboard.getNumber("Linear Actuator Position", linearActuatorPos);
         SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
         linearActuator.set(linearActuatorPos);
+
+        SmartDashboard.putString("Shot Position", shotPosition.toString());
 
         if(dutyCycleMode) {
             if(!pidController.isAtTargetSpeed() && !shooterDisabled) {
@@ -125,6 +161,24 @@ public class Shooter extends SubsystemBase {
     //if motor velocity is slower than usual, returns a boolean
     public boolean isBallThere() {
         return !isAtTargetSpeed();
+    }
+
+    public <T> T chooseFromPosition(T fender, T awayFender, T tarmac) {
+        switch(shotPosition) {
+            case FENDER:
+                return fender;
+            case AWAY_FROM_FENDER:
+                return awayFender;
+            case TARMAC:
+                return tarmac;
+            default:
+                System.err.println("Unknown case: " + shotPosition + "! Assuming FENDER :/");
+                return fender;
+        }
+    }
+
+    public static enum ShotPosition {
+        FENDER, AWAY_FROM_FENDER, TARMAC;
     }
 
 }

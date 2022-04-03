@@ -151,12 +151,12 @@ public final class Constants {
 
             public static final int manualAddPort = 3;
             public static final int manualSubtractPort = 2;
-            public static final int overridePort = 5;
             public static final int shootSoftOnePort = 6;
             public static final int resetAndExtendClimberPort = 9;
             public static final int resetAndRetractClimberPort = 8;
             public static final int resetClimberEncoders = 7;
             public static final int toggleDriveMode = 4;
+            public static final int toggleLongShot = 5;
         }
 
         public static final class RightJoy {
@@ -167,6 +167,7 @@ public final class Constants {
             public static final int slowRetractLeftClimberPort = 3;
             public static final int slowExtendRightClimberPort = 6;
             public static final int slowRetractRightClimberPort = 4;
+            public static final int overridePort = 10;
             public static final int toggleShooterModePort = 12;
         }
 
