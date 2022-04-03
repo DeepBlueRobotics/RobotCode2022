@@ -31,7 +31,8 @@ public class Shooter extends SubsystemBase {
 
     private ShotPosition shotPosition = ShotPosition.FENDER;
     private double ballPSI = 3;
-    private final double maxMidShotPSI = 2.51;
+    private final double minMidShotPSI = 2.25;
+    private final double maxMidShotPSI = 2.675;
     private final LinearInterpolation fenderRPM = new LinearInterpolation("fenderRPMs.csv");
     private final LinearInterpolation awayFenderRPM = new LinearInterpolation("awayFenderRPMs.csv");
     private final LinearInterpolation tarmacRPM = new LinearInterpolation("tarmacRPMs.csv");
@@ -83,7 +84,7 @@ public class Shooter extends SubsystemBase {
 
     public void toggleLongShot() {
         if(shotPosition == ShotPosition.FENDER) {
-            shotPosition = ballPSI <= maxMidShotPSI ? ShotPosition.AWAY_FROM_FENDER : ShotPosition.TARMAC;
+            shotPosition = ballPSI <= maxMidShotPSI ? ballPSI >= minMidShotPSI ? ShotPosition.AWAY_FROM_FENDER : ShotPosition.FENDER : ShotPosition.TARMAC;
         } else {
             shotPosition = ShotPosition.FENDER;
         }
