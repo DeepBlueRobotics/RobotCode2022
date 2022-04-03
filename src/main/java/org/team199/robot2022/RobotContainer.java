@@ -71,13 +71,13 @@ public class RobotContainer {
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
-      new AutoPath(false, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi1")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi2")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Path1(1)")), true, true),
       new AutoPath(true, Arrays.asList(loadPath("Path2(1)"), loadPath("Path2(2)")), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true)
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true),
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)")), false, true)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
