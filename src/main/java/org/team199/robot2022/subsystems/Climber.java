@@ -213,7 +213,7 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isLeftResetExtended() {
-        return getRightPosition() >= 0;
+        return getLeftPosition() >= 0;
     }
 
     public boolean isRightResetRetracted() {
@@ -221,7 +221,7 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isLeftResetRetracted() {
-        return getRightPosition() <= 0;
+        return getLeftPosition() <= 0;
     }
 
 }
