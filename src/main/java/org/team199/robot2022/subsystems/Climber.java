@@ -77,6 +77,7 @@ public class Climber extends SubsystemBase {
         holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putBoolean("Climber: Keep Zeroed", keepPosition);
+        keepZeroed();
     }
 
     public void keepZeroed() {
