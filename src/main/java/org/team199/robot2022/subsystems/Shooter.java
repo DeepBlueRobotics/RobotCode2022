@@ -26,11 +26,11 @@ public class Shooter extends SubsystemBase {
     private final double speedOffsetMain = 0;
     private double linearActuatorPos = 0;
     private final LinearActuator linearActuator = new LinearActuator(0, 0, 50);
-    private final double linearActuatorMaxPos = 50;
+    private final double linearActuatorMaxPos = 1;
     private final double linearActuatorMinPos = 0;
 
     private ShotPosition shotPosition = ShotPosition.FENDER;
-    private double ballPSI = 3;
+    private double ballPSI = 3.5;
     private final double minMidShotPSI = 2.25;
     private final double maxMidShotPSI = 2.675;
     private final LinearInterpolation fenderRPM = new LinearInterpolation("fenderRPMs.csv");
@@ -62,7 +62,6 @@ public class Shooter extends SubsystemBase {
         master.setIdleMode(IdleMode.kCoast);
         slave.setIdleMode(IdleMode.kCoast);
 
-        SmartDashboard.putNumber("Ball PSI", ballPSI);
         ballPSI = SmartDashboard.getNumber("Ball PSI", ballPSI);
         SmartDashboard.putBoolean("Long Shot", shotPosition != ShotPosition.FENDER);
 
