@@ -43,7 +43,7 @@ public class IntakeFeeder extends SubsystemBase {
   // Constant values that can be tweaked
   private double topSpeed = 400;
   private double midSpeed = 400;
-  private double botSpeed = .333;
+  private double botSpeed = 1.0;
 
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
@@ -111,7 +111,9 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Top Actual Speed", top.getEncoder().getVelocity());
     SmartDashboard.putNumber("Mid Actual Speed", middle.getEncoder().getVelocity());
     SmartDashboard.putNumber("Bot Actual Speed", bottom.getEncoder().getVelocity());
-
+    SmartDashboard.putNumber("Bot Current", bottom.getOutputCurrent());
+    SmartDashboard.putNumber("Bot Temp", bottom.getMotorTemperature());
+    SmartDashboard.putNumber("Bot Applied Voltage", bottom.getAppliedOutput());
     middlePID.periodic();
     topPID.periodic();
 
