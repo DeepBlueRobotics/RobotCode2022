@@ -76,6 +76,7 @@ public class Robot extends TimedRobot {
     robotContainer.dt.resetOdometry();
     robotContainer.getAutonomousCommand().schedule();
     Log.setDataLoggingDisabled(false);
+    robotContainer.initShooterConfig();
   }
 
   /** This function is called periodically during autonomous. */
@@ -91,6 +92,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     robotContainer.dt.brake();
     Log.setDataLoggingDisabled(false);
+    robotContainer.initShooterConfig();
   }
 
   /** This function is called periodically during operator control. */

@@ -161,6 +161,10 @@ public class RobotContainer {
     new POVButton(controller, 270).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() - 100);}));
   }
 
+  public void initShooterConfig() {
+    shooter.updateFromPSI();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
