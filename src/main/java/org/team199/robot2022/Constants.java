@@ -221,6 +221,7 @@ public final class Constants {
             public static final int toggleIntakePort = X;
             public static final int extendClimberPort = RB;
             public static final int retractClimberPort = LB;
+            public static final int resetFieldOriented = BACK;
         }
     }
 
