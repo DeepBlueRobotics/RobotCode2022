@@ -157,6 +157,7 @@ public final class Constants {
             public static final int resetClimberEncoders = 7;
             public static final int toggleDriveMode = 4;
             public static final int toggleLongShot = 5;
+            public static final int resetFieldOriented = 10;
         }
 
         public static final class RightJoy {
