@@ -6,8 +6,6 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
 import org.team199.robot2022.Constants;
-import org.team199.robot2022.Robot;
-import org.team199.robot2022.RobotContainer;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SwerveModule;
+import frc.robot.lib.MotorErrors.TemperatureLimit;
 import frc.robot.lib.path.SwerveDriveInterface;
 
 public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
@@ -72,26 +71,26 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         Supplier<Float> pitchSupplier = () -> gyro.getPitch();
         Supplier<Float> rollSupplier = () -> gyro.getRoll();
         SwerveModule moduleFL = new SwerveModule(Constants.DriveConstants.swerveConfig, SwerveModule.ModuleType.FL,
-                MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveFrontLeft),
-                MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnFrontLeft),
+                MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveFrontLeft, TemperatureLimit.NEO),
+                MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnFrontLeft, TemperatureLimit.NEO),
                 new CANCoder(Constants.DrivePorts.canCoderPortFL), Constants.DriveConstants.driveModifier,
                 Constants.DriveConstants.maxSpeed, 0, pitchSupplier, rollSupplier);
         // Forward-Right
         SwerveModule moduleFR = new SwerveModule(Constants.DriveConstants.swerveConfig, SwerveModule.ModuleType.FR,
-                MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveFrontRight),
-                MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnFrontRight),
+                MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveFrontRight, TemperatureLimit.NEO),
+                MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnFrontRight, TemperatureLimit.NEO),
                 new CANCoder(Constants.DrivePorts.canCoderPortFR), Constants.DriveConstants.driveModifier,
                 Constants.DriveConstants.maxSpeed, 1, pitchSupplier, rollSupplier);
         // Backward-Left
         SwerveModule moduleBL = new SwerveModule(Constants.DriveConstants.swerveConfig, SwerveModule.ModuleType.BL,
-                MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveBackLeft),
-                MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnBackLeft),
+                MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveBackLeft, TemperatureLimit.NEO),
+                MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnBackLeft, TemperatureLimit.NEO),
                 new CANCoder(Constants.DrivePorts.canCoderPortBL), Constants.DriveConstants.driveModifier,
                 Constants.DriveConstants.maxSpeed, 2, pitchSupplier, rollSupplier);
         // Backward-Right
         SwerveModule moduleBR = new SwerveModule(Constants.DriveConstants.swerveConfig, SwerveModule.ModuleType.BR,
-                MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveBackRight),
-                MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnBackRight),
+                MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveBackRight, TemperatureLimit.NEO),
+                MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnBackRight, TemperatureLimit.NEO),
                 new CANCoder(Constants.DrivePorts.canCoderPortBR), Constants.DriveConstants.driveModifier,
                 Constants.DriveConstants.maxSpeed, 3, pitchSupplier, rollSupplier);
         modules = new SwerveModule[] { moduleFL, moduleFR, moduleBL, moduleBR };

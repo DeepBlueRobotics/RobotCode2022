@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
+import frc.robot.lib.MotorErrors.TemperatureLimit;
 import frc.robot.lib.LinearActuator;
 import frc.robot.lib.LinearInterpolation;
 import frc.robot.lib.logging.Log;
@@ -40,8 +41,8 @@ public class Shooter extends SubsystemBase {
     private final LinearInterpolation awayFenderPos = new LinearInterpolation("awayFenderPoss.csv");
     private final LinearInterpolation tarmacPos = new LinearInterpolation("tarmacPoss.csv");
 
-    private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster);
-    private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave);
+    private final CANSparkMax master = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterMaster, TemperatureLimit.NEO);
+    private final CANSparkMax slave = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kShooterSlave, TemperatureLimit.NEO);
     private final SparkVelocityPIDController pidController = new SparkVelocityPIDController("Shooter", master, kP, kI, kD, kS, kV, kTargetSpeed, speedOffsetMain) {
         @Override
         public void setTargetSpeed(double targetSpeed) {

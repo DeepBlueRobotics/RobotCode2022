@@ -7,6 +7,8 @@ package org.team199.robot2022.subsystems;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
+import frc.robot.lib.MotorErrors.TemperatureLimit;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -48,8 +50,8 @@ public class Climber extends SubsystemBase {
             + (kSlowVoltsToCounterTorque / 12)); // ~ -0.06151
     private static final double kSlowExtendSpeed = (kSlowDesiredExtendSpeedInps / kInPerSec); // ~0.30261
 
-    private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
-    private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
+    private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft, TemperatureLimit.NEO);
+    private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight, TemperatureLimit.NEO);
     private final RelativeEncoder leftEncoder = left.getEncoder();
     private final RelativeEncoder rightEncoder = right.getEncoder();
 
