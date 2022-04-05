@@ -61,8 +61,8 @@ public class Shooter extends SubsystemBase {
 
         master.setIdleMode(IdleMode.kCoast);
         slave.setIdleMode(IdleMode.kCoast);
-
-        ballPSI = SmartDashboard.getNumber("Ball PSI", ballPSI);
+        
+        SmartDashboard.putNumber("BallPSI", ballPSI);
         SmartDashboard.putBoolean("Long Shot", shotPosition != ShotPosition.FENDER);
 
         Log.registerDoubleVar("Shooter RPM", () -> pidController.getEncoder().getVelocity());
@@ -98,6 +98,7 @@ public class Shooter extends SubsystemBase {
         linearActuatorPos = SmartDashboard.getNumber("Linear Actuator Position", linearActuatorPos);
         SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
         linearActuator.set(linearActuatorPos);
+        ballPSI = SmartDashboard.getNumber("Ball PSI", ballPSI);
 
         SmartDashboard.putString("Shot Position", shotPosition.toString());
 

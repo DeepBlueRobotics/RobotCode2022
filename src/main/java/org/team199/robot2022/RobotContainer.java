@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -135,8 +137,7 @@ public class RobotContainer {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetClimberEncoders). whenPressed(new InstantCommand(climber::resetEncodersToZero));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleDriveMode).whenPressed(new InstantCommand( () -> {SmartDashboard.putBoolean("Field Oriented", SmartDashboard.getBoolean("Field Oriented", true) ? false : true);}));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleLongShot).whenPressed(new InstantCommand(shooter::toggleLongShot));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetFieldOriented).whenPressed(new InstantCommand(() -> {SmartDashboard.putNumber("Field Offset from North (degrees)", SmartDashboard.getNumber("Field Offset from North (degrees)", 0) + dt.getHeadingDeg());}));
-
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetFieldOriented).whenPressed(new SequentialCommandGroup(new InstantCommand(() -> {SmartDashboard.putBoolean("Field Oriented", true);}), new WaitCommand(0.05), new InstantCommand(() -> {SmartDashboard.putNumber("Field Offset from North (degrees)", SmartDashboard.getNumber("Field Offset from North (degrees)", 0) - dt.getHeadingDeg() + 180);})));
   }
 
   private void configureButtonBindingsRightJoy() {
