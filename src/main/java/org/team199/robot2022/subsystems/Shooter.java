@@ -61,7 +61,8 @@ public class Shooter extends SubsystemBase {
 
         master.setIdleMode(IdleMode.kCoast);
         slave.setIdleMode(IdleMode.kCoast);
-
+        
+        SmartDashboard.putNumber("BallPSI", ballPSI);
         SmartDashboard.putBoolean("Long Shot", shotPosition != ShotPosition.FENDER);
 
         Log.registerDoubleVar("Shooter RPM", () -> pidController.getEncoder().getVelocity());
