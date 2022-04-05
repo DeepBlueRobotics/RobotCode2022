@@ -382,7 +382,7 @@ public class IntakeFeeder extends SubsystemBase {
       SmartDashboard.putString("Upper Ball", "None");
     }
 
-    SmartDashboard.putNumber("Current", bottom.getOutputCurrent());
+    SmartDashboard.putNumber("Bottom Current", bottom.getOutputCurrent());
     SmartDashboard.putNumber("Top current", top.getOutputCurrent());
     SmartDashboard.putNumber("Middle current", middle.getOutputCurrent());
     SmartDashboard.putString("Current Command (IntakeFeeder)", getCurrentCommand() == null ? "<None>" : getCurrentCommand().getName());
