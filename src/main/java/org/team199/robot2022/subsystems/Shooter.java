@@ -36,7 +36,7 @@ public class Shooter extends SubsystemBase {
     private final LinearInterpolation fenderRPM = new LinearInterpolation("fenderRPMs.csv");
     private final LinearInterpolation awayFenderRPM = new LinearInterpolation("awayFenderRPMs.csv");
     private final LinearInterpolation tarmacRPM = new LinearInterpolation("tarmacRPMs.csv");
-    private final LinearInterpolation fenderPos = new LinearInterpolation("fenderPos.csv");
+    private final LinearInterpolation fenderPos = new LinearInterpolation("fenderPoss.csv");
     private final LinearInterpolation awayFenderPos = new LinearInterpolation("awayFenderPoss.csv");
     private final LinearInterpolation tarmacPos = new LinearInterpolation("tarmacPoss.csv");
 
