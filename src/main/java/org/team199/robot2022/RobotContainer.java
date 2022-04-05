@@ -125,7 +125,7 @@ public class RobotContainer {
       )
     );
 
-    //climber.setDefaultCommand(new InstantCommand(climber::keepZeroed, climber).perpetually());
+    // climber.setDefaultCommand(new RunCommand(climber::keepZeroed, climber));
   }
   private void configureButtonBindingsLeftJoy() {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
