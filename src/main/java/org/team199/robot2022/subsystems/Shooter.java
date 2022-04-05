@@ -91,7 +91,6 @@ public class Shooter extends SubsystemBase {
 
     public void periodic()  {
         pidController.periodic();
-        SmartDashboard.putNumber("Actual Speed: ", master.getEncoder().getVelocity());
         SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
         SmartDashboard.putString("Shooter: Mode", dutyCycleMode ? "Duty Cycle" : "PID");
         SmartDashboard.putBoolean("Shooter Disabled", shooterDisabled);
