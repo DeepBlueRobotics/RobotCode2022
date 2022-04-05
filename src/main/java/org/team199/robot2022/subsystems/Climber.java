@@ -77,6 +77,7 @@ public class Climber extends SubsystemBase {
         holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putBoolean("Climber: Keep Zeroed", keepPosition);
+        keepZeroed();
     }
 
     public void keepZeroed() {
@@ -213,7 +214,7 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isLeftResetExtended() {
-        return getRightPosition() >= 0;
+        return getLeftPosition() >= 0;
     }
 
     public boolean isRightResetRetracted() {
@@ -221,7 +222,7 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isLeftResetRetracted() {
-        return getRightPosition() <= 0;
+        return getLeftPosition() <= 0;
     }
 
 }
