@@ -15,6 +15,11 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorSensorV3.ColorSensorMeasurementRate;
+import com.revrobotics.ColorSensorV3.ColorSensorResolution;
+import com.revrobotics.ColorSensorV3.GainFactor;
+import com.revrobotics.ColorSensorV3.ProximitySensorMeasurementRate;
+import com.revrobotics.ColorSensorV3.ProximitySensorResolution;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
@@ -99,8 +104,11 @@ public class IntakeFeeder extends SubsystemBase {
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);
 
+    m_colorSensor.configureColorSensor(ColorSensorResolution.kColorSensorRes16bit, ColorSensorMeasurementRate.kColorRate25ms, GainFactor.kGain3x);
+    m_colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes8bit, ProximitySensorMeasurementRate.kProxRate6ms);
+
     cargo.add(true);
-    robot.addPeriodic(this::updateColorSensor, 0.005);
+    robot.addPeriodic(this::updateColorSensor, 0.003);
   }
 
   @Override
