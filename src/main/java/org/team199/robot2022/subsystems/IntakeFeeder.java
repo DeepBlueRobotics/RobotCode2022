@@ -49,12 +49,12 @@ public class IntakeFeeder extends SubsystemBase {
   // Constant values that can be tweaked
   private double topSpeed = 400;
   private double midSpeed = 400;
-  private double botSpeed = 1.0;
+  private double botSpeed = 0.7;
 
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
-  private final int minProxmity = 170; // TODO : Accurately determine minProxmity constant
-  private final int maxProxmity = 150; // TODO : Accurately determine minProxmity constant
+  private double minProxmity = 21.5; // TODO : Accurately determine minProxmity constant
+  private double maxProxmity = 19.5; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
@@ -78,6 +78,8 @@ public class IntakeFeeder extends SubsystemBase {
   boolean midInverted = true;
   boolean topInverted = false;
 
+  private static double proximityVal = 0;
+
   public IntakeFeeder(Robot robot) {
     if (!m_colorSensor.isConnected())
       SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
@@ -89,7 +91,8 @@ public class IntakeFeeder extends SubsystemBase {
     bottom.setInverted(botInverted);
     middle.setInverted(midInverted);
     top.setInverted(topInverted);
-
+    SmartDashboard.putNumber("Min Proximity", minProxmity);
+    SmartDashboard.putNumber("Max Proximity", maxProxmity);
     SmartDashboard.putString("Add Ball to Queue", "");
     SmartDashboard.putNumber("Remove Ball from Queue", 0);
     SmartDashboard.putNumber("Size", 0);
@@ -123,12 +126,18 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Bot Current", bottom.getOutputCurrent());
     SmartDashboard.putNumber("Bot Temp", bottom.getMotorTemperature());
     SmartDashboard.putNumber("Bot Applied Voltage", bottom.getAppliedOutput());
+    minProxmity = SmartDashboard.getNumber("Min Proximity", minProxmity);
+    maxProxmity = SmartDashboard.getNumber("Max Proximity", maxProxmity);
     middlePID.periodic();
     topPID.periodic();
 
-    SmartDashboard.putNumber("Size", cargo.size());
     SmartDashboard.putBoolean("IntakeFeeder Autonomous Control", useAutonomousControl());
     dumbMode = SmartDashboard.getBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
+
+    SmartDashboard.putString("Detected Color", currentColor.toString());
+    SmartDashboard.putNumber("Size", cargo.size());
+    SmartDashboard.putNumber("Proximity", proximityVal);
+    proximityVal = 0;
 
     addBalls();
     debug();
@@ -153,9 +162,9 @@ public class IntakeFeeder extends SubsystemBase {
     } else {
       currentColor = Alliance.Invalid;
     }
-
-    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
-    SmartDashboard.putString("Detected Color", currentColor.toString());
+    proximityVal = Math.max(proximityVal, proximity);
+    if (!dumbMode || useAutonomousControl())
+      detectColor();
   }
 
   public void toggleIntake() {
@@ -452,7 +461,9 @@ public class IntakeFeeder extends SubsystemBase {
     }
 
     if (ballDetected && !hasDetectedBall) {
-      cargo.addLast(currentColor == teamColor);
+      if (cargo.size() < 2) {
+        cargo.addLast(currentColor == teamColor);
+      }
       hasDetectedBall = true;
     }
     else if (!ballDetected)

@@ -19,7 +19,7 @@ public class Climber extends SubsystemBase {
     private static final double kNEOFreeSpeedRPM = 5680;
     private static final double kDiameterIn = 1;
     private static final double kDesiredRetractSpeedInps = 1;
-    private static final double kDesiredExtendSpeedInps = 6;
+    private static final double kDesiredExtendSpeedInps = 24;
 
     // Torque is 2 * 9 * 0.5 = 9
     // Torque on the motor is Torque / ( gearing = 9 ) = 1
