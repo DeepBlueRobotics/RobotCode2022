@@ -87,6 +87,7 @@ public class Shooter extends SubsystemBase {
         } else {
             shotPosition = ShotPosition.FENDER;
         }
+        updateFromPSI();
     }
 
     public void periodic()  {
