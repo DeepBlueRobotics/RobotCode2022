@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -67,12 +68,15 @@ public class RobotContainer {
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
   private final boolean inCompetition = true;
+
+  private final SendableChooser<AutoPath> autoSelector = new SendableChooser<>();
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer(Robot robot) {
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
+      null,
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi1")), false, false),
@@ -86,7 +90,11 @@ public class RobotContainer {
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
     for(int i = 0; i < autoSelectors.length; i++) {
       autoSelectors[i] = new DigitalInput(i);
+      autoSelector.addOption(Integer.toString(i), autoPaths[i]);
     }
+
+    SmartDashboard.putData("Auto Selector", autoSelector);
+
     SmartDashboard.putNumber("Field Offset from North (degrees)", getAutoPath() == null ? 180 : getAutoPath().path.get(0).getRotation2d(0).getDegrees() + 180);
 
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
@@ -232,10 +240,18 @@ public class RobotContainer {
   }
 
   public AutoPath getAutoPath() {
-    for(int i = 0; i < autoSelectors.length; i++) {
-      if(!autoSelectors[i].get())
-        return autoPaths[i];
+    System.out.println("Choosing Auto Path...");
+    if(!autoSelectors[0].get()) {
+      System.out.println("Using value from SmartDashboard");
+      return autoSelector.getSelected();
     }
+    for(int i = 0; i < autoSelectors.length; i++) {
+      if(!autoSelectors[i].get()) {
+        System.out.println("Using Path: " + i);
+        return autoPaths[i];
+      }
+    }
+    System.out.println("NO JUMPER!!!");
     return null;
   }
 
