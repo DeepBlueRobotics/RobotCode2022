@@ -20,6 +20,7 @@ import org.team199.robot2022.subsystems.Climber;
 import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
+import org.team199.robot2022.subsystems.Shooter.ShotPosition;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -76,10 +77,10 @@ public class RobotContainer {
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi1")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi2")), false, false),
-      new AutoPath(false, Arrays.asList(loadPath("Path1(1)")), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path2(1)"), loadPath("Path2(2)")), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path3(1)")), false, true)
+      new AutoPath(false, Arrays.asList(loadPath("Path1(1)")), true, true, ShotPosition.FENDER, ShotPosition.AWAY_FROM_FENDER),
+      new AutoPath(true, Arrays.asList(loadPath("Path2(1)"), loadPath("Path2(2)")), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true, ShotPosition.TARMAC, ShotPosition.FENDER),
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)")), false, true, ShotPosition.FENDER, ShotPosition.TARMAC)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
