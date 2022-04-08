@@ -18,7 +18,7 @@ public class Autonomous extends SequentialCommandGroup {
 
     public Autonomous(AutoPath path, boolean shootAtStart, boolean shootAtEnd, Drivetrain drivetrain, Shooter shooter, IntakeFeeder intakeFeeder) {
         addRequirements(drivetrain, shooter, intakeFeeder);
-
+        addCommands(new PassiveAutomaticIntake(intakeFeeder));
         if(path.shootAtStart) addCommands(new InstantCommand(() -> shooter.setShotPosition(path.startShotPosition)));
 
         addCommands(

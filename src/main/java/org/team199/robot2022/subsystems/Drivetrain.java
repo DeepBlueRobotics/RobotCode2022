@@ -194,8 +194,8 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private ChassisSpeeds getChassisSpeeds(double forward, double strafe, double rotation) {
         ChassisSpeeds speeds;
         if (fieldOriented) { //TODO: field oriented
-            //speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()));
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()).rotateBy(DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(Math.PI) : new Rotation2d()));
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()).rotateBy(new Rotation2d(Math.PI)));
+            //speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotation, Rotation2d.fromDegrees(getHeading()).rotateBy(DriverStation.getAlliance() == Alliance.Blue ? new Rotation2d(Math.PI) : new Rotation2d()));
         } else {
             speeds = new ChassisSpeeds(-1 * forward, -1 * strafe, rotation); //Forward and Strafe are switched to negative so forward is facing intake (robot oreinted specific)
         }
