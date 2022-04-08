@@ -41,7 +41,7 @@ public class Shoot extends ParallelRaceGroup {
         ),
         new WaitCommand(1)
       ),
-      new WaitCommand(1.5)
+      new WaitCommand(5.5)
     );
     addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
   }
