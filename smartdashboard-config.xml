@@ -1,0 +1,366 @@
+<xml version="1.0">
+<dashboard>
+	<widget field="Climber: Keep Zeroed" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="673" y="512"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.MjpgStreamViewerImpl">
+		<location x="16" y="128"/>
+		<width>432</width>
+		<height>368</height>
+		<property name="MJPG Server URL" value="http://10.1.99.11:5800"/>
+	</static-widget>
+	<widget field="Long Shot" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="928" y="210"/>
+	</widget>
+	<widget field="IntakeFeeder Dumb Mode" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="496" y="240"/>
+	</widget>
+	<widget field="IntakeFeeder Autonomous Control" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="496" y="80"/>
+	</widget>
+	<widget field="isAtTargetSpeed" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="928" y="306"/>
+	</widget>
+	<widget field="Field Oriented" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="944" y="416"/>
+	</widget>
+	<widget field="Lower Ball" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="496" y="208"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Ball PSI" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="928" y="176"/>
+	</widget>
+	<widget field="Current Command (IntakeFeeder)" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="496" y="48"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Shooter: Target Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="928" y="44"/>
+	</widget>
+	<widget field="Shooter Disabled" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="928" y="16"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Linear Actuator Position" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="928" y="108"/>
+	</widget>
+	<widget field="Left Climber Position" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="464" y="448"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Upper Ball" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="496" y="176"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Field Offset from North (degrees)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="944" y="480"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Right climber is" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="672" y="480"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Size" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="496" y="144"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="PDP Voltage" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="19" y="16"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Shooter: Current Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="928" y="76"/>
+		<height>20</height>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Proximity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="496" y="112"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Detected Color" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="496" y="16"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="PDP Current" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="20" y="48"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Shooter RPM" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="928" y="140"/>
+	</widget>
+	<widget field="Shooter: Mode" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="928" y="272"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Shot Position" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="928" y="240"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Right Climber Position" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="672" y="448"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Left climber is" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="464" y="480"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Robot Heading" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="944" y="448"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Bot Actual Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1153" y="604"/>
+	</widget>
+	<widget field="Port 17 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1117" y="617"/>
+	</widget>
+	<widget field="BR angleDiff (deg)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1149" y="584"/>
+	</widget>
+	<widget field="Port 4 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1120" y="593"/>
+	</widget>
+	<widget field="Intake Feeder (Top): P" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1152" y="599"/>
+	</widget>
+	<widget field="Middle current" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1150" y="611"/>
+	</widget>
+	<widget field="BL angleDiff (deg)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1146" y="604"/>
+	</widget>
+	<widget field="Intake Feeder (Top): I" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1152" y="598"/>
+	</widget>
+	<widget field="Port 18 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1103" y="620"/>
+	</widget>
+	<widget field="Intake Feeder (Top): D" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1107" y="611"/>
+	</widget>
+	<widget field="FL Actual Speed (mps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1144" y="622"/>
+	</widget>
+	<widget field="Teleop Face Direction of Travel" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1075" y="605"/>
+	</widget>
+	<widget field="FR current limit (amps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1097" y="620"/>
+	</widget>
+	<widget field="BL Actual Speed (mps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1113" y="610"/>
+	</widget>
+	<widget field="Bot Applied Voltage" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1134" y="611"/>
+	</widget>
+	<widget field="Port 5 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1097" y="619"/>
+	</widget>
+	<widget field="Shooter Current Master" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1169" y="614"/>
+	</widget>
+	<widget field="Shooter: P" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1254" y="616"/>
+	</widget>
+	<widget field="Port 19 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1085" y="611"/>
+	</widget>
+	<widget field="Add Ball to Queue" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1146" y="584"/>
+	</widget>
+	<widget field="limelight_Stream" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1106" y="614"/>
+	</widget>
+	<widget field="Shooter: I" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1098" y="615"/>
+	</widget>
+	<widget field="Intake Feeder (Top): Tolerance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1090" y="609"/>
+	</widget>
+	<widget field="Shooter: D" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1197" y="606"/>
+	</widget>
+	<widget field="BL Desired Speed (mps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1120" y="612"/>
+	</widget>
+	<widget field="FL error (deg)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1107" y="601"/>
+	</widget>
+	<widget field="Bot Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1136" y="619"/>
+	</widget>
+	<widget field="Port 6 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1127" y="608"/>
+	</widget>
+	<widget field="Intake Feeder (Top): Target Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1035" y="617"/>
+	</widget>
+	<widget field="Bot Current" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1212" y="617"/>
+	</widget>
+	<widget field="Intake Feeder (Middle): Target Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1050" y="609"/>
+	</widget>
+	<widget field="Top Actual Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1175" y="605"/>
+	</widget>
+	<widget field="Port 9 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1170" y="585"/>
+	</widget>
+	<widget field="Intake Feeder (Top): Current Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1111" y="601"/>
+	</widget>
+	<widget field="Bot Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1204" y="612"/>
+	</widget>
+	<widget field="Intake Feeder (Middle): P" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1086" y="617"/>
+	</widget>
+	<widget field="FR Desired Speed (mps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1148" y="584"/>
+	</widget>
+	<widget field="Intake Feeder (Middle): I" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1147" y="599"/>
+	</widget>
+	<widget field="Intake Feeder (Middle): D" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1100" y="610"/>
+	</widget>
+	<widget field="BL error (deg)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1151" y="616"/>
+	</widget>
+	<widget field="AntiGravitational accelration" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1095" y="620"/>
+	</widget>
+	<widget field="Intake Feeder (Middle): Tolerance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1069" y="607"/>
+	</widget>
+	<widget field="BL current limit (amps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1126" y="601"/>
+	</widget>
+	<widget field="Mid Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1212" y="586"/>
+	</widget>
+	<widget field="IntakeFeeder Default Type" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="496" y="269"/>
+		<property name="Editable" value="false"/>
+	</widget>
+	<widget field="Port 20 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1147" y="618"/>
+	</widget>
+	<widget field="Port 10 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1165" y="599"/>
+	</widget>
+	<widget field="BR current limit (amps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1153" y="583"/>
+	</widget>
+	<widget field="BR Desired Speed (mps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1167" y="587"/>
+	</widget>
+	<widget field="Port 11 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1138" y="603"/>
+	</widget>
+	<widget field="FR error (deg)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1214" y="592"/>
+	</widget>
+	<widget field="Intake Feeder (Middle): Current Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1024" y="610"/>
+	</widget>
+	<widget field="kDesiredRetractSpeedInps" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1081" y="621"/>
+	</widget>
+	<widget field="Port 12 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1104" y="615"/>
+	</widget>
+	<widget field="Shooter: Tolerance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1137" y="620"/>
+	</widget>
+	<widget field="Shooter Current Slave" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1124" y="613"/>
+	</widget>
+	<widget field="Magnetic Field Disturbance" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1106" y="600"/>
+	</widget>
+	<widget field="FR angleDiff (deg)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1147" y="599"/>
+	</widget>
+	<widget field="Bottom Current" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1198" y="614"/>
+	</widget>
+	<widget field="Climber: Tolerance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1177" y="611"/>
+	</widget>
+	<widget field="FL angleDiff (deg)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1131" y="608"/>
+	</widget>
+	<widget field="Top Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1142" y="611"/>
+	</widget>
+	<widget field="Remove Ball from Queue" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1156" y="602"/>
+	</widget>
+	<widget field="Port 1 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1142" y="604"/>
+	</widget>
+	<widget field="limelight_Interface" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1154" y="594"/>
+	</widget>
+	<widget field="Port 15 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1110" y="608"/>
+	</widget>
+	<widget field="FL Desired Speed (mps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1136" y="621"/>
+	</widget>
+	<widget field="BR error (deg)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1167" y="626"/>
+	</widget>
+	<widget field="kDesiredExtendSpeedInps" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1156" y="599"/>
+	</widget>
+	<widget field="Top current" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1130" y="597"/>
+	</widget>
+	<widget field="limelight_PipelineName" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1134" y="601"/>
+	</widget>
+	<widget field="Port 2 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1129" y="593"/>
+	</widget>
+	<widget field="2 Balls in Motor" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1129" y="602"/>
+	</widget>
+	<widget field="Mid Actual Speed" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1123" y="599"/>
+	</widget>
+	<widget field="FR Actual Speed (mps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1141" y="595"/>
+	</widget>
+	<widget field="BR Actual Speed (mps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1140" y="597"/>
+	</widget>
+	<widget field="Regurgitating" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1160" y="604"/>
+	</widget>
+	<widget field="FL current limit (amps)" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1096" y="602"/>
+	</widget>
+	<widget field="Port 3 Spark Max Temp" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1116" y="611"/>
+	</widget>
+	<widget field="Max Proximity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1166" y="614"/>
+	</widget>
+	<widget field="Min Proximity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1198" y="598"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.MjpgStreamViewerImpl">
+		<location x="20" y="118"/>
+		<width>432</width>
+		<height>368</height>
+		<property name="MJPG Server URL" value="http://10.1.99.11:5800"/>
+	</static-widget>
+</dashboard>
+<live-window>
+</live-window>
+	<hidden field="BallPSI"/>
+</xml>

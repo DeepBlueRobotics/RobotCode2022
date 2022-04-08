@@ -9,11 +9,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
+import frc.robot.lib.MotorErrors.TemperatureLimit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorSensorV3.ColorSensorMeasurementRate;
+import com.revrobotics.ColorSensorV3.ColorSensorResolution;
+import com.revrobotics.ColorSensorV3.GainFactor;
+import com.revrobotics.ColorSensorV3.ProximitySensorMeasurementRate;
+import com.revrobotics.ColorSensorV3.ProximitySensorResolution;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
@@ -33,9 +39,9 @@ public class IntakeFeeder extends SubsystemBase {
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom); //TODO: set ports for motors
-  private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle);
-  private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop);
+  private final CANSparkMax bottom = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeBottom, TemperatureLimit.NEO); //TODO: set ports for motors
+  private final CANSparkMax middle = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeMiddle, TemperatureLimit.NEO_550);
+  private final CANSparkMax top = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kIntakeTop, TemperatureLimit.NEO_550);
 
   private final SparkVelocityPIDController middlePID;
   private final SparkVelocityPIDController topPID;
@@ -43,12 +49,12 @@ public class IntakeFeeder extends SubsystemBase {
   // Constant values that can be tweaked
   private double topSpeed = 400;
   private double midSpeed = 400;
-  private double botSpeed = 1.0;
+  private double botSpeed = 0.7;
 
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
-  private final int minProxmity = 170; // TODO : Accurately determine minProxmity constant
-  private final int maxProxmity = 150; // TODO : Accurately determine minProxmity constant
+  private double minProxmity = 21.5; // TODO : Accurately determine minProxmity constant
+  private double maxProxmity = 19.5; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
@@ -72,6 +78,8 @@ public class IntakeFeeder extends SubsystemBase {
   boolean midInverted = true;
   boolean topInverted = false;
 
+  private static double proximityVal = 0;
+
   public IntakeFeeder(Robot robot) {
     if (!m_colorSensor.isConnected())
       SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
@@ -83,7 +91,8 @@ public class IntakeFeeder extends SubsystemBase {
     bottom.setInverted(botInverted);
     middle.setInverted(midInverted);
     top.setInverted(topInverted);
-
+    SmartDashboard.putNumber("Min Proximity", minProxmity);
+    SmartDashboard.putNumber("Max Proximity", maxProxmity);
     SmartDashboard.putString("Add Ball to Queue", "");
     SmartDashboard.putNumber("Remove Ball from Queue", 0);
     SmartDashboard.putNumber("Size", 0);
@@ -98,8 +107,11 @@ public class IntakeFeeder extends SubsystemBase {
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);
 
+    m_colorSensor.configureColorSensor(ColorSensorResolution.kColorSensorRes16bit, ColorSensorMeasurementRate.kColorRate25ms, GainFactor.kGain3x);
+    m_colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes8bit, ProximitySensorMeasurementRate.kProxRate6ms);
+
     cargo.add(true);
-    robot.addPeriodic(this::updateColorSensor, 0.005);
+    robot.addPeriodic(this::updateColorSensor, 0.003);
   }
 
   @Override
@@ -114,12 +126,18 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Bot Current", bottom.getOutputCurrent());
     SmartDashboard.putNumber("Bot Temp", bottom.getMotorTemperature());
     SmartDashboard.putNumber("Bot Applied Voltage", bottom.getAppliedOutput());
+    minProxmity = SmartDashboard.getNumber("Min Proximity", minProxmity);
+    maxProxmity = SmartDashboard.getNumber("Max Proximity", maxProxmity);
     middlePID.periodic();
     topPID.periodic();
 
-    SmartDashboard.putNumber("Size", cargo.size());
     SmartDashboard.putBoolean("IntakeFeeder Autonomous Control", useAutonomousControl());
     dumbMode = SmartDashboard.getBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
+
+    SmartDashboard.putString("Detected Color", currentColor.toString());
+    SmartDashboard.putNumber("Size", cargo.size());
+    SmartDashboard.putNumber("Proximity", proximityVal);
+    proximityVal = 0;
 
     addBalls();
     debug();
@@ -144,9 +162,9 @@ public class IntakeFeeder extends SubsystemBase {
     } else {
       currentColor = Alliance.Invalid;
     }
-
-    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
-    SmartDashboard.putString("Detected Color", currentColor.toString());
+    proximityVal = Math.max(proximityVal, proximity);
+    if (!dumbMode || useAutonomousControl())
+      detectColor();
   }
 
   public void toggleIntake() {
@@ -382,7 +400,7 @@ public class IntakeFeeder extends SubsystemBase {
       SmartDashboard.putString("Upper Ball", "None");
     }
 
-    SmartDashboard.putNumber("Current", bottom.getOutputCurrent());
+    SmartDashboard.putNumber("Bottom Current", bottom.getOutputCurrent());
     SmartDashboard.putNumber("Top current", top.getOutputCurrent());
     SmartDashboard.putNumber("Middle current", middle.getOutputCurrent());
     SmartDashboard.putString("Current Command (IntakeFeeder)", getCurrentCommand() == null ? "<None>" : getCurrentCommand().getName());
@@ -443,7 +461,9 @@ public class IntakeFeeder extends SubsystemBase {
     }
 
     if (ballDetected && !hasDetectedBall) {
-      cargo.addLast(currentColor == teamColor);
+      if (cargo.size() < 2) {
+        cargo.addLast(currentColor == teamColor);
+      }
       hasDetectedBall = true;
     }
     else if (!ballDetected)

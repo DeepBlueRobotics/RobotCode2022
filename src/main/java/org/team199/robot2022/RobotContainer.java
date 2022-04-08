@@ -20,6 +20,7 @@ import org.team199.robot2022.subsystems.Climber;
 import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
+import org.team199.robot2022.subsystems.Shooter.ShotPosition;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -27,11 +28,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -64,26 +68,33 @@ public class RobotContainer {
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
   private final boolean inCompetition = true;
+
+  private final SendableChooser<AutoPath> autoSelector = new SendableChooser<>();
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer(Robot robot) {
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
+      null,
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi1")), false, false),
       new AutoPath(false, Arrays.asList(loadPath("Taxi2")), false, false),
-      new AutoPath(false, Arrays.asList(loadPath("Path1(1)")), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path2(1)"), loadPath("Path2(2)")), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true),
-      new AutoPath(true, Arrays.asList(loadPath("Path3(1)")), false, true)
+      new AutoPath(false, Arrays.asList(loadPath("Path1(1)")), true, true, ShotPosition.FENDER, ShotPosition.AWAY_FROM_FENDER),
+      new AutoPath(true, Arrays.asList(loadPath("Path2(1)"), loadPath("Path2(2)")), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true, ShotPosition.TARMAC, ShotPosition.FENDER),
+      new AutoPath(true, Arrays.asList(loadPath("Path3(1)")), false, true, ShotPosition.FENDER, ShotPosition.TARMAC)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
     for(int i = 0; i < autoSelectors.length; i++) {
       autoSelectors[i] = new DigitalInput(i);
+      autoSelector.addOption(Integer.toString(i), autoPaths[i]);
     }
+
+    SmartDashboard.putData("Auto Selector", autoSelector);
+
     SmartDashboard.putNumber("Field Offset from North (degrees)", getAutoPath() == null ? 180 : getAutoPath().path.get(0).getRotation2d(0).getDegrees() + 180);
 
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
@@ -125,7 +136,7 @@ public class RobotContainer {
       )
     );
 
-    //climber.setDefaultCommand(new InstantCommand(climber::keepZeroed, climber).perpetually());
+    // climber.setDefaultCommand(new RunCommand(climber::keepZeroed, climber));
   }
   private void configureButtonBindingsLeftJoy() {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
@@ -135,6 +146,7 @@ public class RobotContainer {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetClimberEncoders). whenPressed(new InstantCommand(climber::resetEncodersToZero));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleDriveMode).whenPressed(new InstantCommand( () -> {SmartDashboard.putBoolean("Field Oriented", SmartDashboard.getBoolean("Field Oriented", true) ? false : true);}));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleLongShot).whenPressed(new InstantCommand(shooter::toggleLongShot));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetFieldOriented).whenPressed(new SequentialCommandGroup(new InstantCommand(() -> {SmartDashboard.putBoolean("Field Oriented", true);}), new WaitCommand(0.05), new InstantCommand(() -> {SmartDashboard.putNumber("Field Offset from North (degrees)", SmartDashboard.getNumber("Field Offset from North (degrees)", 0) - dt.getHeadingDeg() + 180);})));
   }
 
   private void configureButtonBindingsRightJoy() {
@@ -155,7 +167,6 @@ public class RobotContainer {
     new JoystickButton(controller, Constants.OI.Controller.toggleIntakePort).whenPressed(new InstantCommand(intakeFeeder::toggleIntake, intakeFeeder));
     new JoystickButton(controller, Constants.OI.Controller.extendClimberPort).whenPressed(new ExtendClimber(climber));
     new JoystickButton(controller, Constants.OI.Controller.retractClimberPort).whenPressed(new RetractClimber(climber));
-    new JoystickButton(controller, Constants.OI.Controller.resetFieldOriented).whenPressed(new InstantCommand(() -> {SmartDashboard.putNumber("Field Offset from North (degrees)", 0);}));
     new POVButton(controller, 0).whenPressed(new InstantCommand( () ->{shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() + 0.1);}));
     new POVButton(controller, 180).whenPressed(new InstantCommand( () ->{shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() - 0.1);}));
     new POVButton(controller, 90).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() + 100);}));
@@ -229,10 +240,18 @@ public class RobotContainer {
   }
 
   public AutoPath getAutoPath() {
-    for(int i = 0; i < autoSelectors.length; i++) {
-      if(!autoSelectors[i].get())
-        return autoPaths[i];
+    System.out.println("Choosing Auto Path...");
+    if(!autoSelectors[0].get()) {
+      System.out.println("Using value from SmartDashboard");
+      return autoSelector.getSelected();
     }
+    for(int i = 0; i < autoSelectors.length; i++) {
+      if(!autoSelectors[i].get()) {
+        System.out.println("Using Path: " + i);
+        return autoPaths[i];
+      }
+    }
+    System.out.println("NO JUMPER!!!");
     return null;
   }
 

@@ -7,6 +7,8 @@ package org.team199.robot2022.subsystems;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
+import frc.robot.lib.MotorErrors.TemperatureLimit;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -17,7 +19,7 @@ public class Climber extends SubsystemBase {
     private static final double kNEOFreeSpeedRPM = 5680;
     private static final double kDiameterIn = 1;
     private static final double kDesiredRetractSpeedInps = 1;
-    private static final double kDesiredExtendSpeedInps = 6;
+    private static final double kDesiredExtendSpeedInps = 24;
 
     // Torque is 2 * 9 * 0.5 = 9
     // Torque on the motor is Torque / ( gearing = 9 ) = 1
@@ -48,8 +50,8 @@ public class Climber extends SubsystemBase {
             + (kSlowVoltsToCounterTorque / 12)); // ~ -0.06151
     private static final double kSlowExtendSpeed = (kSlowDesiredExtendSpeedInps / kInPerSec); // ~0.30261
 
-    private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
-    private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
+    private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft, TemperatureLimit.NEO);
+    private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight, TemperatureLimit.NEO);
     private final RelativeEncoder leftEncoder = left.getEncoder();
     private final RelativeEncoder rightEncoder = right.getEncoder();
 
@@ -77,6 +79,7 @@ public class Climber extends SubsystemBase {
         holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putBoolean("Climber: Keep Zeroed", keepPosition);
+        keepZeroed();
     }
 
     public void keepZeroed() {

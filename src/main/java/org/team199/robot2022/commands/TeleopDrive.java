@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TeleopDrive extends CommandBase {
-  private static final double kSlowDriveSpeed = 0.6;
-  private static final double kSlowDriveRotation = 0.6;
+  private static final double kSlowDriveSpeed = 0.25;
+  private static final double kSlowDriveRotation = 0.15;
 
   private final Drivetrain drivetrain;
   private Supplier<Double> fwd;
@@ -55,13 +55,9 @@ public class TeleopDrive extends CommandBase {
     if (Math.abs(str.get()) <= Constants.OI.JOY_THRESH) rawStrafe = 0.0;
     else rawStrafe = Constants.DriveConstants.maxStrafe * str.get();
 
-    if (!SmartDashboard.getBoolean("Teleop Face Direction of Travel", false)) {
-      rotateClockwise = rcw.get();
-      if (Math.abs(rotateClockwise) <= Constants.OI.JOY_THRESH) rotateClockwise = 0.0;
-      else rotateClockwise = Constants.DriveConstants.maxRCW * rotateClockwise;
-    } else {
-      rotateClockwise = drivetrain.getHeading()/160;
-    }
+    rotateClockwise = rcw.get();
+    if (Math.abs(rotateClockwise) <= Constants.OI.JOY_THRESH) rotateClockwise = 0.0;
+    else rotateClockwise = Constants.DriveConstants.maxRCW * rotateClockwise;
     //double currentForward = drivetrain.getSpeeds().vxMetersPerSecond;
     //double currentStrafe = -drivetrain.getSpeeds().vyMetersPerSecond;
     Vector2d targetAcceleration = new Vector2d((rawForward - currentForward)/deltaT, (rawStrafe - currentStrafe)/deltaT);
