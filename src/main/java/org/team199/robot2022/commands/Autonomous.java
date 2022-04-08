@@ -6,6 +6,7 @@ import org.team199.robot2022.AutoPath;
 import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.Shooter;
+import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -21,6 +22,7 @@ public class Autonomous extends SequentialCommandGroup {
         if(path.shootAtStart) addCommands(new InstantCommand(() -> shooter.setShotPosition(path.startShotPosition)));
 
         addCommands(
+            new InstantCommand(() -> {intakeFeeder.run(Motor.BOTTOM, true);}),
             shootAtStart ? new SequentialCommandGroup( new WaitUntilCommand(shooter::isAtTargetSpeed),  new WaitCommand(1.5), new Shoot(intakeFeeder, shooter)) : new InstantCommand()
         );
         //addCommands(new WaitCommand(4));
