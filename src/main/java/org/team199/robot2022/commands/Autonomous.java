@@ -21,12 +21,12 @@ public class Autonomous extends SequentialCommandGroup {
         if(path.shootAtStart) addCommands(new InstantCommand(() -> shooter.setShotPosition(path.startShotPosition)));
 
         addCommands(
-            new InstantCommand(path.path.get(0)::initializeDrivetrainPosition),
             shootAtStart ? new SequentialCommandGroup( new WaitUntilCommand(shooter::isAtTargetSpeed),  new WaitCommand(1.5), new Shoot(intakeFeeder, shooter)) : new InstantCommand()
         );
         //addCommands(new WaitCommand(4));
         for (int i = 0; i < path.path.size(); i++){
-            addCommands(path.path.get(i).getPathCommand(false, i == path.path.size()-1));
+            addCommands(new InstantCommand(path.path.get(i)::initializeDrivetrainPosition),
+            path.path.get(i).getPathCommand(false, i == path.path.size()-1));
         }
 
 
