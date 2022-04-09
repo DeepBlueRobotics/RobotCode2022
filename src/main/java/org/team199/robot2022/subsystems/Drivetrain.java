@@ -74,8 +74,8 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
 
         kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
         odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(Units.degreesToRadians(getHeading())));
-        initPitch = gyro.getPitch();
-        initRoll = gyro.getRoll();
+        initPitch = 0;
+        initRoll = 0;
         Supplier<Float> pitchSupplier = () -> initPitch;
         Supplier<Float> rollSupplier = () -> initRoll;
         SwerveModule moduleFL = new SwerveModule(Constants.DriveConstants.swerveConfig, SwerveModule.ModuleType.FL,

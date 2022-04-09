@@ -39,7 +39,7 @@ public class Autonomous extends SequentialCommandGroup {
 
 
         // if(path.shootAtEnd) addCommands(new InstantCommand(() -> shooter.setShotPosition(path.endShotPosition)));
-        addCommands(new RunCommand(intakeFeeder::runForward, intakeFeeder));
+        addCommands(new ParallelCommandGroup(new TeleopDrive(drivetrain, () -> 0D, () -> 0D, () -> 0D, () -> false), new RunCommand(intakeFeeder::runForward, intakeFeeder)));
 
         addCommands(
             shootAtEnd ? new SequentialCommandGroup( new WaitUntilCommand(shooter::isAtTargetSpeed),  new WaitCommand(0.4), new Shoot(intakeFeeder, shooter), new Shoot(intakeFeeder, shooter)) : new InstantCommand()
