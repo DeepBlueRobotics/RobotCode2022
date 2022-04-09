@@ -22,6 +22,10 @@ import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.Shooter.ShotPosition;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
+import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -70,10 +74,18 @@ public class RobotContainer {
   private final boolean inCompetition = true;
 
   private final SendableChooser<AutoPath> autoSelector = new SendableChooser<>();
+
+  private final UsbCamera camera;
+  private final VideoSink videoSink;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer(Robot robot) {
+    camera = CameraServer.startAutomaticCapture();
+    camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    videoSink = CameraServer.getServer();
+    videoSink.setSource(camera);
+
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
       null,
