@@ -27,8 +27,9 @@ public class Autonomous extends SequentialCommandGroup {
         );
         //addCommands(new WaitCommand(4));
         for (int i = 0; i < path.path.size(); i++){
-            addCommands(path.path.get(i).getPathCommand(false, i == path.path.size()-1));
+            addCommands(path.path.get(i).getPathCommand(false, false));
         }
+        addCommands(new InstantCommand(() -> {drivetrain.stop();}));
 
 
         if(path.shootAtEnd) addCommands(new InstantCommand(() -> shooter.setShotPosition(path.endShotPosition)));
