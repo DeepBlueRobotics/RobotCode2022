@@ -37,6 +37,8 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private static final boolean isGyroReversed = true;
     private static boolean fieldOriented = true;
     private double initTimestamp = 0;
+    private final float initPitch;
+    private final float initRoll;
 
     public Drivetrain() {
         gyro.calibrate();
@@ -72,9 +74,10 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
 
         kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
         odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(Units.degreesToRadians(getHeading())));
-
-        Supplier<Float> pitchSupplier = () -> gyro.getPitch();
-        Supplier<Float> rollSupplier = () -> gyro.getRoll();
+        initPitch = gyro.getPitch();
+        initRoll = gyro.getRoll();
+        Supplier<Float> pitchSupplier = () -> initPitch;
+        Supplier<Float> rollSupplier = () -> initRoll;
         SwerveModule moduleFL = new SwerveModule(Constants.DriveConstants.swerveConfig, SwerveModule.ModuleType.FL,
                 MotorControllerFactory.createSparkMax(Constants.DrivePorts.driveFrontLeft, TemperatureLimit.NEO),
                 MotorControllerFactory.createSparkMax(Constants.DrivePorts.turnFrontLeft, TemperatureLimit.NEO),
