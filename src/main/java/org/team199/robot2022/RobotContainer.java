@@ -95,7 +95,7 @@ public class RobotContainer {
       new AutoPath(true, loadPaths("ShootAndTaxi2"), false, false),
       new AutoPath(true, loadPaths("TarmacShootAndTaxi1"), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
       new AutoPath(true, loadPaths("TarmacShootAndTaxi2"), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
-      new AutoPath(false,loadPaths("2BallAuto1(1)", "2BallAuto1(2)"), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(true,loadPaths("2BallAuto1(1)", "2BallAuto1(2)"), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
       new AutoPath(true, loadPaths("2BallAuto2(1)", "2BallAuto2(2)"), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
       new AutoPath(true, loadPaths("3BallAuto(1)", "3BallAuto(2)", "3BallAuto(3)", "3BallAuto(4)", "3BallAuto(5)"), false, true, ShotPosition.FENDER, ShotPosition.FENDER)
     };
