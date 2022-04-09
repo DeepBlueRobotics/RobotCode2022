@@ -93,8 +93,8 @@ public class RobotContainer {
       new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
       new AutoPath(true, Arrays.asList(loadPath("TarmacShootAndTaxi1")), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
       new AutoPath(true, Arrays.asList(loadPath("TarmacShootAndTaxi2")), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
-      new AutoPath(false, Arrays.asList(loadPath("Path1(1)")), true, true, ShotPosition.FENDER, ShotPosition.AWAY_FROM_FENDER),
-      new AutoPath(true, Arrays.asList(loadPath("Path2(1)"), loadPath("Path2(2)")), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(false, Arrays.asList(loadPath("2BallAuto1(1)"), loadPath("2BallAuto1(2)")), true, true, ShotPosition.FENDER, ShotPosition.AWAY_FROM_FENDER),
+      new AutoPath(true, Arrays.asList(loadPath("2BallAuto2(1)"), loadPath("2BallAuto2(2)")), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
       new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true, ShotPosition.TARMAC, ShotPosition.FENDER),
       new AutoPath(true, Arrays.asList(loadPath("Path3(1)")), false, true, ShotPosition.FENDER, ShotPosition.TARMAC)
     };
