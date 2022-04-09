@@ -27,6 +27,7 @@ public class Autonomous extends SequentialCommandGroup {
         );
         //addCommands(new WaitCommand(4));
         for (int i = 0; i < path.path.size(); i++){
+            addCommands(new PassiveAutomaticIntake(intakeFeeder));
             addCommands(path.path.get(i).getPathCommand(false, false));
         }
         addCommands(new InstantCommand(() -> {drivetrain.stop();}));
