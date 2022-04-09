@@ -45,6 +45,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.lib.path.RobotPath;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -89,14 +91,13 @@ public class RobotContainer {
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
       null,
-      new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi1")), false, false),
-      new AutoPath(true, Arrays.asList(loadPath("ShootAndTaxi2")), false, false),
-      new AutoPath(true, Arrays.asList(loadPath("TarmacShootAndTaxi1")), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
-      new AutoPath(true, Arrays.asList(loadPath("TarmacShootAndTaxi2")), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
-      new AutoPath(false, Arrays.asList(loadPath("2BallAuto1(1)"), loadPath("2BallAuto1(2)")), true, true, ShotPosition.FENDER, ShotPosition.AWAY_FROM_FENDER),
-      new AutoPath(true, Arrays.asList(loadPath("2BallAuto2(1)"), loadPath("2BallAuto2(2)")), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
-      new AutoPath(true, Arrays.asList(loadPath("Path3(1)"), loadPath("Path3(2)")), true, true, ShotPosition.TARMAC, ShotPosition.FENDER),
-      new AutoPath(true, Arrays.asList(loadPath("Path3(1)")), false, true, ShotPosition.FENDER, ShotPosition.TARMAC)
+      new AutoPath(true, loadPaths("ShootAndTaxi1"), false, false),
+      new AutoPath(true, loadPaths("ShootAndTaxi2"), false, false),
+      new AutoPath(true, loadPaths("TarmacShootAndTaxi1"), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
+      new AutoPath(true, loadPaths("TarmacShootAndTaxi2"), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
+      new AutoPath(false,loadPaths("2BallAuto1(1)", "2BallAuto1(2)"), true, true, ShotPosition.FENDER, ShotPosition.AWAY_FROM_FENDER),
+      new AutoPath(true, loadPaths("2BallAuto2(1)", "2BallAuto2(2)"), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(true, loadPaths("3BallAuto(1)", "3BallAuto(2)", "3BallAuto(3)", "3BallAuto(4)", "3BallAuto(5)"), false, true, ShotPosition.FENDER, ShotPosition.FENDER)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
@@ -184,6 +185,9 @@ public class RobotContainer {
     new POVButton(controller, 90).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() + 100);}));
     new POVButton(controller, 270).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() - 100);}));
 
+  }
+  private List<RobotPath> loadPaths(String... pathNames) {
+    return Arrays.stream(pathNames).map(this::loadPath).collect(Collectors.toList());
   }
 
   public void initShooterConfig() {
