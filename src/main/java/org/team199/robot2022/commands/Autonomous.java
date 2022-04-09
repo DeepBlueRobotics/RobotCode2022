@@ -9,6 +9,9 @@ import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -27,13 +30,17 @@ public class Autonomous extends SequentialCommandGroup {
         );
         //addCommands(new WaitCommand(4));
         for (int i = 0; i < path.path.size(); i++){
-            addCommands(new PassiveAutomaticIntake(intakeFeeder));
-            addCommands(path.path.get(i).getPathCommand(false, false));
+            addCommands(new ParallelRaceGroup(path.path.get(i).getPathCommand(false, false), new PassiveAutomaticIntake(intakeFeeder).perpetually()));
+            if (i < path.path.size()-1){
+            addCommands(new InstantCommand(path.path.get(i+1)::initializeDrivetrainPosition));
+            }
         }
         addCommands(new InstantCommand(() -> {drivetrain.stop();}));
 
 
-        if(path.shootAtEnd) addCommands(new InstantCommand(() -> shooter.setShotPosition(path.endShotPosition)));
+        // if(path.shootAtEnd) addCommands(new InstantCommand(() -> shooter.setShotPosition(path.endShotPosition)));
+        // addCommands(new ParallelCommandGroup(new TeleopDrive(drivetrain, () -> 0D, () -> 0D, () -> 0D, () -> false), new RunCommand(intakeFeeder::runForward, intakeFeeder)));
+        addCommands(new ParallelCommandGroup(new RunCommand(drivetrain::stop, drivetrain), new RunCommand(intakeFeeder::runForward, intakeFeeder)));
 
         addCommands(
             shootAtEnd ? new SequentialCommandGroup( new WaitUntilCommand(shooter::isAtTargetSpeed),  new WaitCommand(0.4), new Shoot(intakeFeeder, shooter), new Shoot(intakeFeeder, shooter)) : new InstantCommand()

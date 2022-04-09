@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TeleopDrive extends CommandBase {
   private static final double kSlowDriveSpeed = 0.25;
-  private static final double kSlowDriveRotation = 0.15;
+  private static final double kSlowDriveRotation = 0.30;
 
   private final Drivetrain drivetrain;
   private Supplier<Double> fwd;
@@ -75,7 +75,7 @@ public class TeleopDrive extends CommandBase {
     //SmartDashboard.putNumber("Forward (mps)", currentForward);
    // SmartDashboard.putNumber("Strafe (mps)", currentStrafe);
     double driveMultiplier = slow.get() ? kSlowDriveSpeed : 1;
-    double rotationMultiplier = slow.get() ? kSlowDriveRotation : 0.75;
+    double rotationMultiplier = slow.get() ? kSlowDriveRotation : 0.55;
     drivetrain.drive(currentForward * driveMultiplier, currentStrafe * driveMultiplier, rotateClockwise * rotationMultiplier);
   }
 
