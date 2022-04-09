@@ -18,6 +18,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
@@ -35,11 +36,14 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private SwerveModule modules[];
     private static final boolean isGyroReversed = true;
     private static boolean fieldOriented = true;
+    private double initTimestamp = 0;
 
     public Drivetrain() {
         gyro.calibrate();
-        int repeats = 0;
-        while (gyro.isCalibrating() && repeats < 20) {
+        initTimestamp = Timer.getFPGATimestamp();
+        double currentTimestamp = initTimestamp;
+        while (gyro.isCalibrating() && currentTimestamp - initTimestamp < 10) {
+            currentTimestamp = Timer.getFPGATimestamp();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -47,7 +51,6 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
                 break;
             }
             System.out.println("Calibrating the gyro...");
-            repeats ++;
         }
         gyro.reset();
         System.out.println("NavX-MXP firmware version: " + gyro.getFirmwareVersion());
