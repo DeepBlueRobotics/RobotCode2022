@@ -59,6 +59,8 @@ public class Climber extends SubsystemBase {
     private double holdTolerance = 0.05;
 
     public Climber() {
+        left.setSmartCurrentLimit(80);
+        right.setSmartCurrentLimit(80);
         left.setInverted(leftInverted);
         right.setInverted(!leftInverted);
 

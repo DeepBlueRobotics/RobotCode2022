@@ -38,7 +38,8 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
 
     public Drivetrain() {
         gyro.calibrate();
-        while (gyro.isCalibrating()) {
+        int repeats = 0;
+        while (gyro.isCalibrating() && repeats < 20) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -46,6 +47,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
                 break;
             }
             System.out.println("Calibrating the gyro...");
+            repeats ++;
         }
         gyro.reset();
         System.out.println("NavX-MXP firmware version: " + gyro.getFirmwareVersion());
