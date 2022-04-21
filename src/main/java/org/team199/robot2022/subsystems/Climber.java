@@ -73,8 +73,7 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putString("Right climber is", "Stopped");
         SmartDashboard.putNumber("kDesiredExtendSpeedInps", kDesiredExtendSpeedInps);
         SmartDashboard.putNumber("kDesiredRetractSpeedInps", kDesiredRetractSpeedInps);
-        SmartDashboard.putBoolean("kInResetMode", false);
-        isInResetMode = SmartDashboard.getBoolean("kInResetMode", false);
+        
     }
 
     @Override
