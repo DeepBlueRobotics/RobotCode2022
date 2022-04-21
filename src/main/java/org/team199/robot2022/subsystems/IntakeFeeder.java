@@ -59,7 +59,7 @@ public class IntakeFeeder extends SubsystemBase {
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
   private boolean overrideSensor = false;
-  private boolean dumbMode = false;
+  private boolean dumbMode = true;
 
   private Alliance currentColor = Alliance.Invalid;
   private boolean ballDetected = false;

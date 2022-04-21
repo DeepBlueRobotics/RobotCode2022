@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TeleopDrive extends CommandBase {
-  private static final double kSlowDriveSpeed = 0.25;
-  private static final double kSlowDriveRotation = 0.30;
+  private static final double kSlowDriveSpeed = 0.1;
+  private static final double kSlowDriveRotation = 0.12;
 
   private final Drivetrain drivetrain;
   private Supplier<Double> fwd;
