@@ -36,7 +36,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private SwerveModule modules[];
     private static final boolean isGyroReversed = true;
     private static boolean fieldOriented = true;
-    private static boolean normalMode = false;
+    private static boolean safeMode = false;
     private double initTimestamp = 0;
     private final float initPitch;
     private final float initRoll;
@@ -107,8 +107,8 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         SmartDashboard.putBoolean("Teleop Face Direction of Travel", false);
         SmartDashboard.putBoolean("Field Oriented", true);
         fieldOriented = SmartDashboard.getBoolean("Field Oriented", true);
-        SmartDashboard.putBoolean("Normal Mode", false);
-        normalMode = SmartDashboard.getBoolean("Normal Mode", false);
+        SmartDashboard.putBoolean("Safe Mode", false);
+        safeMode = SmartDashboard.getBoolean("Safe Mode", false);
         SmartDashboard.putBoolean("Reset Field Oriented", false);
     }
 
@@ -132,7 +132,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         // SmartDashboard.putNumber("Raw gyro angle", gyro.getAngle());
         SmartDashboard.putNumber("Robot Heading", getHeading());
         fieldOriented = SmartDashboard.getBoolean("Field Oriented", true);
-        normalMode = SmartDashboard.getBoolean("Normal Mode", false);
+        safeMode = SmartDashboard.getBoolean("Safe Mode", false);
         if (SmartDashboard.getBoolean("Reset Field Oriented", false)){
             SmartDashboard.putNumber("Field Offset from North (degrees)", SmartDashboard.getNumber("Field Offset from North (degrees)", 0) - getHeadingDeg() + 180);
             SmartDashboard.putBoolean("Reset Field Oriented", false);
