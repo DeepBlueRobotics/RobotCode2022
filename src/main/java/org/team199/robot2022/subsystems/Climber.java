@@ -56,7 +56,6 @@ public class Climber extends SubsystemBase {
     private final RelativeEncoder rightEncoder = right.getEncoder();
 
     private boolean keepPosition = true;
-    private boolean isInResetMode = false;
     private double holdTolerance = 0.05;
 
     public Climber() {
@@ -80,8 +79,6 @@ public class Climber extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Left Climber Position", getLeftPosition());
         SmartDashboard.putNumber("Right Climber Position", getRightPosition());
-        SmartDashboard.putBoolean("kInResetMode", isInResetMode);
-        isInResetMode = SmartDashboard.getBoolean("kInResetMode", false);
         holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putBoolean("Climber: Keep Zeroed", keepPosition);

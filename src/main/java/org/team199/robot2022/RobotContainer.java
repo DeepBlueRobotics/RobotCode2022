@@ -134,7 +134,7 @@ public class RobotContainer {
     dt.setDefaultCommand(new TeleopDrive(dt,
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.Y)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
-        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> SmartDashboard.getBoolean("Normal Mode", false)));
+        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> SmartDashboard.getBoolean("Safe Mode", false)));
 
     // intakeFeeder.setDefaultCommand(
     //   new PerpetualCommand(
