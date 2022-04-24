@@ -169,7 +169,7 @@ public class RobotContainer {
     // new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(SmartDashboard.getBoolean("Normal Mode", false) ? new InstantCommand(climber::slowRetractLeft) : new InstantCommand()).whenReleased(new InstantCommand(climber::stopLeft));
     // new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(SmartDashboard.getBoolean("Normal Mode", false) ? new InstantCommand(climber::slowExtendRight) : new InstantCommand()).whenReleased(new InstantCommand(climber::stopRight));
     // new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(SmartDashboard.getBoolean("Normal Mode", false) ? new InstantCommand(climber::slowRetractRight) : new InstantCommand()).whenReleased(new InstantCommand(climber::stopRight));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
+    // new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     //new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
 
