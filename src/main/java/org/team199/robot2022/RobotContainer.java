@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.lib.path.RobotPath;
 import java.util.Arrays;
 import java.util.List;
@@ -79,6 +80,9 @@ public class RobotContainer {
 
   private final UsbCamera camera;
   private final VideoSink videoSink;
+
+  private final Trigger notSafeMode = new Trigger(() -> !SmartDashboard.getBoolean("Safe Mode", false));
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -165,10 +169,10 @@ public class RobotContainer {
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
-    // //new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).whileHeld(SmartDashboard.getBoolean("Normal Mode", false) ? new InstantCommand(climber::slowExtendLeft) : new InstantCommand()).whenReleased(new InstantCommand(climber::stopLeft));
-    // new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(SmartDashboard.getBoolean("Normal Mode", false) ? new InstantCommand(climber::slowRetractLeft) : new InstantCommand()).whenReleased(new InstantCommand(climber::stopLeft));
-    // new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(SmartDashboard.getBoolean("Normal Mode", false) ? new InstantCommand(climber::slowExtendRight) : new InstantCommand()).whenReleased(new InstantCommand(climber::stopRight));
-    // new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(SmartDashboard.getBoolean("Normal Mode", false) ? new InstantCommand(climber::slowRetractRight) : new InstantCommand()).whenReleased(new InstantCommand(climber::stopRight));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).and(notSafeMode).whileActiveContinuous(new InstantCommand(climber::slowExtendLeft)).whenInactive(new InstantCommand(climber::stopLeft));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).and(notSafeMode).whileActiveContinuous(new InstantCommand(climber::slowRetractLeft)).whenInactive(new InstantCommand(climber::stopLeft));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).and(notSafeMode).whileActiveContinuous(new InstantCommand(climber::slowExtendRight)).whenInactive(new InstantCommand(climber::stopRight));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).and(notSafeMode).whileActiveContinuous(new InstantCommand(climber::slowRetractRight)).whenInactive(new InstantCommand(climber::stopRight));
     // new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     //new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
@@ -179,8 +183,8 @@ public class RobotContainer {
     //new JoystickButton(controller, Constants.OI.Controller.regurgitatePort).whenPressed(new Regurgitate(intakeFeeder));
     //new JoystickButton(controller, Constants.OI.Controller.dumbModeToggle).whenPressed(new InstantCommand(intakeFeeder::toggleDumbMode, intakeFeeder));
     //new JoystickButton(controller, Constants.OI.Controller.toggleIntakePort).whenPressed(new InstantCommand(intakeFeeder::toggleIntake, intakeFeeder));
-    //new JoystickButton(controller, Constants.OI.Controller.extendClimberPort).whenPressed(new ExtendClimber(climber));
-    //new JoystickButton(controller, Constants.OI.Controller.retractClimberPort).whenPressed(new RetractClimber(climber));
+    new JoystickButton(controller, Constants.OI.Controller.extendClimberPort).and(notSafeMode).whenActive(new ExtendClimber(climber));
+    new JoystickButton(controller, Constants.OI.Controller.retractClimberPort).and(notSafeMode).whenActive(new RetractClimber(climber));
     //new POVButton(controller, 0).whenPressed(new InstantCommand( () ->{shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() + 0.1);}));
     //new POVButton(controller, 180).whenPressed(new InstantCommand( () ->{shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() - 0.1);}));
     //new POVButton(controller, 90).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() + 100);}));
