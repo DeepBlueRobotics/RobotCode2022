@@ -49,7 +49,7 @@ public class IntakeFeeder extends SubsystemBase {
   // Constant values that can be tweaked
   private double topSpeed = 400;
   private double midSpeed = 400;
-  private double botSpeed = 0.7;
+  private double botSpeed = 0.45;
 
   private double rpmTolerance = 7;
   // Used to calculate whether there is a ball against the motor
