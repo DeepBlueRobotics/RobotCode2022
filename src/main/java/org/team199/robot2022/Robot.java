@@ -4,11 +4,12 @@
 
 package org.team199.robot2022;
 
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.lib.MotorErrors;
-import frc.robot.lib.logging.Log;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -25,10 +26,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    DataLogManager.start();
+    DriverStation.startDataLog(DataLogManager.getLog());
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer(this);
-    Log.init();
   }
 
   /**
@@ -49,7 +51,6 @@ public class Robot extends TimedRobot {
     double totalAmps = robotContainer.pdp.getTotalCurrent();
     SmartDashboard.putNumber("PDP Voltage", batteryVolts);
     SmartDashboard.putNumber("PDP Current", totalAmps);
-    Log.logData();
     MotorErrors.printSparkMaxErrorMessages();
   }
 
@@ -62,8 +63,6 @@ public class Robot extends TimedRobot {
         robotContainer.dt.coast();
       } catch(InterruptedException e) {}
     }).start();
-    Log.flush();
-    Log.setDataLoggingDisabled(true);
   }
 
   @Override
@@ -75,7 +74,6 @@ public class Robot extends TimedRobot {
     robotContainer.dt.brake();
     robotContainer.dt.resetOdometry();
     robotContainer.getAutonomousCommand().schedule();
-    Log.setDataLoggingDisabled(false);
     robotContainer.initShooterConfig();
   }
 
@@ -91,7 +89,6 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     CommandScheduler.getInstance().cancelAll();
     robotContainer.dt.brake();
-    Log.setDataLoggingDisabled(false);
     robotContainer.initShooterConfig();
   }
 

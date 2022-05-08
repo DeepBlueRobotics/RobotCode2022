@@ -14,7 +14,6 @@ import frc.robot.lib.SparkVelocityPIDController;
 import frc.robot.lib.MotorErrors.TemperatureLimit;
 import frc.robot.lib.LinearActuator;
 import frc.robot.lib.LinearInterpolation;
-import frc.robot.lib.logging.Log;
 
 public class Shooter extends SubsystemBase {
     private static double kV = 0.129 / 60;
@@ -64,10 +63,6 @@ public class Shooter extends SubsystemBase {
         slave.setIdleMode(IdleMode.kCoast);
         
         SmartDashboard.putNumber("Ball PSI", ballPSI);
-
-        Log.registerDoubleVar("Shooter RPM", () -> pidController.getEncoder().getVelocity());
-        Log.registerDoubleVar("Shooter Current Master", () -> master.getOutputCurrent());
-        Log.registerDoubleVar("Shooter Current Slave", () -> slave.getOutputCurrent());
     }
 
     public void updateFromPSI() {
