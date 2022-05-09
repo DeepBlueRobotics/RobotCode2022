@@ -22,10 +22,6 @@ import org.team199.robot2022.subsystems.IntakeFeeder;
 import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.Shooter.ShotPosition;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.cscore.VideoSink;
-import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -43,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.path.RobotPath;
 import java.util.Arrays;
 import java.util.List;
@@ -77,16 +74,11 @@ public class RobotContainer {
 
   private final SendableChooser<AutoPath> autoSelector = new SendableChooser<>();
 
-  private final UsbCamera camera;
-  private final VideoSink videoSink;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer(Robot robot) {
-    camera = CameraServer.startAutomaticCapture();
-    camera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    videoSink = CameraServer.getServer();
-    videoSink.setSource(camera);
+    MotorControllerFactory.configureCamera();
 
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
