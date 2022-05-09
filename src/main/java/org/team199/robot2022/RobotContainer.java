@@ -99,6 +99,8 @@ public class RobotContainer {
       autoSelector.addOption(Integer.toString(i), autoPaths[i]);
     }
 
+    SmartDashboard.putData(shooter);
+
     SmartDashboard.putData("Auto Selector", autoSelector);
 
     SmartDashboard.putNumber("Field Offset from North (degrees)", getAutoPath() == null ? 180 : getAutoPath().path.get(0).getRotation2d(0).getDegrees() + 180);
