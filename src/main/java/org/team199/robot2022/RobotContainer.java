@@ -6,6 +6,7 @@ package org.team199.robot2022;
 
 import java.io.IOException;
 
+import org.team199.robot2022.commands.AutoIntake;
 import org.team199.robot2022.commands.Autonomous;
 import org.team199.robot2022.commands.ExtendClimber;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
@@ -44,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.lib.path.RobotPath;
+import frc.robot.lib.Limelight;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,6 +70,7 @@ public class RobotContainer {
   public final Drivetrain dt = new Drivetrain();
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
+  private final Limelight lime = new Limelight(1/90d);
 
   public final IntakeFeeder intakeFeeder;
 
@@ -134,7 +137,7 @@ public class RobotContainer {
     dt.setDefaultCommand(new TeleopDrive(dt,
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.Y)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
-        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> leftJoy.getRawButton(1) || rightJoy.getRawButton(1)));
+        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> leftJoy.getRawButton(1)));
 
     intakeFeeder.setDefaultCommand(
       new PerpetualCommand(
@@ -171,6 +174,7 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.autoIntake).whileHeld(new AutoIntake(dt, lime));
   }
 
   private void configureButtonBindingsController() {

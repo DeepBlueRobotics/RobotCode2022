@@ -162,7 +162,7 @@ public final class Constants {
 
         public static final class RightJoy {
             public static final int port = 1;
-
+            public static final int autoIntake = 1;
             public static final int shootPort = 2;
             public static final int slowExtendLeftClimberPort = 5;
             public static final int slowRetractLeftClimberPort = 3;
