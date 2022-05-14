@@ -149,6 +149,7 @@ public final class Constants {
         public static final class LeftJoy {
             public static final int port = 0;
 
+            public static final int slowDriveButton = 1;
             public static final int manualAddPort = 3;
             public static final int manualSubtractPort = 2;
             public static final int shootSoftOnePort = 6;

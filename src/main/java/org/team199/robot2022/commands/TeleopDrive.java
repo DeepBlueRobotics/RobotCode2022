@@ -20,6 +20,7 @@ import frc.robot.lib.Limelight;
 public class TeleopDrive extends CommandBase {
   private static final double kSlowDriveSpeed = 0.25;
   private static final double kSlowDriveRotation = 0.30;
+  private static final double kAlignMultiplier = 1D/3D;
 
   private final Drivetrain drivetrain;
   private Supplier<Double> fwd;
@@ -83,7 +84,7 @@ public class TeleopDrive extends CommandBase {
     double rotationMultiplier = slow.get() ? kSlowDriveRotation : 0.55;
     if(align.get()) {
       rotateClockwise = lime.steeringAssist();
-      rotationMultiplier = Constants.DriveConstants.maxRCW / 3;
+      rotationMultiplier = Constants.DriveConstants.maxRCW * kAlignMultiplier;
     }
     drivetrain.drive(currentForward * driveMultiplier, currentStrafe * driveMultiplier, rotateClockwise * rotationMultiplier);
   }

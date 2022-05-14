@@ -6,7 +6,6 @@ package org.team199.robot2022;
 
 import java.io.IOException;
 
-import org.team199.robot2022.commands.AutoIntake;
 import org.team199.robot2022.commands.Autonomous;
 import org.team199.robot2022.commands.ExtendClimber;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
@@ -24,7 +23,6 @@ import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.Shooter.ShotPosition;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -129,7 +127,9 @@ public class RobotContainer {
     dt.setDefaultCommand(new TeleopDrive(dt,
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.Y)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
-        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> leftJoy.getRawButton(1), () -> rightJoy.getRawButton(1), lime));
+        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)),
+        () -> leftJoy.getRawButton(Constants.OI.LeftJoy.slowDriveButton),
+        () -> rightJoy.getRawButton(Constants.OI.RightJoy.autoIntake), lime));
 
     intakeFeeder.setDefaultCommand(
       new PerpetualCommand(
@@ -166,7 +166,8 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
-    // new JoystickButton(rightJoy, Constants.OI.RightJoy.autoIntake).whileHeld(new AutoIntake(dt, lime));
+    new POVButton(rightJoy, 90).whenPressed(new InstantCommand(() -> lime.setIdleTurnDirection(Limelight.TurnDirection.CW)));
+    new POVButton(rightJoy, 270).whenPressed(new InstantCommand(() -> lime.setIdleTurnDirection(Limelight.TurnDirection.CCW)));
   }
 
   private void configureButtonBindingsController() {
@@ -177,10 +178,10 @@ public class RobotContainer {
     new JoystickButton(controller, Constants.OI.Controller.toggleIntakePort).whenPressed(new InstantCommand(intakeFeeder::toggleIntake, intakeFeeder));
     new JoystickButton(controller, Constants.OI.Controller.extendClimberPort).whenPressed(new ExtendClimber(climber));
     new JoystickButton(controller, Constants.OI.Controller.retractClimberPort).whenPressed(new RetractClimber(climber));
-    new POVButton(controller, 0).whenPressed(new InstantCommand( () ->{shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() + 0.1);}));
-    new POVButton(controller, 180).whenPressed(new InstantCommand( () ->{shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() - 0.1);}));
-    new POVButton(controller, 90).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() + 100);}));
-    new POVButton(controller, 270).whenPressed(new InstantCommand(() -> {shooter.setMainSpeed(shooter.getTargetSpeed() - 100);}));
+    new POVButton(controller, 0).whenPressed(new InstantCommand(() -> shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() + 0.1)));
+    new POVButton(controller, 180).whenPressed(new InstantCommand( () -> shooter.setLinearActuatorPos(shooter.getLinearActuatorPos() - 0.1)));
+    new POVButton(controller, 90).whenPressed(new InstantCommand(() -> shooter.setMainSpeed(shooter.getTargetSpeed() + 100)));
+    new POVButton(controller, 270).whenPressed(new InstantCommand(() -> shooter.setMainSpeed(shooter.getTargetSpeed() - 100)));
 
   }
   private List<RobotPath> loadPaths(String... pathNames) {
