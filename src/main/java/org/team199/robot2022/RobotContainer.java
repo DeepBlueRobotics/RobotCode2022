@@ -114,8 +114,6 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("Field Offset from North (degrees)", getAutoPath() == null ? 180 : getAutoPath().path.get(0).getRotation2d(0).getDegrees() + 180);
 
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(3);
-
     if (DriverStation.isJoystickConnected(Constants.OI.LeftJoy.port) || inCompetition) {
       configureButtonBindingsLeftJoy();
     } else {
@@ -137,7 +135,7 @@ public class RobotContainer {
     dt.setDefaultCommand(new TeleopDrive(dt,
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.Y)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
-        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> leftJoy.getRawButton(1)));
+        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)), () -> leftJoy.getRawButton(1), () -> rightJoy.getRawButton(1), lime));
 
     intakeFeeder.setDefaultCommand(
       new PerpetualCommand(
@@ -174,7 +172,7 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.autoIntake).whileHeld(new AutoIntake(dt, lime));
+    // new JoystickButton(rightJoy, Constants.OI.RightJoy.autoIntake).whileHeld(new AutoIntake(dt, lime));
   }
 
   private void configureButtonBindingsController() {
