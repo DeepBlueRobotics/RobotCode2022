@@ -5,16 +5,14 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.team199.robot2022.Constants;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import edu.wpi.first.wpilibj.SpeedController;
-//import java.lang.AutoCloseable;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import frc.robot.lib.SparkVelocityPIDController;
 import frc.robot.lib.MotorErrors.TemperatureLimit;
 import frc.robot.lib.LinearActuator;
 import frc.robot.lib.LinearInterpolation;
-import frc.robot.lib.logging.Log;
 
 public class Shooter extends SubsystemBase {
     private static double kV = 0.129 / 60;
@@ -64,10 +62,6 @@ public class Shooter extends SubsystemBase {
         slave.setIdleMode(IdleMode.kCoast);
         
         SmartDashboard.putNumber("Ball PSI", ballPSI);
-
-        Log.registerDoubleVar("Shooter RPM", () -> pidController.getEncoder().getVelocity());
-        Log.registerDoubleVar("Shooter Current Master", () -> master.getOutputCurrent());
-        Log.registerDoubleVar("Shooter Current Slave", () -> slave.getOutputCurrent());
     }
 
     public void updateFromPSI() {
@@ -178,6 +172,13 @@ public class Shooter extends SubsystemBase {
                 System.err.println("Unknown case: " + shotPosition + "! Assuming FENDER :/");
                 return fender;
         }
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addDoubleProperty("Shooter Master Current", master::getOutputCurrent, null);
+        builder.addDoubleProperty("Shooter Slave Current", slave::getOutputCurrent, null);
     }
 
     public static enum ShotPosition {
