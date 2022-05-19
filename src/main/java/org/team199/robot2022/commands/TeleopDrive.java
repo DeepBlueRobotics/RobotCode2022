@@ -22,6 +22,7 @@ public class TeleopDrive extends CommandBase {
   private static final double kSlowDriveSpeed = 0.25;
   private static final double kSlowDriveRotation = 0.30;
   private static final double kAlignMultiplier = 1D/3D;
+  private static final double kAlignForward = 0.6;
 
   private final Drivetrain drivetrain;
   private Supplier<Double> fwd;
@@ -84,7 +85,7 @@ public class TeleopDrive extends CommandBase {
     double driveMultiplier = slow.get() ? kSlowDriveSpeed : 1;
     double rotationMultiplier = slow.get() ? kSlowDriveRotation : 0.55;
     if(align.get()) {
-      currentForward = Constants.DriveConstants.maxSpeed * 0.6 * NetworkTableInstance.getDefault().getTable(lime.config.ntName).getEntry("tv").getDouble(0.0);
+      currentForward = Constants.DriveConstants.maxSpeed * kAlignForward * NetworkTableInstance.getDefault().getTable(lime.config.ntName).getEntry("tv").getDouble(0.0);
       currentStrafe = 0;
       driveMultiplier = 1;
       rotateClockwise = lime.steeringAssist();
