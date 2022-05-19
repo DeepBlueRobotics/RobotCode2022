@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import org.team199.robot2022.Constants;
 import org.team199.robot2022.subsystems.Drivetrain;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -83,6 +84,9 @@ public class TeleopDrive extends CommandBase {
     double driveMultiplier = slow.get() ? kSlowDriveSpeed : 1;
     double rotationMultiplier = slow.get() ? kSlowDriveRotation : 0.55;
     if(align.get()) {
+      currentForward = Constants.DriveConstants.maxSpeed * 0.6 * NetworkTableInstance.getDefault().getTable(lime.config.ntName).getEntry("tv").getDouble(0.0);
+      currentStrafe = 0;
+      driveMultiplier = 1;
       rotateClockwise = lime.steeringAssist();
       rotationMultiplier = Constants.DriveConstants.maxRCW * kAlignMultiplier;
     }

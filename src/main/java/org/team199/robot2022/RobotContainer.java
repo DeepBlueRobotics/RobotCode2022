@@ -72,6 +72,7 @@ public class RobotContainer {
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
   private final boolean inCompetition = true;
+  private boolean robotWasFieldAligned = true;
 
   private final SendableChooser<AutoPath> autoSelector = new SendableChooser<>();
 
@@ -80,6 +81,8 @@ public class RobotContainer {
    */
   public RobotContainer(Robot robot) {
     MotorControllerFactory.configureCamera();
+
+    lime.config.steeringFactor = .4;
 
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
@@ -168,6 +171,10 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
     new POVButton(rightJoy, 90).whenPressed(new InstantCommand(() -> lime.setIdleTurnDirection(Limelight.TurnDirection.CW)));
     new POVButton(rightJoy, 270).whenPressed(new InstantCommand(() -> lime.setIdleTurnDirection(Limelight.TurnDirection.CCW)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.autoIntake).whenPressed(() -> {
+      RobotContainer.this.robotWasFieldAligned = SmartDashboard.getBoolean("Field Oriented", true);
+      SmartDashboard.putBoolean("Field Oriented", false);
+    }).whenReleased(() -> SmartDashboard.putBoolean("Field Oriented", RobotContainer.this.robotWasFieldAligned));
   }
 
   private void configureButtonBindingsController() {
