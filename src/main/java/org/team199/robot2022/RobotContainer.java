@@ -15,6 +15,7 @@ import org.team199.robot2022.commands.ResetAndExtendClimber;
 import org.team199.robot2022.commands.ResetAndRetractClimber;
 import org.team199.robot2022.commands.RetractClimber;
 import org.team199.robot2022.commands.Shoot;
+import org.team199.robot2022.commands.ShootMove;
 import org.team199.robot2022.commands.TeleopDrive;
 import org.team199.robot2022.subsystems.Climber;
 import org.team199.robot2022.subsystems.Drivetrain;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -66,6 +68,7 @@ public class RobotContainer {
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
   private final Limelight lime = new Limelight(1/90d);
+  private final TeleopDrive teleop;
 
   public final IntakeFeeder intakeFeeder;
 
@@ -127,7 +130,7 @@ public class RobotContainer {
       System.err.println("ERROR: Dude, you're missing the controller.");
     }
 
-    dt.setDefaultCommand(new TeleopDrive(dt,
+    dt.setDefaultCommand(teleop = new TeleopDrive(dt,
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.Y)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)),
@@ -169,6 +172,7 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whenHeld(new ParallelCommandGroup(new ShootMove(dt, lime, teleop), new Shoot(intakeFeeder, shooter)));
     new POVButton(rightJoy, 90).whenPressed(new InstantCommand(() -> lime.setIdleTurnDirection(Limelight.TurnDirection.CW)));
     new POVButton(rightJoy, 270).whenPressed(new InstantCommand(() -> lime.setIdleTurnDirection(Limelight.TurnDirection.CCW)));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.autoIntake).whenPressed(() -> {

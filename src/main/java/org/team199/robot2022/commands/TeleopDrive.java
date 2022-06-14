@@ -54,6 +54,11 @@ public class TeleopDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double[] driverInputs = getAdjustedDriverInputs();
+    drivetrain.drive(driverInputs[0], driverInputs[1], driverInputs[2]);
+  }
+
+  public double[] getAdjustedDriverInputs() {
     double rawForward, rawStrafe, rotateClockwise, deltaT;
     deltaT = .05;
     // Sets all values less than or equal to a very small value (determined by the idle joystick state) to zero.
@@ -91,7 +96,7 @@ public class TeleopDrive extends CommandBase {
       rotateClockwise = lime.steeringAssist();
       rotationMultiplier = Constants.DriveConstants.maxRCW * kAlignMultiplier;
     }
-    drivetrain.drive(currentForward * driveMultiplier, currentStrafe * driveMultiplier, rotateClockwise * rotationMultiplier);
+    return new double[] {currentForward * driveMultiplier, currentStrafe * driveMultiplier, rotateClockwise * rotationMultiplier};
   }
 
   /*
