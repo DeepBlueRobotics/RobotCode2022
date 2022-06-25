@@ -8,6 +8,7 @@ import org.team199.robot2022.subsystems.Drivetrain;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.lib.Limelight;
@@ -17,12 +18,11 @@ public class ShootMove extends CommandBase {
   private Drivetrain dt;
   private Limelight limelight;
   private final double CAMERA_HEIGHT = 0;
-  private final double OBJECT_HEIGHT = 0;
   private final double CAMERA_ANGLE = 0;
   private final double GOAL_HEIGHT = 0;
   private final double SHOOTER_HEIGHT = 0;
-  private final double BALL_VELOCITY_X = 0;  
-  private final double BALL_VELOCITY_Y = 0;  
+  private final double BALL_VELOCITY_X = Units.feetToMeters(3.71428571);  
+  private final double BALL_VELOCITY_Y = Units.feetToMeters(5.83333333);  
   // number of seconds ball is in air
   private final double t = (BALL_VELOCITY_Y + Math.sqrt(BALL_VELOCITY_Y*BALL_VELOCITY_Y + 19.6*(SHOOTER_HEIGHT - GOAL_HEIGHT)))/9.8;
   private final TeleopDrive teleop;
@@ -52,7 +52,7 @@ public class ShootMove extends CommandBase {
       dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * limelight.getIdleTurnDirection().sign);
       return;
     }
-    double[] sides = limelight.determineObjectDist(CAMERA_HEIGHT, OBJECT_HEIGHT, CAMERA_ANGLE);
+    double[] sides = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE);
     double dist = Math.hypot(sides[0], sides[1]);
 
     double odoRadian = dt.getOdometry().getPoseMeters().getRotation().getRadians(); // field-relative
