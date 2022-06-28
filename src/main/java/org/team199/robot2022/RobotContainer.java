@@ -67,7 +67,8 @@ public class RobotContainer {
   public final Drivetrain dt = new Drivetrain();
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
-  private final Limelight lime = new Limelight(1/90d);
+  private final Limelight limeIntake = new Limelight("limelight-intake", 1/90d);
+  private final Limelight limeShooter = new Limelight("limelight-shooter", 1/90d);
   private final TeleopDrive teleop;
 
   public final IntakeFeeder intakeFeeder;
@@ -85,7 +86,8 @@ public class RobotContainer {
   public RobotContainer(Robot robot) {
     MotorControllerFactory.configureCamera();
 
-    lime.config.steeringFactor = .4;
+    limeIntake.config.steeringFactor = .4;
+    limeShooter.config.steeringFactor = .4;
 
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
@@ -135,7 +137,7 @@ public class RobotContainer {
         () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
         () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)),
         () -> leftJoy.getRawButton(Constants.OI.LeftJoy.slowDriveButton),
-        () -> rightJoy.getRawButton(Constants.OI.RightJoy.autoIntake), lime));
+        () -> rightJoy.getRawButton(Constants.OI.RightJoy.autoIntake), limeIntake));
 
     intakeFeeder.setDefaultCommand(
       new PerpetualCommand(
@@ -172,9 +174,15 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whenHeld(new ParallelCommandGroup(new ShootMove(dt, lime, teleop), new Shoot(intakeFeeder, shooter)));
-    new POVButton(rightJoy, 90).whenPressed(new InstantCommand(() -> lime.setIdleTurnDirection(Limelight.TurnDirection.CW)));
-    new POVButton(rightJoy, 270).whenPressed(new InstantCommand(() -> lime.setIdleTurnDirection(Limelight.TurnDirection.CCW)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whenHeld(new ParallelCommandGroup(new ShootMove(dt, limeShooter, teleop), new Shoot(intakeFeeder, shooter)));
+    new POVButton(rightJoy, 90).whenPressed(new InstantCommand(() -> {
+      limeIntake.setIdleTurnDirection(Limelight.TurnDirection.CW);
+      limeShooter.setIdleTurnDirection(Limelight.TurnDirection.CW);
+    }));
+    new POVButton(rightJoy, 270).whenPressed(new InstantCommand(() -> {
+      limeIntake.setIdleTurnDirection(Limelight.TurnDirection.CCW);
+      limeShooter.setIdleTurnDirection(Limelight.TurnDirection.CCW);
+    }));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.autoIntake).whenPressed(() -> {
       RobotContainer.this.robotWasFieldAligned = SmartDashboard.getBoolean("Field Oriented", true);
       SmartDashboard.putBoolean("Field Oriented", false);
