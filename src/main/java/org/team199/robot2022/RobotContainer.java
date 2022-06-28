@@ -114,6 +114,27 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("Field Offset from North (degrees)", getAutoPath() == null ? 180 : getAutoPath().path.get(0).getRotation2d(0).getDegrees() + 180);
 
+    dt.setDefaultCommand(teleop = new TeleopDrive(dt,
+      () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.Y)),
+      () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
+      () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)),
+      () -> leftJoy.getRawButton(Constants.OI.LeftJoy.slowDriveButton),
+      () -> rightJoy.getRawButton(Constants.OI.RightJoy.autoIntake), limeIntake));
+
+    intakeFeeder.setDefaultCommand(
+      new PerpetualCommand(
+        new ConditionalCommand(
+          new InstantCommand(() -> {}, intakeFeeder),
+          new ConditionalCommand(
+            new PassiveAutomaticIntake(intakeFeeder),
+            new PassiveManualIntake(intakeFeeder),
+            intakeFeeder::useAutonomousControl
+          ),
+          intakeFeeder::isDumbModeEnabled
+        )
+      )
+    );
+
     if (DriverStation.isJoystickConnected(Constants.OI.LeftJoy.port) || inCompetition) {
       configureButtonBindingsLeftJoy();
     } else {
@@ -132,26 +153,7 @@ public class RobotContainer {
       System.err.println("ERROR: Dude, you're missing the controller.");
     }
 
-    dt.setDefaultCommand(teleop = new TeleopDrive(dt,
-        () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.Y)),
-        () -> inputProcessing(getStickValue(Constants.OI.StickType.LEFT, Constants.OI.StickDirection.X)),
-        () -> inputProcessing(getStickValue(Constants.OI.StickType.RIGHT, Constants.OI.StickDirection.X)),
-        () -> leftJoy.getRawButton(Constants.OI.LeftJoy.slowDriveButton),
-        () -> rightJoy.getRawButton(Constants.OI.RightJoy.autoIntake), limeIntake));
-
-    intakeFeeder.setDefaultCommand(
-      new PerpetualCommand(
-        new ConditionalCommand(
-          new InstantCommand(() -> {}, intakeFeeder),
-          new ConditionalCommand(
-            new PassiveAutomaticIntake(intakeFeeder),
-            new PassiveManualIntake(intakeFeeder),
-            intakeFeeder::useAutonomousControl
-          ),
-          intakeFeeder::isDumbModeEnabled
-        )
-      )
-    );
+    
 
     // climber.setDefaultCommand(new RunCommand(climber::keepZeroed, climber));
   }
@@ -175,6 +177,7 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whenHeld(new ParallelCommandGroup(new ShootMove(dt, limeShooter, teleop), new Shoot(intakeFeeder, shooter)));
+    //new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whenHeld(new ShootMove(dt, limeShooter, teleop));
     new POVButton(rightJoy, 90).whenPressed(new InstantCommand(() -> {
       limeIntake.setIdleTurnDirection(Limelight.TurnDirection.CW);
       limeShooter.setIdleTurnDirection(Limelight.TurnDirection.CW);
