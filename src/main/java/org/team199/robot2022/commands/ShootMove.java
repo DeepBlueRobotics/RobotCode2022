@@ -8,6 +8,7 @@ import org.team199.robot2022.subsystems.Drivetrain;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -22,8 +23,8 @@ public class ShootMove extends CommandBase {
   // The goal (the very top) is 264cm tall
   private final double GOAL_HEIGHT = 2.64;
   private final double SHOOTER_HEIGHT = 1.144016;
-  private final double BALL_VELOCITY_X = 3.71428571;  
-  private final double BALL_VELOCITY_Y = 5.833333;  
+  private final double BALL_VELOCITY_X = Units.feetToMeters(3.71428571);  
+  private final double BALL_VELOCITY_Y = Units.feetToMeters(5.83333333);  
   // number of seconds ball is in air
   private final double t = (BALL_VELOCITY_Y + Math.sqrt(BALL_VELOCITY_Y*BALL_VELOCITY_Y + 19.6*(SHOOTER_HEIGHT - GOAL_HEIGHT)))/9.8;
   private final TeleopDrive teleop;
