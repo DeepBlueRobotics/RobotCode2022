@@ -6,10 +6,9 @@ package org.team199.robot2022.commands;
 
 import org.team199.robot2022.subsystems.Drivetrain;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.lib.Limelight;
@@ -26,15 +25,20 @@ public class ShootMove extends CommandBase {
   private final double BALL_VELOCITY_X = 2.31;
   private final double BALL_VELOCITY_Y = 6.52;
   // number of seconds ball is in air
-  private final double t = (BALL_VELOCITY_Y + Math.sqrt(BALL_VELOCITY_Y*BALL_VELOCITY_Y + 19.6*(SHOOTER_HEIGHT - GOAL_HEIGHT)))/9.8;
   private final TeleopDrive teleop;
-  private final double speed = 0.1;
+  private double turnAngle = Math.PI; // in radians
+  private final double turnTolerance = 1;
   
   public ShootMove(Drivetrain dt, Limelight limelight, TeleopDrive teleop) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(this.dt = dt);
     this.limelight = limelight;
     this.teleop = teleop;
+  }
+
+  public boolean shouldShoot()
+  {
+    return (Math.abs(turnAngle) < turnTolerance);
   }
 
   // Called when the command is initially scheduled.
@@ -52,40 +56,88 @@ public class ShootMove extends CommandBase {
     double[] driverInputs = teleop.getAdjustedDriverInputs();
     // if limelight sees no goal
     // make robot turn at a constant velocity until it sees goal
-    if(NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tv").getDouble(0.0) == 0) {
+    if(NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tv").getDouble(0.0) < 0.01) {
       dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * limelight.getIdleTurnDirection().sign);
+      turnAngle = Math.PI;
+
+      SmartDashboard.putNumber("Relative x", -1);
+      SmartDashboard.putNumber("Relative y", -1);
+      SmartDashboard.putNumber("Turn Angle", turnAngle*180/Math.PI);
+      SmartDashboard.putNumber("Time", -1);
+      SmartDashboard.putNumber("Driver Input 0", driverInputs[0]);
+      SmartDashboard.putNumber("Driver Input 1", driverInputs[1]);
       return;
     }
-    double[] sides = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE);
-    double dist = Math.hypot(sides[0], sides[1]);
-    double odoRadian = dt.getOdometry().getPoseMeters().getRotation().getRadians(); // current angle of robot field-relative
-    double limeRadian = Math.toRadians(NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tx").getDouble(0.0)); // goal-relative
 
     ChassisSpeeds speeds = dt.getSpeeds();
 
-    double veloAngle = Math.atan2(-speeds.vyMetersPerSecond, speeds.vxMetersPerSecond); // robot-relative
-    double velocity = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
-
-    double alpha = veloAngle + limeRadian;
-
-    // the angle between the direction the robot is going
-    double theta = dist * Math.sin(alpha) / (BALL_VELOCITY_X * t);
-
-    // the angle that the robot should face field relative
-    double fieldRelativeTheta = odoRadian - ( -theta - veloAngle );
+    double dist = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE)[0];
+    // In degrees
+    double txDeg = NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tx").getDouble(0.0);
     
-    double robotTurn = 1;
-    dt.drive(driverInputs[0], driverInputs[1], speed * (fieldRelativeTheta - odoRadian));
+    // Robot-Relative
+    double relative_x = dist * Math.cos(txDeg / 180 * Math.PI);
+    double relative_y = dist * Math.sin(txDeg / 180 * Math.PI);
 
-    SmartDashboard.putNumber("Goal Distance", dist);
-    SmartDashboard.putNumber("Robot Relative Magnitude", velocity);
-    /*
-    SmartDashboard.putNumber("Field Relative Rotation", odoRadian);
-    SmartDashboard.putNumber("Goal Relative Rotation", limeRadian);
-    SmartDashboard.putNumber("Robot Relative Rotation", veloAngle);
-    */
-    SmartDashboard.putNumber("fieldRelativeTheta", fieldRelativeTheta);
-    SmartDashboard.putNumber("Target Angle", fieldRelativeTheta - odoRadian);
+    RobotInfo robotInfo = new RobotInfo(relative_x, relative_y, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, BALL_VELOCITY_X);
+    //double currAngle = dt.getOdometry().getPoseMeters().getRotation().getRadians(); // Field-relative
+    double[] info = solve_2d(robotInfo); // in radians
+    turnAngle = info[1];
+    double time = info[0];
+
+    if (Math.abs(turnAngle + 1.0) < 0.01) {
+      dt.drive(driverInputs[0], driverInputs[1], 0);
+    } else {
+      dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * turnAngle);
+    }
+    SmartDashboard.putNumber("Relative x", relative_x);
+    SmartDashboard.putNumber("Relative y", relative_y);
+    SmartDashboard.putNumber("Turn Angle", turnAngle*180/Math.PI);
+    SmartDashboard.putNumber("Time", time);
+    SmartDashboard.putNumber("Driver Input 0", driverInputs[0]);
+    SmartDashboard.putNumber("Driver Input 1", driverInputs[1]);
+  }
+
+  // Rearrangement of the system into standard form
+  public double f(RobotInfo info, double theta)
+  {
+    return info.relative_x*(info.vel_y + info.speed_p*Math.sin(theta)) - info.relative_y*(info.vel_x + info.speed_p*Math.cos(theta));
+  }
+
+  public double f_prime(RobotInfo info, double theta)
+  {
+    return info.relative_x*info.speed_p*Math.cos(theta) + info.relative_y*info.speed_p*Math.sin(theta);
+  }
+
+  public double[] solve_2d(RobotInfo info)
+  {
+    // the easiest way to ensure the solution is non-degenerate is to seed newton's method with the direction to the goal
+    // TODO: adjust for robot speed. radial/tangential velocity?
+    int NEWTON_STEPS = 30;
+    double guess = Math.atan2(info.relative_y, info.relative_x);
+    for (int i = 0; i < NEWTON_STEPS; i++) {
+      guess -= f(info, guess)/f_prime(info, guess);
+    }
+    guess %= (2*Math.PI);
+    if (guess > Math.PI)
+    {
+      guess = -(2*Math.PI - guess);
+    }
+    double x_time = info.relative_x / (info.vel_x + info.speed_p * Math.cos(guess));
+    double y_time = info.relative_y / (info.vel_y + info.speed_p * Math.sin(guess));
+
+    // Check if t is valid
+    if (x_time < 0 || y_time < 0) {
+      DriverStation.reportError("x_time " + x_time, false);
+      DriverStation.reportError("y_time " + y_time, false);
+      //return new double[]{-1, -1};
+    }
+    if (Math.abs(x_time-y_time) > .1) {
+      DriverStation.reportError("x_time " + x_time, false);
+      DriverStation.reportError("y_time " + y_time, false);
+      //return new double[]{-1, -1};
+    }
+    return new double[]{(x_time+y_time)/2, guess};
   }
 
   // Called once the command ends or is interrupted.
@@ -96,5 +148,28 @@ public class ShootMove extends CommandBase {
   @Override
   public boolean isFinished() {
     return true;
+  }
+
+  // This class is for convenience, so that you don't have to pass in 6 parameters
+  private class RobotInfo {
+
+    // The robot distance relative to the goal (Limelight Calculations)
+    double relative_x; 
+    double relative_y; 
+
+    // The velocity of the robot (ChassisSpeeds)
+    double vel_x; 
+    double vel_y; 
+    
+    // Speed of the ball in the planar (x-y) dimension (Sen-ac)
+    double speed_p; 
+
+    // Angle of the robot/shooter on the x-y plane (What we are trying to calculate)
+    //double theta;
+
+    public RobotInfo(double r_x, double r_y, double v_x, double v_y, double s_p)
+    {
+      relative_x = r_x; relative_y = r_y; vel_x = v_x; vel_y = v_y; speed_p = s_p;
+    }
   }
 }

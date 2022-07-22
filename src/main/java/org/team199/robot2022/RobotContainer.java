@@ -176,8 +176,9 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whenHeld(new ParallelCommandGroup(new ShootMove(dt, limeShooter, teleop), new Shoot(intakeFeeder, shooter)));
-    //new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whenHeld(new ShootMove(dt, limeShooter, teleop));
+    ShootMove shootMove = null;
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whileHeld(new ParallelCommandGroup(shootMove = new ShootMove(dt, limeShooter, teleop), new ConditionalCommand(new Shoot(intakeFeeder, shooter), new InstantCommand(), shootMove::shouldShoot)));
+    //new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whileHeld(new ShootMove(dt, limeShooter, teleop));
     new POVButton(rightJoy, 90).whenPressed(new InstantCommand(() -> {
       limeIntake.setIdleTurnDirection(Limelight.TurnDirection.CW);
       limeShooter.setIdleTurnDirection(Limelight.TurnDirection.CW);
