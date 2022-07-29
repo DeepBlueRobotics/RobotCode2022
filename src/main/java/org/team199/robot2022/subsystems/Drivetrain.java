@@ -166,6 +166,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     }
 
     public void drive(double forward, double strafe, double rotation) {
+        //System.err.println(rotation);
         drive(getSwerveStates(forward, strafe, rotation));
     }
 

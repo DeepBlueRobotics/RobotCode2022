@@ -45,5 +45,16 @@
       "/SmartDashboard/Auto Selector": "String Chooser",
       "/SmartDashboard/Shooter": "Subsystem"
     }
+  },
+  "NetworkTables": {
+    "LiveWindow": {
+      "Drivetrain": {
+        "open": true
+      },
+      "IntakeFeeder": {
+        "open": true
+      },
+      "open": true
+    }
   }
 }

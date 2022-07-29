@@ -9,6 +9,7 @@ import org.team199.robot2022.subsystems.Drivetrain;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.lib.Limelight;
@@ -28,23 +29,37 @@ public class ShootMove extends CommandBase {
   private final TeleopDrive teleop;
   private double turnAngle = Math.PI; // in radians
   private final double turnTolerance = 1;
+
+  private static int count = 0;
+
+  private final Timer timer;
   
   public ShootMove(Drivetrain dt, Limelight limelight, TeleopDrive teleop) {
     // Use addRequirements() here to declare subsystem dependencies.
+    ++count;
+    SmartDashboard.putNumber("Constructor", count);
     addRequirements(this.dt = dt);
     this.limelight = limelight;
     this.teleop = teleop;
+    timer = new Timer();
+    timer.start();
   }
 
   public boolean shouldShoot()
   {
+    if (Math.abs(turnAngle) < turnTolerance) {
+      SmartDashboard.putBoolean("Shooting", true);
+    } else {
+      SmartDashboard.putBoolean("Shooting", false);
+    }
+
     return (Math.abs(turnAngle) < turnTolerance);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,48 +69,69 @@ public class ShootMove extends CommandBase {
     // shoot command will be parallelcommandgroup in robotcontainer
 
     double[] driverInputs = teleop.getAdjustedDriverInputs();
+    SmartDashboard.putNumber("Elapsed Time ShootMove", timer.get());
     // if limelight sees no goal
     // make robot turn at a constant velocity until it sees goal
     if(NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tv").getDouble(0.0) < 0.01) {
-      dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * limelight.getIdleTurnDirection().sign);
-      turnAngle = Math.PI;
-
       SmartDashboard.putNumber("Relative x", -1);
       SmartDashboard.putNumber("Relative y", -1);
       SmartDashboard.putNumber("Turn Angle", turnAngle*180/Math.PI);
+      SmartDashboard.putNumber("Turn Angle Velocity", limelight.config.steeringFactor * limelight.getIdleTurnDirection().sign);
       SmartDashboard.putNumber("Time", -1);
       SmartDashboard.putNumber("Driver Input 0", driverInputs[0]);
       SmartDashboard.putNumber("Driver Input 1", driverInputs[1]);
+      SmartDashboard.putBoolean("Target Found", false);
+      
+      dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * limelight.getIdleTurnDirection().sign);
+      
+      turnAngle = Math.PI;
       return;
     }
 
     ChassisSpeeds speeds = dt.getSpeeds();
 
-    double dist = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE)[0];
+    //double dist = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE);
     // In degrees
-    double txDeg = NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tx").getDouble(0.0);
+    //double txDeg = NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tx").getDouble(0.0);
     
     // Robot-Relative
+    double relative_x = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE)[0];
+    double relative_y = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE)[1];
+    // If not then something is seriously wrong
+    // relative_x is the "forward" distance the ball needs to travel, and at this point the goal is in range of limelight
+    // if its negative than y and x are swapped
+    assert relative_x >= 0;
+    /*
     double relative_x = dist * Math.cos(txDeg / 180 * Math.PI);
     double relative_y = dist * Math.sin(txDeg / 180 * Math.PI);
 
-    RobotInfo robotInfo = new RobotInfo(relative_x, relative_y, speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, BALL_VELOCITY_X);
+    */
+    RobotInfo robotInfo = new RobotInfo(relative_x, relative_y, speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond, BALL_VELOCITY_X);
     //double currAngle = dt.getOdometry().getPoseMeters().getRotation().getRadians(); // Field-relative
     double[] info = solve_2d(robotInfo); // in radians
     turnAngle = info[1];
     double time = info[0];
 
-    if (Math.abs(turnAngle + 1.0) < 0.01) {
-      dt.drive(driverInputs[0], driverInputs[1], 0);
-    } else {
-      dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * turnAngle);
-    }
     SmartDashboard.putNumber("Relative x", relative_x);
     SmartDashboard.putNumber("Relative y", relative_y);
     SmartDashboard.putNumber("Turn Angle", turnAngle*180/Math.PI);
+    SmartDashboard.putNumber("Turn Angle Velocity", limelight.config.steeringFactor*turnAngle*180/Math.PI);
     SmartDashboard.putNumber("Time", time);
     SmartDashboard.putNumber("Driver Input 0", driverInputs[0]);
     SmartDashboard.putNumber("Driver Input 1", driverInputs[1]);
+    SmartDashboard.putBoolean("Target Found", true);
+    dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * turnAngle);
+
+    /*
+    if (Math.abs(turnAngle + 1.0) < 0.01) {
+      dt.drive(driverInputs[0], driverInputs[1], 0);
+    } else {
+    }
+    */
+    
+    
+    
+    shouldShoot();
   }
 
   // Rearrangement of the system into standard form
