@@ -28,19 +28,22 @@ public class ShootMove extends CommandBase {
   // number of seconds ball is in air
   private final TeleopDrive teleop;
   private double turnAngle = Math.PI; // in radians
-  private final double turnTolerance = 1;
+  private final double turnTolerance = 5 * Math.PI/180;
 
-  private static int count = 0;
-
+  private double kp = 0.1;
+  private double min_turn = 2 * Math.PI/180;
+  private double min_threshold = 5 * Math.PI/180;
   private final Timer timer;
   
   public ShootMove(Drivetrain dt, Limelight limelight, TeleopDrive teleop) {
     // Use addRequirements() here to declare subsystem dependencies.
-    ++count;
-    SmartDashboard.putNumber("Constructor", count);
     addRequirements(this.dt = dt);
     this.limelight = limelight;
     this.teleop = teleop;
+    SmartDashboard.putNumber("ShootMove-kp", kp);
+    SmartDashboard.putNumber("min_turn", min_turn);
+    SmartDashboard.putNumber("min_threshold", min_threshold);
+
     timer = new Timer();
     timer.start();
   }
@@ -67,12 +70,13 @@ public class ShootMove extends CommandBase {
   public void execute() {
     // Orientation of dt is taken over to face a certain direction
     // shoot command will be parallelcommandgroup in robotcontainer
-
+    
     double[] driverInputs = teleop.getAdjustedDriverInputs();
     SmartDashboard.putNumber("Elapsed Time ShootMove", timer.get());
     // if limelight sees no goal
     // make robot turn at a constant velocity until it sees goal
     if(NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tv").getDouble(0.0) < 0.01) {
+      /*
       SmartDashboard.putNumber("Relative x", -1);
       SmartDashboard.putNumber("Relative y", -1);
       SmartDashboard.putNumber("Turn Angle", turnAngle*180/Math.PI);
@@ -80,11 +84,12 @@ public class ShootMove extends CommandBase {
       SmartDashboard.putNumber("Time", -1);
       SmartDashboard.putNumber("Driver Input 0", driverInputs[0]);
       SmartDashboard.putNumber("Driver Input 1", driverInputs[1]);
+      */
       SmartDashboard.putBoolean("Target Found", false);
-      
-      dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * limelight.getIdleTurnDirection().sign);
-      
       turnAngle = Math.PI;
+      
+      dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * turnAngle);
+      
       return;
     }
 
@@ -100,7 +105,7 @@ public class ShootMove extends CommandBase {
     // If not then something is seriously wrong
     // relative_x is the "forward" distance the ball needs to travel, and at this point the goal is in range of limelight
     // if its negative than y and x are swapped
-    assert relative_x >= 0;
+    //assert relative_x >= 0;
     /*
     double relative_x = dist * Math.cos(txDeg / 180 * Math.PI);
     double relative_y = dist * Math.sin(txDeg / 180 * Math.PI);
@@ -108,19 +113,43 @@ public class ShootMove extends CommandBase {
     */
     RobotInfo robotInfo = new RobotInfo(relative_x, relative_y, speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond, BALL_VELOCITY_X);
     //double currAngle = dt.getOdometry().getPoseMeters().getRotation().getRadians(); // Field-relative
-    double[] info = solve_2d(robotInfo); // in radians
-    turnAngle = info[1];
-    double time = info[0];
-
-    SmartDashboard.putNumber("Relative x", relative_x);
-    SmartDashboard.putNumber("Relative y", relative_y);
-    SmartDashboard.putNumber("Turn Angle", turnAngle*180/Math.PI);
-    SmartDashboard.putNumber("Turn Angle Velocity", limelight.config.steeringFactor*turnAngle*180/Math.PI);
-    SmartDashboard.putNumber("Time", time);
+    //SmartDashboard.putNumber("Relative x", relative_x);
+    //SmartDashboard.putNumber("Relative y", relative_y);
+    
+    /*
     SmartDashboard.putNumber("Driver Input 0", driverInputs[0]);
     SmartDashboard.putNumber("Driver Input 1", driverInputs[1]);
+    */
     SmartDashboard.putBoolean("Target Found", true);
-    dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * turnAngle);
+
+    double[] info = solve_2d(robotInfo); // in radians
+
+    turnAngle = info[1];
+    double time = info[0];
+    
+    SmartDashboard.putNumber("Turn Angle", turnAngle*180/Math.PI);
+    kp = SmartDashboard.getNumber("ShootMove-kp", kp);
+    min_turn = SmartDashboard.getNumber("min_turn", min_turn);
+    min_threshold = SmartDashboard.getNumber("min_threshold", min_threshold);
+
+    if (Math.abs(turnAngle) > min_threshold) {
+      dt.drive(driverInputs[0], driverInputs[1], kp * turnAngle);
+      SmartDashboard.putNumber("Turn Angle Velocity", kp * turnAngle);    
+    }
+    else {
+      if (turnAngle < 0) {
+        dt.drive(driverInputs[0], driverInputs[1], kp * turnAngle - min_turn);
+        SmartDashboard.putNumber("Turn Angle Velocity", kp * turnAngle - min_turn);    
+
+      }
+      else if (turnAngle > 0) {
+        dt.drive(driverInputs[0], driverInputs[1], kp * turnAngle + min_turn);
+        SmartDashboard.putNumber("Turn Angle Velocity", kp * turnAngle + min_turn);    
+
+      }
+    }
+
+
 
     /*
     if (Math.abs(turnAngle + 1.0) < 0.01) {
@@ -128,8 +157,6 @@ public class ShootMove extends CommandBase {
     } else {
     }
     */
-    
-    
     
     shouldShoot();
   }
@@ -149,7 +176,7 @@ public class ShootMove extends CommandBase {
   {
     // the easiest way to ensure the solution is non-degenerate is to seed newton's method with the direction to the goal
     // TODO: adjust for robot speed. radial/tangential velocity?
-    int NEWTON_STEPS = 30;
+    int NEWTON_STEPS = (int)SmartDashboard.getNumber("NewtonStep", 30);
     double guess = Math.atan2(info.relative_y, info.relative_x);
     for (int i = 0; i < NEWTON_STEPS; i++) {
       guess -= f(info, guess)/f_prime(info, guess);
@@ -163,6 +190,7 @@ public class ShootMove extends CommandBase {
     double y_time = info.relative_y / (info.vel_y + info.speed_p * Math.sin(guess));
 
     // Check if t is valid
+    /*
     if (x_time < 0 || y_time < 0) {
       DriverStation.reportError("x_time " + x_time, false);
       DriverStation.reportError("y_time " + y_time, false);
@@ -173,7 +201,8 @@ public class ShootMove extends CommandBase {
       DriverStation.reportError("y_time " + y_time, false);
       //return new double[]{-1, -1};
     }
-    return new double[]{(x_time+y_time)/2, guess};
+    */
+    return new double[]{NEWTON_STEPS, guess};
   }
 
   // Called once the command ends or is interrupted.

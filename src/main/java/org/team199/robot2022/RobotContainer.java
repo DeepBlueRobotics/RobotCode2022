@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -169,6 +170,9 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsRightJoy() {
+    ShootMove shootMove = null;
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whileHeld(shootMove = new ShootMove(dt, limeShooter, teleop));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whileHeld(new ConditionalCommand(new Shoot(intakeFeeder, shooter), new InstantCommand(), shootMove::shouldShoot));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).whileHeld(new InstantCommand(climber::slowExtendLeft)).whenReleased(new InstantCommand(climber::stopLeft));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(new InstantCommand(climber::slowRetractLeft)).whenReleased(new InstantCommand(climber::stopLeft));
@@ -176,8 +180,7 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.toggleShooterModePort).whenPressed(new InstantCommand(shooter::toggleDutyCycleMode));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
-    ShootMove shootMove = null;
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whileHeld(new ParallelCommandGroup(shootMove = new ShootMove(dt, limeShooter, teleop), new ConditionalCommand(new Shoot(intakeFeeder, shooter), new InstantCommand(), shootMove::shouldShoot)));
+    
     //new JoystickButton(rightJoy, Constants.OI.RightJoy.shootMovePort).whileHeld(new ShootMove(dt, limeShooter, teleop));
     new POVButton(rightJoy, 90).whenPressed(new InstantCommand(() -> {
       limeIntake.setIdleTurnDirection(Limelight.TurnDirection.CW);
