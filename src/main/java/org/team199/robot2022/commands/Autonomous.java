@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.lib.path.RobotPath;
+import org.carlmontrobotics.lib199.path.RobotPath;
 
 public class Autonomous extends SequentialCommandGroup {
 
