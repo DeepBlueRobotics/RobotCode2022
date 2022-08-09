@@ -30,7 +30,7 @@ public class ShootMove extends CommandBase {
   private double turnAngle = Math.PI; // in radians
   private final double turnTolerance = 5 * Math.PI/180;
 
-  private double kp = 0.1;
+  private double kp = 1.75;
   private double min_turn = 2 * Math.PI/180;
   private double min_threshold = 5 * Math.PI/180;
   private final Timer timer;
