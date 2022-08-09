@@ -50,11 +50,12 @@ public class ShootMove extends CommandBase {
 
   public boolean shouldShoot()
   {
-    if (Math.abs(turnAngle) < turnTolerance) {
-      SmartDashboard.putBoolean("Shooting", true);
-    } else {
+    if(NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tv").getDouble(0.0) == 0) {
       SmartDashboard.putBoolean("Shooting", false);
+      return false;
     }
+
+    SmartDashboard.putBoolean("Shooting", Math.abs(turnAngle) < turnTolerance);
 
     return (Math.abs(turnAngle) < turnTolerance);
   }
@@ -90,6 +91,7 @@ public class ShootMove extends CommandBase {
       
       dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * turnAngle);
       
+      shouldShoot();
       return;
     }
 
