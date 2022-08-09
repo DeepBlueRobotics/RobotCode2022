@@ -41,8 +41,8 @@ public class ShootMove extends CommandBase {
     this.limelight = limelight;
     this.teleop = teleop;
     SmartDashboard.putNumber("ShootMove-kp", kp);
-    SmartDashboard.putNumber("min_turn", min_turn);
-    SmartDashboard.putNumber("min_threshold", min_threshold);
+    //SmartDashboard.putNumber("min_turn", min_turn);
+    //SmartDashboard.putNumber("min_threshold", min_threshold);
 
     timer = new Timer();
     timer.start();
@@ -69,7 +69,7 @@ public class ShootMove extends CommandBase {
   @Override
   public void execute() {
     // Orientation of dt is taken over to face a certain direction
-    // shoot command will be parallelcommandgroup in robotcontainer
+    // shoot command will be two commands in robotcontainer
     
     double[] driverInputs = teleop.getAdjustedDriverInputs();
     SmartDashboard.putNumber("Elapsed Time ShootMove", timer.get());
@@ -129,13 +129,14 @@ public class ShootMove extends CommandBase {
     
     SmartDashboard.putNumber("Turn Angle", turnAngle*180/Math.PI);
     kp = SmartDashboard.getNumber("ShootMove-kp", kp);
-    min_turn = SmartDashboard.getNumber("min_turn", min_turn);
-    min_threshold = SmartDashboard.getNumber("min_threshold", min_threshold);
+    //min_turn = SmartDashboard.getNumber("min_turn", min_turn);
+    //min_threshold = SmartDashboard.getNumber("min_threshold", min_threshold);
 
-    if (Math.abs(turnAngle) > min_threshold) {
+    //if (Math.abs(turnAngle) > min_threshold) {
       dt.drive(driverInputs[0], driverInputs[1], kp * turnAngle);
       SmartDashboard.putNumber("Turn Angle Velocity", kp * turnAngle);    
-    }
+    //}
+    /*
     else {
       if (turnAngle < 0) {
         dt.drive(driverInputs[0], driverInputs[1], kp * turnAngle - min_turn);
@@ -148,6 +149,7 @@ public class ShootMove extends CommandBase {
 
       }
     }
+    */
 
 
 
