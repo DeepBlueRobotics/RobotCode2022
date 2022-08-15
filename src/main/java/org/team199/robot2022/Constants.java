@@ -133,9 +133,11 @@ public final class Constants {
         public static final int kIntakeMiddle = 4;
         public static final int kIntakeBottom = 5;
 
+        public static final int kBeamBreak1 = 10;
+        public static final int kBeamBreak2 = 11;
+
         public static final int kClimberLeft = 15;
         public static final int kClimberRight = 6;
-
     }
 
     public static final class OI {

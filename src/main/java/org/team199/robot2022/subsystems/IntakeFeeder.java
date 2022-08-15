@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.carlmontrobotics.lib199.MotorControllerFactory;
 import org.carlmontrobotics.lib199.SparkVelocityPIDController;
 import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -45,6 +47,10 @@ public class IntakeFeeder extends SubsystemBase {
 
   private final SparkVelocityPIDController middlePID;
   private final SparkVelocityPIDController topPID;
+
+  private final DigitalInput beamBreak1, beamBreak2;
+
+  private boolean invertBeamBreaks = false;
 
   // Constant values that can be tweaked
   private double topSpeed = 400;
@@ -107,6 +113,9 @@ public class IntakeFeeder extends SubsystemBase {
     middlePID.getEncoder().setVelocityConversionFactor(0.1);
     topPID.getEncoder().setVelocityConversionFactor(0.1);
 
+    beamBreak1 = new DigitalInput(Constants.DrivePorts.kBeamBreak1);
+    beamBreak2 = new DigitalInput(Constants.DrivePorts.kBeamBreak2);
+
     m_colorSensor.configureColorSensor(ColorSensorResolution.kColorSensorRes16bit, ColorSensorMeasurementRate.kColorRate25ms, GainFactor.kGain3x);
     m_colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes8bit, ProximitySensorMeasurementRate.kProxRate6ms);
 
@@ -139,8 +148,22 @@ public class IntakeFeeder extends SubsystemBase {
     SmartDashboard.putNumber("Proximity", proximityVal);
     proximityVal = 0;
 
+    SmartDashboard.putBoolean("Beam Break 1 Triggered", invertBeamBreaks ? !beamBreak1.get() : beamBreak1.get());
+    SmartDashboard.putBoolean("Beam Break 2 Triggered", invertBeamBreaks ? !beamBreak2.get() : beamBreak2.get());
+
+    setSize(invertBeamBreaks ? (beamBreak1.get() ? 0 : 1) + (beamBreak2.get() ? 0 : 1) : (beamBreak1.get() ? 1 : 0) + (beamBreak2.get() ? 1 : 0));
+
     addBalls();
     debug();
+  }
+
+  public void setSize(int size) {
+    if(size < 0) {
+      cargo.clear();
+      return;
+    }
+    while(cargo.size() > size) cargo.poll();
+    while(cargo.size() < size) cargo.push(true);
   }
 
   public void updateColorSensor() {
@@ -172,7 +195,8 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   public boolean useAutonomousControl() {
-    return m_colorSensor.isConnected() && !overrideSensor;
+    return true;
+    // return m_colorSensor.isConnected() && !overrideSensor;
   }
 
   public Deque<Boolean> getCargo()
@@ -182,14 +206,14 @@ public class IntakeFeeder extends SubsystemBase {
 
   public void popFirstBall()
   {
-    if (cargo.size() > 0)
-      cargo.pollLast();
+    // if (cargo.size() > 0)
+    //   cargo.pollLast();
   }
 
   public void popSecondBall()
   {
-    if (cargo.size() > 0)
-      cargo.pollFirst();
+    // if (cargo.size() > 0)
+    //   cargo.pollFirst();
   }
 
   public void clearCargo() {
