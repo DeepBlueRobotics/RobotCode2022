@@ -187,8 +187,8 @@ public class Climber extends SubsystemBase {
         }
     }
 
-    public void set(String action, CANSparkMax motor) {
-        set(action, motor, "normal");
+    public void set(Action action, CANSparkMax motor) {
+        set(action, motor, Speed.NORMAL);
     }
 
     public void stop() {
