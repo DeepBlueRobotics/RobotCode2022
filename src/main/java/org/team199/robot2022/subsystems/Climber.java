@@ -31,6 +31,18 @@ public class Climber extends SubsystemBase {
 
     private static final double retractPositionLeft = -1.151;
     private static final double retractPositionRight = -1.172;
+    public enum encoderResetPos {
+        public enum left {
+            public static double extended=5.317;
+            public static double retracted=-1.151;
+            public static double zero=0;
+        };
+        public enum right {
+            public static double extended=5.315;
+            public static double retracted=-1.172;
+            public static double zero=0;
+        };
+    }
     private static final double gearing = 9;
     private static final double kInPerSec = ((kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60);
     private static double kRetractSpeed = -((kDesiredRetractSpeedInps / kInPerSec)
@@ -61,16 +73,17 @@ public class Climber extends SubsystemBase {
         leftEncoder.setPosition(0);
         rightEncoder.setPositionConversionFactor(1 / gearing);
         rightEncoder.setPosition(0);
+
         SmartDashboard.putString("Left climber is", "Stopped");
         SmartDashboard.putString("Right climber is", "Stopped");
-        SmartDashboard.putNumber("kDesiredExtendSpeedInps", kDesiredExtendSpeedInps);
-        SmartDashboard.putNumber("kDesiredRetractSpeedInps", kDesiredRetractSpeedInps);
+        // SmartDashboard.putNumber("kDesiredExtendSpeedInps", kDesiredExtendSpeedInps);
+        // SmartDashboard.putNumber("kDesiredRetractSpeedInps", kDesiredRetractSpeedInps);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Left Climber Position", getLeftPosition());
-        SmartDashboard.putNumber("Right Climber Position", getRightPosition());
+        SmartDashboard.putNumber("L Climber Pos", leftEncoder.getPosition());
+        SmartDashboard.putNumber("R Climber Pos", rightEncoder.getPosition());
     }
 
     public void resetEncodersToExtended() {
@@ -155,44 +168,36 @@ public class Climber extends SubsystemBase {
         stopRight();
     }
 
-    public double getLeftPosition() {
-        return leftEncoder.getPosition();
-    }
-
-    public double getRightPosition() {
-        return rightEncoder.getPosition();
-    }
-
     public boolean isLeftExtended() {
-        return getLeftPosition() >= extendPositionLeft;
+        return leftEncoder.getPosition() >= extendPositionLeft;
     }
 
     public boolean isRightExtended() {
-        return getRightPosition() >= extendPositionRight;
+        return rightEncoder.getPosition() >= extendPositionRight;
     }
 
     public boolean isLeftRetracted() {
-        return getLeftPosition() <= retractPositionLeft;
+        return leftEncoder.getPosition() <= retractPositionLeft;
     }
 
     public boolean isRightRetracted() {
-        return getRightPosition() <= retractPositionRight;
+        return rightEncoder.getPosition() <= retractPositionRight;
     }
 
     public boolean isRightResetExtended() {
-        return getRightPosition() >= 0;
+        return rightEncoder.getPosition() >= 0;
     }
 
     public boolean isLeftResetExtended() {
-        return getRightPosition() >= 0;
+        return rightEncoder.getPosition() >= 0;
     }
 
     public boolean isRightResetRetracted() {
-        return getRightPosition() <= 0;
+        return rightEncoder.getPosition() <= 0;
     }
 
     public boolean isLeftResetRetracted() {
-        return getRightPosition() <= 0;
+        return rightEncoder.getPosition() <= 0;
     }
 
 }
