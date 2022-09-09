@@ -169,22 +169,35 @@ public class Climber extends SubsystemBase {
     }
 
     public void set(Action action, CANSparkMax motor, Speed speed) {
-        String dashboardSlot = motor.equals(left) ? "Left" : "Right" + " climber is";
-        String msg = action.name().toLowerCase() + "ing";
+        String dashboardSlot = motor.equals(left) ? "Left" : "Right" + " climber is"; // "Left/Right climber is"
+        String msg = action.name().toLowerCase() + "ing"; // "retracting" or "extending"
+        msg = msg.substring(0, 0).toUpperCase() + msg.substring(1); // set first letter to upper case  - "Retracting" or "Extending"
+
         if (speed == Speed.NORMAL) {
             switch (action) {
                 case RETRACT: {
-
+                    motor.set(kRetractSpeed);
                     break;
                 }
                 case EXTEND: {
-
+                    motor.set(kExtendSpeed);
                     break;
                 }
             }
         } else if (speed == Speed.SLOW) {
-
+            switch (action) {
+                case RETRACT: {
+                    motor.set(kSlowRetractSpeed);
+                    break;
+                }
+                case EXTEND: {
+                    motor.set(kSlowExtendSpeed);
+                    break;
+                }
+            }
         }
+        SmartDashboard.putString(dashboardSlot, msg);
+        keepPosition = false;
     }
 
     public void set(Action action, CANSparkMax motor) {
