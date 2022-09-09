@@ -160,10 +160,29 @@ public class Climber extends SubsystemBase {
         keepPosition = false;
     }
 
-    public void set(String action, CANSparkMax motor, String speed) {
-        if (speed == "normal") {
-            
-        } else if (speed == "slow") {
+    public enum Speed {
+        NORMAL, SLOW
+    }
+
+    public enum Action {
+        RETRACT, EXTEND
+    }
+
+    public void set(Action action, CANSparkMax motor, Speed speed) {
+        String dashboardSlot = motor.equals(left) ? "Left" : "Right" + " climber is";
+        String msg = action.name().toLowerCase() + "ing";
+        if (speed == Speed.NORMAL) {
+            switch (action) {
+                case RETRACT: {
+
+                    break;
+                }
+                case EXTEND: {
+
+                    break;
+                }
+            }
+        } else if (speed == Speed.SLOW) {
 
         }
     }
