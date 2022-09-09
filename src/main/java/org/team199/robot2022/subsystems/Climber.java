@@ -160,6 +160,18 @@ public class Climber extends SubsystemBase {
         keepPosition = false;
     }
 
+    public void set(String action, CANSparkMax motor, String speed) {
+        if (speed == "normal") {
+            
+        } else if (speed == "slow") {
+
+        }
+    }
+
+    public void set(String action, CANSparkMax motor) {
+        set(action, motor, "normal");
+    }
+
     public void stop() {
         left.set(0);
         right.set(0);
