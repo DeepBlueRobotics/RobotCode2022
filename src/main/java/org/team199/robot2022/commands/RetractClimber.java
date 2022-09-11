@@ -10,23 +10,25 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 public class RetractClimber extends ParallelCommandGroup {
+    private final Climber climber;
 
     public RetractClimber(Climber climber) {
-        super(
-            new FunctionalCommand(
-                () -> {},
-                climber::retractLeft,
-                climber::stopLeft,
-                climber::isLeftRetracted
-            ),
-            new FunctionalCommand(
-                () -> {},
-                climber::retractRight,
-                climber::stopRight,
-                climber::isRightRetracted
-            )
-        );
-        addRequirements(climber);
+        addRequirements(this.climber = climber);
+    }
+
+    @Override
+    public void initialize() {
+        climber.moveMotors(climber.MotorSpeed.kRetractSpeed,0);
+    }
+
+    @Override
+    public boolean isFinished(){
+        return (isMotorRetracted(-1,false) && isMotorRetracted(1,false));
+    }
+
+    @Override
+    public void end(){
+        climber.stopMotors(0);
     }
 
 }
