@@ -7,6 +7,7 @@ package org.team199.robot2022.commands;
 import org.team199.robot2022.subsystems.Drivetrain;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -31,8 +32,11 @@ public class ShootMove extends CommandBase {
   private final double turnTolerance = 5 * Math.PI/180;
 
   private double kp = 1.75;
-  private double min_turn = 2 * Math.PI/180;
-  private double min_threshold = 5 * Math.PI/180;
+  private double maxDist = 2.5;
+  private double distTolerance = Units.inchesToMeters(6);
+  private double dist;
+  //private double min_turn = 2 * Math.PI/180;
+  //private double min_threshold = 5 * Math.PI/180;
   private final Timer timer;
   
   public ShootMove(Drivetrain dt, Limelight limelight, TeleopDrive teleop) {
@@ -55,9 +59,10 @@ public class ShootMove extends CommandBase {
       return false;
     }
 
-    SmartDashboard.putBoolean("Shooting", Math.abs(turnAngle) < turnTolerance);
+    SmartDashboard.putBoolean("Shooting", Math.abs(turnAngle) < turnTolerance && Math.abs(dist - maxDist) < distTolerance);
 
-    return (Math.abs(turnAngle) < turnTolerance);
+    // assume its long shot for now
+    return (Math.abs(turnAngle) < turnTolerance && Math.abs(dist - maxDist) < distTolerance);
   }
 
   // Called when the command is initially scheduled.
@@ -104,6 +109,8 @@ public class ShootMove extends CommandBase {
     // Robot-Relative
     double relative_x = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE)[0];
     double relative_y = limelight.determineObjectDist(CAMERA_HEIGHT, GOAL_HEIGHT, CAMERA_ANGLE)[1];
+    dist = Math.hypot(relative_x, relative_y);
+    SmartDashboard.putNumber("Distance from Goal", dist);
     // If not then something is seriously wrong
     // relative_x is the "forward" distance the ball needs to travel, and at this point the goal is in range of limelight
     // if its negative than y and x are swapped
