@@ -18,17 +18,17 @@ public class ExtendClimber extends CommandBase {
 
     @Override
     public void initialize() {
-        climber.moveMotors(climber.MotorSpeed.kExtendSpeed,climber.Motor.both);
+        climber.moveMotors(climber.MotorSpeed.kExtendSpeed,climber.bothMotors);
     }
 
     @Override
     public boolean isFinished(){
-        return isMotorExtended(climber.Motor.both);
+        return isMotorExtended(climber.bothMotors);
     }
 
     @Override
     public void end(){
-        climber.stopMotors(climber.Motor.both);
+        climber.stopMotors(climber.bothMotors);
     }
 
 }
