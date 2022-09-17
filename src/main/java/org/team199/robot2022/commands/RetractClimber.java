@@ -18,17 +18,17 @@ public class RetractClimber extends ParallelCommandGroup {
 
     @Override
     public void initialize() {
-        climber.moveMotors(climber.MotorSpeed.kRetractSpeed,0);
+        climber.moveMotors(climber.MotorSpeed.kRetractSpeed,climber.Motor.both);
     }
 
     @Override
     public boolean isFinished(){
-        return (isMotorRetracted(-1,false) && isMotorRetracted(1,false));
+        return isMotorRetracted(climber.Motor.both);
     }
 
     @Override
     public void end(){
-        climber.stopMotors(0);
+        climber.stopMotors(climber.Motor.both);
     }
 
 }

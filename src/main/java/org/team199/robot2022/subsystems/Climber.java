@@ -66,6 +66,15 @@ public class Climber extends SubsystemBase {
       kRetractSpeed
     }
 
+    private static final int left = -1;
+    private static final int both = 0;
+    private static final int right = 1;
+    public static final enum Motor{
+      left,
+      right,
+      both,
+    }
+
 
     private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft);
     private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight);
@@ -83,7 +92,12 @@ public class Climber extends SubsystemBase {
       (MotorSpeed speed) -> {left.set(speed);SmartDashboard.putString("Left Climber State", "Moving");},
       (MotorSpeed speed) -> {left.set(speed);right.set(speed);SmartDashboard.putString("Left Climber State", "Moving");SmartDashboard.putString("Right Climber State", "Moving");},
       (MotorSpeed speed) -> {right.set(speed);SmartDashboard.putString("Right Climber State", "Moving");},
-    }
+    };
+
+    private final Consumer<double>[] getMotorPos = {
+      () -> leftEncoder.getPosition(),
+      () -> rightEncoder.getPosition(),
+    };
 
 
     public Climber() {
@@ -106,15 +120,15 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("R Climber Pos", rightEncoder.getPosition());
     }
 
-    public void resetEncodersTo(EncoderPos pos,int motor){//motor = -1 left or 1 right or 0 both
+    public void resetEncodersTo(EncoderPos pos,Motor motor){//motor = -1 left or 1 right or 0 both
       setEncoder[motor+1](pos);
     }
 
-    public void moveMotors(MotorSpeed speed, int motor){//motor = -1 left or 1 right or 0 both
+    public void moveMotors(MotorSpeed speed, Motor motor){//motor = -1 left or 1 right or 0 both
       setMotor[motor+1](speed);
     }
 
-    public void stopMotors(int motor){//motor = -1 left or 1 right or 0 both
+    public void stopMotors(Motor motor){//motor = -1 left or 1 right or 0 both
       if (motor<1){
         left.set(0);
         SmartDashboard.putString("Left climber is", "Stopped");
@@ -126,38 +140,26 @@ public class Climber extends SubsystemBase {
     }
 
 
-    public boolean isMotorExtended(int motor, boolean reset){//motor = -1 left or 1 right
-      if (motor==1){
-        if (!reset){
-          return getRightPosition() >= EncoderPos.extendRight;
-        }else{
-          return getRightPosition() >= 0;
-        }
+    public boolean isMotorExtended(Motor motor){//motor = -1 left or 1 right or 0 both
+      if (motor<1 && getMotorPos[0]() < EncoderPos.extendLeft){
+        //getLeftPosition() >= EncoderPos.extendLeft;
+        return false;
       }
-      if (motor==-1){
-        if (!reset){
-          return getLeftPosition() >= EncoderPos.extendLeft;
-        }else{
-          return getLeftPosition() >= 0;
-        }
+      if (motor>-1 && getMotorPos[1]() < EncoderPos.extendRight){
+        //return getRightPosition() >= EncoderPos.extendRight;
+        return false;
       }
+      return true;
     }
 
-    public boolean isMotorRetracted(int motor, boolean reset){//motor = -1 left or 1 right
-      if (motor==1){
-        if (!reset){
-          return getRightPosition() <= EncoderPos.retractLeft;
-        }else{
-          return getRightPosition() <= 0;
-        }
+    public boolean isMotorRetracted(Motor motor){//motor = -1 left or 1 right or 0 both
+      if (motor<1 && getMotorPos[0]() > EncoderPos.retractLeft){
+        return false;
       }
-      if (motor==-1){
-        if (!reset){
-          return getLeftPosition() <= EncoderPos.retractLeft;
-        }else{
-          return getLeftPosition() <= 0;
-        }
+      if (motor>-1 && getMotorPos[1]() > EncoderPos.retractRight){
+        return false;
       }
+      return true;
     }
 
 }
