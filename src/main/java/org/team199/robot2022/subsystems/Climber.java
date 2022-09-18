@@ -66,7 +66,7 @@ public class Climber extends SubsystemBase {
       kRetractSpeed,
     }
 
-    private static final int leftMotor = -1;
+    private static final int leftMotor = -1;//because someone requested this and there's no point slapping them in an enum
     private static final int bothMotors = 0;
     private static final int rightMotor = 1;
 
@@ -77,7 +77,7 @@ public class Climber extends SubsystemBase {
     private final RelativeEncoder rightEncoder = right.getEncoder();
 
 
-    private final Consumer<void>[] setEncoder = {//faster array[](inp) than two if's + an else in a func
+    private final Consumer<void>[] setEncoder = {//faster to array[](inp) than a bunch of if's in a func
       (EncoderPos pos) -> leftEncoder.setPosition(pos),
       (EncoderPos pos) -> {leftEncoder.setPosition(pos);rightEncoder.setPosition(pos);},
       (EncoderPos pos) -> rightEncoder.setPosition(pos),
@@ -115,17 +115,16 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("R Climber Pos", rightEncoder.getPosition());
     }
 
-    public void resetEncodersTo(EncoderPos pos,int motor){//motor = -1 left or 1 right or 0 both
+    //motor = -1 left or 1 right or 0 both
+    public void resetEncodersTo(EncoderPos pos,int motor){
 			setEncoder[motor+1].apply(pos);
-//      Consumer func = setEncoder[motor+1];
-//			func(pos);
     }
 
-    public void moveMotors(MotorSpeed speed, int motor){//motor = -1 left or 1 right or 0 both
+    public void moveMotors(MotorSpeed speed, int motor){
       setMotor[motor+1].apply(speed);
     }
 
-    public void stopMotors(int motor){//motor = -1 left or 1 right or 0 both
+    public void stopMotors(int motor){
       if (motor<1){
         left.set(0);
         SmartDashboard.putString("Left climber is", "Stopped");
@@ -137,19 +136,17 @@ public class Climber extends SubsystemBase {
     }
 
 
-    public boolean isMotorExtended(int motor){//motor = -1 left or 1 right or 0 both
+    public boolean isMotorExtended(int motor){//is the motor(s) extended?
       if (motor<1 && getMotorPos[0].apply() < EncoderPos.extendLeft){
-        //getLeftPosition() >= EncoderPos.extendLeft;
         return false;
       }
       if (motor>-1 && getMotorPos[1].apply() < EncoderPos.extendRight){
-        //return getRightPosition() >= EncoderPos.extendRight;
         return false;
       }
       return true;
     }
 
-    public boolean isMotorRetracted(int motor){//motor = -1 left or 1 right or 0 both
+    public boolean isMotorRetracted(int motor){//is the motor(s) retracted?
       if (motor<1 && getMotorPos[0].apply() > EncoderPos.retractLeft){
         return false;
       }
