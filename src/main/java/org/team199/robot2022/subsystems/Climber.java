@@ -111,7 +111,7 @@ public class Climber extends SubsystemBase {
       }
       if (motor>-1){
         right.set(0);
-        SmartDashboard.putString("Right climber is", "Stopped");
+        SmartDashboard.putString("Right Climber State", "Stop");
       }
     }
 
