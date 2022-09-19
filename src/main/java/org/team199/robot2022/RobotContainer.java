@@ -11,8 +11,6 @@ import org.team199.robot2022.commands.ExtendClimber;
 import org.team199.robot2022.commands.PassiveAutomaticIntake;
 import org.team199.robot2022.commands.PassiveManualIntake;
 import org.team199.robot2022.commands.Regurgitate;
-import org.team199.robot2022.commands.ResetAndExtendClimber;
-import org.team199.robot2022.commands.ResetAndRetractClimber;
 import org.team199.robot2022.commands.RetractClimber;
 import org.team199.robot2022.commands.Shoot;
 import org.team199.robot2022.commands.TeleopDrive;
@@ -60,7 +58,7 @@ public class RobotContainer {
 
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
-  
+
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -126,17 +124,14 @@ public class RobotContainer {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetAndExtendClimberPort).whenPressed(new ResetAndExtendClimber(climber));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetAndRetractClimberPort).whenPressed(new ResetAndRetractClimber(climber));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetClimberEncoders). whenPressed(new InstantCommand(climber::resetEncodersToZero));
   }
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).whileHeld(new InstantCommand(climber::slowExtendLeft)).whenReleased(new InstantCommand(climber::stopLeft));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(new InstantCommand(climber::slowRetractLeft)).whenReleased(new InstantCommand(climber::stopLeft));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(new InstantCommand(climber::slowExtendRight)).whenReleased(new InstantCommand(climber::stopRight));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(climber::slowRetractRight)).whenReleased(new InstantCommand(climber::stopRight));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowExtend,climber.leftMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(climber.leftMotor)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowRetract,climber.leftMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(climber.leftMotor)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowExtend,climber.rightMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(climber.rightMotor)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowRetract,climber.rightMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(climber.rightMotor)));
   }
 
   private void configureButtonBindingsController() {
@@ -197,7 +192,7 @@ public class RobotContainer {
 
   /**
    * Processes an input from the joystick into a value between -1 and 1
-   * 
+   *
    * @param value The value to be processed.
    * @return The processed value.
    */

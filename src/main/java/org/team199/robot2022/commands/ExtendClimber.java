@@ -6,27 +6,23 @@ package org.team199.robot2022.commands;
 
 import org.team199.robot2022.subsystems.Climber;
 
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class ExtendClimber extends CommandBase {
-    private final Climber climber;
+    private Climber climber;
 
     public ExtendClimber(Climber climber) {
         addRequirements(this.climber = climber);
     }
 
-    @Override
     public void initialize() {
-        climber.moveMotors(climber.MotorSpeed.kExtendSpeed,climber.bothMotors);
+        climber.moveMotors(Climber.MotorSpeed.extend,climber.bothMotors);
     }
 
-    @Override
     public boolean isFinished(){
-        return isMotorExtended(climber.bothMotors);
+        return climber.isMotorExtended(climber.bothMotors);
     }
 
-    @Override
     public void end(){
         climber.stopMotors(climber.bothMotors);
     }
