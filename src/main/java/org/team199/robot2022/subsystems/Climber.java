@@ -52,16 +52,30 @@ public class Climber extends SubsystemBase {
     private final RelativeEncoder rightEncoder = right.getEncoder();
 
 
-    private final Consumer[] setEncoder = new Consumer[]{//faster to array[](inp) than a bunch of if's in a func
+    private final Consumer[] setEncoder = new Consumer[]{ // faster to array[](inp) than a bunch of if's in a func
       (pos) -> leftEncoder.setPosition((double) pos),
-      (pos) -> {leftEncoder.setPosition((double) pos);rightEncoder.setPosition((double) pos);},
+      (pos) -> {
+        leftEncoder.setPosition((double) pos);
+        rightEncoder.setPosition((double) pos);
+      },
       (pos) -> rightEncoder.setPosition((double) pos),
     };
 
     private final Consumer[] setMotor = new Consumer[]{
-      (speed) -> {left.set((double) speed);SmartDashboard.putString("Left Climber State", "Moving");},
-      (speed) -> {left.set((double) speed);right.set((double) speed);SmartDashboard.putString("Left Climber State", "Moving");SmartDashboard.putString("Right Climber State", "Moving");},
-      (speed) -> {right.set((double) speed);SmartDashboard.putString("Right Climber State", "Moving");},
+      (speed) -> {
+        left.set((double) speed);
+        SmartDashboard.putString("Left Climber State", "Moving");
+      },
+      (speed) -> {
+        left.set((double) speed);
+        right.set((double) speed);
+        SmartDashboard.putString("Left Climber State", "Moving");
+        SmartDashboard.putString("Right Climber State", "Moving");
+      },
+      (speed) -> {
+        right.set((double) speed);
+        SmartDashboard.putString("Right Climber State", "Moving");
+      },
     };
 
     public Climber() {
