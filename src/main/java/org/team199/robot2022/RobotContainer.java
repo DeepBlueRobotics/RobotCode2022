@@ -99,8 +99,9 @@ public class RobotContainer {
       new AutoPath(true, loadPaths("TarmacShootAndTaxi2"), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
       new AutoPath(true,loadPaths("2BallAuto1(1)", "2BallAuto1(2)"), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
       new AutoPath(true, loadPaths("2BallAuto2(1)", "2BallAuto2(2)"), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
-      new AutoPath(true, loadPaths("3BallAuto(1)", "3BallAuto(2)", "3BallAuto(3)", "3BallAuto(4)", "3BallAuto(5)"), false, true, ShotPosition.FENDER, ShotPosition.FENDER),
-      new AutoPath(false, loadPaths("RotateInPlace"), false, false, ShotPosition.FENDER, ShotPosition.FENDER)
+      new AutoPath(true, loadPaths("connorpath1", "connorpath2"), true, true, ShotPosition.FENDER, ShotPosition.FENDER)
+      //new AutoPath(true, loadPaths("3BallAuto(1)", "3BallAuto(2)", "3BallAuto(3)", "3BallAuto(4)", "3BallAuto(5)"), false, true, ShotPosition.FENDER, ShotPosition.FENDER),
+      //new AutoPath(false, loadPaths("RotateInPlace"), false, false, ShotPosition.FENDER, ShotPosition.FENDER)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
