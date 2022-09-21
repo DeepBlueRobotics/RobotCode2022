@@ -1,6 +1,6 @@
 package org.team199.robot2022;
 
-import frc.robot.lib.path.RobotPath;
+import org.carlmontrobotics.lib199.path.RobotPath;
 import java.util.List;
 
 import org.team199.robot2022.subsystems.Shooter.ShotPosition;

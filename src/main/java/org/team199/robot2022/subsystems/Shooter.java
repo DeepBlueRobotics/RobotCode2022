@@ -8,11 +8,11 @@ import org.team199.robot2022.Constants;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.lib.MotorControllerFactory;
-import frc.robot.lib.SparkVelocityPIDController;
-import frc.robot.lib.MotorErrors.TemperatureLimit;
-import frc.robot.lib.LinearActuator;
-import frc.robot.lib.LinearInterpolation;
+import org.carlmontrobotics.lib199.MotorControllerFactory;
+import org.carlmontrobotics.lib199.SparkVelocityPIDController;
+import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
+import org.carlmontrobotics.lib199.LinearActuator;
+import org.carlmontrobotics.lib199.LinearInterpolation;
 
 public class Shooter extends SubsystemBase {
     private static double kV = 0.129 / 60;

@@ -39,6 +39,12 @@ deploy {
     }
 }
 
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
 // Set to true to use debug for JNI.
@@ -68,7 +74,7 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.12'
-    implementation "org.carlmontrobotics:lib199:unspecified"
+    implementation "com.github.deepbluerobotics:lib199:1.0.2"
 }
 
 // Simulation configuration (e.g. environment variables).
