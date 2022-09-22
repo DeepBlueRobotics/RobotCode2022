@@ -33,12 +33,33 @@ public class Climber extends SubsystemBase {
     private static final double kVoltsToCounterTorque = 10.5;
     private static final double kSlowVoltsToCounterTorque = (1.1D / 32) * 12;
 
-    public static enum MotorSpeed{retract,extend,slowRetract,slowExtend;};
-    private static Dictionary dMotorSpeed = new Hashtable();//given values in constructor
+    public static enum MotorSpeed{
+      retract(-((kDesiredRetractSpeedInps / kInPerSec) + (kVoltsToCounterTorque / 12))),// ~ -0.06151
+      extend(kDesiredExtendSpeedInps / kInPerSec),// ~0.30261
+      slowRetract(-((kSlowDesiredRetractSpeedInps / kInPerSec) + (kSlowVoltsToCounterTorque / 12))),// ~ -0.06151
+      slowExtend(kSlowDesiredExtendSpeedInps / kInPerSec);// ~0.30261
+
+      public final double value;
+
+      private MotorSpeed(double value) {
+          this.value = value;
+      }
+    };
 
 
-    public static enum EncoderPos{extendLeft,extendRight,retractLeft,retractRight,zero;};
-    private static Dictionary dEncoderPos = new Hashtable();//given values in constructor
+    public static enum EncoderPos{
+      extendLeft(-5.317),
+      extendRight(5.315),
+      retractLeft(-1.151),
+      retractRight(-1.172),
+      zero(0.0);
+
+      public final double value;
+
+      private EncoderPos(double value) {
+          this.value = value;
+      }
+    };
 
 
     public static final int leftMotor = -1;//because someone requested this and there's no point slapping them in an enum
@@ -90,17 +111,6 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putString("Right Climber State", "Stop");
         SmartDashboard.putNumber("kDesiredExtendSpeedInps", kDesiredExtendSpeedInps);
         SmartDashboard.putNumber("kDesiredRetractSpeedInps", kDesiredRetractSpeedInps);
-
-        dEncoderPos.put(EncoderPos.extendRight, 5.315);
-        dEncoderPos.put(EncoderPos.retractLeft, -1.151);
-        dEncoderPos.put(EncoderPos.extendLeft, -5.317);
-        dEncoderPos.put(EncoderPos.retractRight, -1.172);
-        dEncoderPos.put(EncoderPos.zero, 0.0);
-
-        dMotorSpeed.put(MotorSpeed.retract, -((kDesiredRetractSpeedInps / kInPerSec) + (kVoltsToCounterTorque / 12))); // ~ -0.06151
-        dMotorSpeed.put(MotorSpeed.extend, (kDesiredExtendSpeedInps / kInPerSec)); // ~0.30261
-        dMotorSpeed.put(MotorSpeed.slowRetract, -((kSlowDesiredRetractSpeedInps / kInPerSec) + (kSlowVoltsToCounterTorque / 12))); // ~ -0.06151
-        dMotorSpeed.put(MotorSpeed.slowExtend, (kSlowDesiredExtendSpeedInps / kInPerSec)); // ~0.30261
     }
 
     @Override
@@ -110,12 +120,13 @@ public class Climber extends SubsystemBase {
     }
 
     //motor = -1 left or 1 right or 0 both
-    public void resetEncodersTo(EncoderPos pos,int motor){
-			setEncoder[motor+1].accept(dEncoderPos.get(pos));
+    public void resetEncodersTo(EncoderPos posEnum,int motor){
+			// setEncoder[motor+1].accept(dEncoderPos.get(pos));
+      setEncoder[motor+1].accept(posEnum.value);
     }
 
-    public void moveMotors(MotorSpeed speed, int motor){
-      setMotor[motor+1].accept(dMotorSpeed.get(speed));
+    public void moveMotors(MotorSpeed speedEnum, int motor){
+      setMotor[motor+1].accept(speedEnum.value);
     }
 
     public void stopMotors(int motor){
@@ -129,22 +140,21 @@ public class Climber extends SubsystemBase {
       }
     }
 
-
     public boolean isMotorExtended(int motor){//is the motor(s) extended?
-      if (motor<1 && leftEncoder.getPosition() < (double) dEncoderPos.get(EncoderPos.extendLeft)){
+      if (motor<1 && leftEncoder.getPosition() < EncoderPos.extendLeft.value){
         return false;
       }
-      if (motor>-1 && rightEncoder.getPosition() < (double) dEncoderPos.get(EncoderPos.extendRight)){
+      if (motor>-1 && rightEncoder.getPosition() < EncoderPos.extendRight.value){
         return false;
       }
       return true;
     }
 
     public boolean isMotorRetracted(int motor){//is the motor(s) retracted?
-      if (motor<1 && leftEncoder.getPosition() > (double) dEncoderPos.get(EncoderPos.retractLeft)){
+      if (motor<1 && leftEncoder.getPosition() > EncoderPos.retractLeft.value){
         return false;
       }
-      if (motor>-1 && rightEncoder.getPosition() > (double) dEncoderPos.get(EncoderPos.retractRight)){
+      if (motor>-1 && rightEncoder.getPosition() > EncoderPos.retractRight.value){
         return false;
       }
       return true;
