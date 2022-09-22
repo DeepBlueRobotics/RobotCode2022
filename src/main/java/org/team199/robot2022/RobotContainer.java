@@ -128,10 +128,10 @@ public class RobotContainer {
 
   private void configureButtonBindingsRightJoy() {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.shootPort).whenPressed(new Shoot(intakeFeeder, shooter));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowExtend,climber.leftMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(climber.leftMotor)));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowRetract,climber.leftMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(climber.leftMotor)));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowExtend,climber.rightMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(climber.rightMotor)));
-    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowRetract,climber.rightMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(climber.rightMotor)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendLeftClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowExtend,Climber.leftMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(Climber.leftMotor)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowRetract,Climber.leftMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(Climber.leftMotor)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowExtend,Climber.rightMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(Climber.rightMotor)));
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowRetract,Climber.rightMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(Climber.rightMotor)));
   }
 
   private void configureButtonBindingsController() {
