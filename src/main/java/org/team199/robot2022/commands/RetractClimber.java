@@ -6,25 +6,26 @@ package org.team199.robot2022.commands;
 
 import org.team199.robot2022.subsystems.Climber;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
-public class RetractClimber extends CommandBase {
-    private Climber climber;
+public class RetractClimber extends ParallelCommandGroup {
 
     public RetractClimber(Climber climber) {
-        addRequirements(this.climber = climber);
+        super(
+            new FunctionalCommand(
+              () -> {},
+              () -> {climber.moveMotors(Climber.MotorSpeed.retract,climber.rightMotor);},
+              (interrupted) -> {climber.stopMotors(climber.rightMotor);},
+              () -> {return climber.isMotorRetracted(climber.rightMotor);}
+            ),
+            new FunctionalCommand(
+              () -> {},
+              () -> {climber.moveMotors(Climber.MotorSpeed.retract,climber.leftMotor);},
+              (interrupted) -> {climber.stopMotors(climber.leftMotor);},
+              () -> {return climber.isMotorRetracted(climber.leftMotor);}
+            )
+        );
+        addRequirements(climber);
     }
-
-    public void initialize() {
-        climber.moveMotors(Climber.MotorSpeed.retract,climber.bothMotors);
-    }
-
-    public boolean isFinished(){
-        return climber.isMotorRetracted(climber.bothMotors);
-    }
-
-    public void end(){
-        climber.stopMotors(climber.bothMotors);
-    }
-
 }

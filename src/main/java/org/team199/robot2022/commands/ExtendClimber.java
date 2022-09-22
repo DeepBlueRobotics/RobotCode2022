@@ -6,25 +6,26 @@ package org.team199.robot2022.commands;
 
 import org.team199.robot2022.subsystems.Climber;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
-public class ExtendClimber extends CommandBase {
-    private Climber climber;
+public class ExtendClimber extends ParallelCommandGroup {
 
     public ExtendClimber(Climber climber) {
-        addRequirements(this.climber = climber);
+        super(
+            new FunctionalCommand(
+                () -> {},
+                () -> {climber.moveMotors(Climber.MotorSpeed.extend,climber.rightMotor);},
+                (interrupted) -> {climber.stopMotors(climber.rightMotor);},
+                () -> {return climber.isMotorExtended(climber.rightMotor);}
+            ),
+            new FunctionalCommand(
+                () -> {},
+                () -> {climber.moveMotors(Climber.MotorSpeed.extend,climber.leftMotor);},
+                (interrupted) -> {climber.stopMotors(climber.leftMotor);},
+                () -> {return climber.isMotorExtended(climber.leftMotor);}
+            )
+        );
+        addRequirements(climber);
     }
-
-    public void initialize() {
-        climber.moveMotors(Climber.MotorSpeed.extend,climber.bothMotors);
-    }
-
-    public boolean isFinished(){
-        return climber.isMotorExtended(climber.bothMotors);
-    }
-
-    public void end(){
-        climber.stopMotors(climber.bothMotors);
-    }
-
 }
