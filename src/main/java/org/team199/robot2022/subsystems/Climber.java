@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MotorControllerFactory;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
 import java.util.Hashtable;
 import java.util.Dictionary;
 
@@ -73,28 +73,28 @@ public class Climber extends SubsystemBase {
     private final RelativeEncoder rightEncoder = right.getEncoder();
 
 
-    private final Consumer[] setEncoder = new Consumer[]{ // faster to array[](inp) than a bunch of if's in a func
-      (pos) -> leftEncoder.setPosition((double) pos),
+    private final DoubleConsumer[] setEncoder = new DoubleConsumer[]{ // faster to array[](inp) than a bunch of if's in a func
+      (pos) -> leftEncoder.setPosition(pos),
       (pos) -> {
-        leftEncoder.setPosition((double) pos);
-        rightEncoder.setPosition((double) pos);
+        leftEncoder.setPosition(pos);
+        rightEncoder.setPosition(pos);
       },
-      (pos) -> rightEncoder.setPosition((double) pos),
+      (pos) -> rightEncoder.setPosition(pos),
     };
 
-    private final Consumer[] setMotor = new Consumer[]{
+    private final DoubleConsumer[] setMotor = new DoubleConsumer[]{
       (speed) -> {
-        left.set((double) speed);
+        left.set(speed);
         SmartDashboard.putString("Left Climber State", "Moving");
       },
       (speed) -> {
-        left.set((double) speed);
-        right.set((double) speed);
+        left.set(speed);
+        right.set(speed);
         SmartDashboard.putString("Left Climber State", "Moving");
         SmartDashboard.putString("Right Climber State", "Moving");
       },
       (speed) -> {
-        right.set((double) speed);
+        right.set(speed);
         SmartDashboard.putString("Right Climber State", "Moving");
       },
     };
