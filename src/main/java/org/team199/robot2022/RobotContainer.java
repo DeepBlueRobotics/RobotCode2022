@@ -65,7 +65,7 @@ public class RobotContainer {
   public final Drivetrain dt = new Drivetrain();
   public final PowerDistribution pdp = new PowerDistribution();
   public final Shooter shooter = new Shooter();
-  private final Limelight lime = new Limelight(1/90d);
+  private final Limelight lime = new Limelight("limelight-intake", 1/90d);
 
   public final IntakeFeeder intakeFeeder;
 
