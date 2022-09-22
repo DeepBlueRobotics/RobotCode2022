@@ -107,8 +107,8 @@ public class Climber extends SubsystemBase {
         leftEncoder.setPosition(0);
         rightEncoder.setPositionConversionFactor(1 / gearing);
         rightEncoder.setPosition(0);
-        SmartDashboard.putString("Left Climber State", "Stop");
-        SmartDashboard.putString("Right Climber State", "Stop");
+        SmartDashboard.putString("Left Climber State", "Stopped");
+        SmartDashboard.putString("Right Climber State", "Stopped");
         SmartDashboard.putNumber("kDesiredExtendSpeedInps", kDesiredExtendSpeedInps);
         SmartDashboard.putNumber("kDesiredRetractSpeedInps", kDesiredRetractSpeedInps);
     }
@@ -132,11 +132,11 @@ public class Climber extends SubsystemBase {
     public void stopMotors(int motor){
       if (motor<1){
         left.set(0);
-        SmartDashboard.putString("Left Climber State", "Stop");
+        SmartDashboard.putString("Left Climber State", "Stopped");
       }
       if (motor>-1){
         right.set(0);
-        SmartDashboard.putString("Right Climber State", "Stop");
+        SmartDashboard.putString("Right Climber State", "Stopped");
       }
     }
 
