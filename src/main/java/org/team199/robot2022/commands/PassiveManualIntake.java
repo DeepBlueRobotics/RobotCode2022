@@ -23,7 +23,7 @@ public class PassiveManualIntake extends CommandBase {
         SmartDashboard.putString("IntakeFeeder Default Type", "Manual");
         // Reset the balls in the cargo as color sensor no longer works and we cannot
         // accurately record the cargo
-        intakeFeeder.clearCargo();
+        // intakeFeeder.clearCargo();
         // Manually intake balls
         if(lastFeed != intakeFeeder.getNumBalls()) isSpinningUp = true;
         lastFeed = intakeFeeder.getNumBalls();
