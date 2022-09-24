@@ -33,34 +33,8 @@ public class Climber extends SubsystemBase {
     private static final double kVoltsToCounterTorque = 10.5;
     private static final double kSlowVoltsToCounterTorque = (1.1D / 32) * 12;
 
-    public static enum MotorSpeed{
-      retract(-((kDesiredRetractSpeedInps / kInPerSec) + (kVoltsToCounterTorque / 12))),// ~ -0.06151
-      extend(kDesiredExtendSpeedInps / kInPerSec),// ~0.30261
-      slowRetract(-((kSlowDesiredRetractSpeedInps / kInPerSec) + (kSlowVoltsToCounterTorque / 12))),// ~ -0.06151
-      slowExtend(kSlowDesiredExtendSpeedInps / kInPerSec);// ~0.30261
-
-      public final double value;
-
-      private MotorSpeed(double value) {
-          this.value = value;
-      }
-    };
-
-
-    public static enum EncoderPos{
-      extendLeft(-5.317),
-      extendRight(5.315),
-      retractLeft(-1.151),
-      retractRight(-1.172),
-      zero(0.0);
-
-      public final double value;
-
-      private EncoderPos(double value) {
-          this.value = value;
-      }
-    };
-
+    private boolean keepPosition = true;
+    private double holdTolerance = 0.05;
 
     public static final int leftMotor = -1;//because someone requested this and there's no point slapping them in an enum
     public static final int bothMotors = 0;
@@ -117,6 +91,26 @@ public class Climber extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("L Climber Pos", leftEncoder.getPosition());
         SmartDashboard.putNumber("R Climber Pos", rightEncoder.getPosition());
+
+        holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
+        SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
+        SmartDashboard.putBoolean("Climber: Keep Zeroed", keepPosition);
+        keepZeroed();
+    }
+
+    public void keepZeroed() {
+        if(keepPosition) {
+            if(Math.abs(getLeftPosition()) > holdTolerance) {
+                left.set(Math.signum(getLeftPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
+            } else {
+                left.set(0);
+            }
+            if(Math.abs(getRightPosition()) > holdTolerance) {
+                right.set(Math.signum(getRightPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
+            } else {
+                right.set(0);
+            }
+        }
     }
 
     //motor = -1 left or 1 right or 0 both
@@ -159,5 +153,33 @@ public class Climber extends SubsystemBase {
       }
       return true;
     }
+
+    public static enum MotorSpeed{
+      retract(-((kDesiredRetractSpeedInps / kInPerSec) + (kVoltsToCounterTorque / 12))),// ~ -0.06151
+      extend(kDesiredExtendSpeedInps / kInPerSec),// ~0.30261
+      slowRetract(-((kSlowDesiredRetractSpeedInps / kInPerSec) + (kSlowVoltsToCounterTorque / 12))),// ~ -0.06151
+      slowExtend(kSlowDesiredExtendSpeedInps / kInPerSec);// ~0.30261
+
+      public final double value;
+
+      private MotorSpeed(double value) {
+          this.value = value;
+      }
+    };
+
+
+    public static enum EncoderPos{
+      extendLeft(-5.317),
+      extendRight(5.315),
+      retractLeft(-1.151),
+      retractRight(-1.172),
+      zero(0.0);
+
+      public final double value;
+
+      private EncoderPos(double value) {
+          this.value = value;
+      }
+    };
 
 }
