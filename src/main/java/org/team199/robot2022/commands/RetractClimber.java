@@ -9,24 +9,23 @@ import org.team199.robot2022.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
-public class RetractClimber extends ParallelCommandGroup {
+public final class RetractClimber extends ParallelCommandGroup {
 
     public RetractClimber(Climber climber) {
         super(
             new FunctionalCommand(
-                () -> {},
-                climber::retractLeft,
-                climber::stopLeft,
-                climber::isLeftRetracted
+              () -> {},
+              () -> {climber.moveMotors(Climber.MotorSpeed.retract,climber.rightMotor);},
+              (interrupted) -> {climber.stopMotors(climber.rightMotor);},
+              () -> {return climber.isMotorRetracted(climber.rightMotor);}
             ),
             new FunctionalCommand(
-                () -> {},
-                climber::retractRight,
-                climber::stopRight,
-                climber::isRightRetracted
+              () -> {},
+              () -> {climber.moveMotors(Climber.MotorSpeed.retract,climber.leftMotor);},
+              (interrupted) -> {climber.stopMotors(climber.leftMotor);},
+              () -> {return climber.isMotorRetracted(climber.leftMotor);}
             )
         );
         addRequirements(climber);
     }
-
 }
