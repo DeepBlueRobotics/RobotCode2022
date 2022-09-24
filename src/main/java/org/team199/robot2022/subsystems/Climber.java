@@ -92,33 +92,8 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-<<<<<<< HEAD
-        SmartDashboard.putNumber("Left Climber Position", getLeftPosition());
-        SmartDashboard.putNumber("Right Climber Position", getRightPosition());
-        holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
-        SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
-        SmartDashboard.putBoolean("Climber: Keep Zeroed", keepPosition);
-        keepZeroed();
-    }
-
-    public void keepZeroed() {
-        if(keepPosition) {
-            if(Math.abs(getLeftPosition()) > holdTolerance) {
-                left.set(Math.signum(getLeftPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
-            } else {
-                left.set(0);
-            }
-            if(Math.abs(getRightPosition()) > holdTolerance) {
-                right.set(Math.signum(getRightPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
-            } else {
-                right.set(0);
-            }
-        }
-    }
-=======
         SmartDashboard.putNumber("L Climber Pos", leftEncoder.getPosition());
         SmartDashboard.putNumber("R Climber Pos", rightEncoder.getPosition());
->>>>>>> milkybeans
 
         holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
@@ -141,56 +116,6 @@ public class Climber extends SubsystemBase {
         }
     }
 
-<<<<<<< HEAD
-    public void extendLeft() {
-        left.set(kExtendSpeed);
-        SmartDashboard.putString("Left climber is", "Extending");
-        keepPosition = false;
-    }
-
-    public void extendRight() {
-        right.set(kExtendSpeed);
-        SmartDashboard.putString("Right climber is", "Extending");
-        keepPosition = false;
-    }
-
-    public void retractLeft() {
-        left.set(kRetractSpeed);
-        SmartDashboard.putString("Left climber is", "Retracting");
-        keepPosition = false;
-    }
-
-    public void retractRight() {
-        right.set(kRetractSpeed);
-        SmartDashboard.putString("Right climber is", "Retracting");
-        keepPosition = false;
-    }
-
-    public void slowExtendLeft() {
-        left.set(kSlowExtendSpeed);
-        SmartDashboard.putString("Left climber is", "Extending");
-        keepPosition = false;
-    }
-
-    public void slowExtendRight() {
-        right.set(kSlowExtendSpeed);
-        SmartDashboard.putString("Right climber is", "Extending");
-        keepPosition = false;
-    }
-    public void slowRetractLeft() {
-        left.set(kSlowRetractSpeed);
-        SmartDashboard.putString("Left climber is", "Retracting");
-        keepPosition = false;
-    }
-
-    public void slowRetractRight() {
-        right.set(kSlowRetractSpeed);
-        SmartDashboard.putString("Right climber is", "Retracting");
-        keepPosition = false;
-    }
-
-    public void stop() {
-=======
     //motor = -1 left or 1 right or 0 both
     public void resetEncodersTo(EncoderPos posEnum,int motor){
 			// setEncoder[motor+1].accept(dEncoderPos.get(pos));
@@ -203,7 +128,6 @@ public class Climber extends SubsystemBase {
 
     public void stopMotors(int motor){
       if (motor<1){
->>>>>>> milkybeans
         left.set(0);
         SmartDashboard.putString("Left Climber State", "Stopped");
       }
