@@ -103,13 +103,13 @@ public class Climber extends SubsystemBase {
 
     public void keepZeroed() {
         if(keepPosition) {
-            if(Math.abs(getLeftPosition()) > holdTolerance) {
-                left.set(Math.signum(getLeftPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
+            if(Math.abs(leftEncoder.getPosition()) > holdTolerance) {
+                left.set(Math.signum(leftEncoder.getPosition()) > 0 ? MotorSpeed.slowRetract.value : MotorSpeed.slowExtend.value);
             } else {
                 left.set(0);
             }
-            if(Math.abs(getRightPosition()) > holdTolerance) {
-                right.set(Math.signum(getRightPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
+            if(Math.abs(rightEncoder.getPosition()) > holdTolerance) {
+                right.set(Math.signum(rightEncoder.getPosition()) > 0 ? MotorSpeed.slowRetract.value : MotorSpeed.slowExtend.value);
             } else {
                 right.set(0);
             }

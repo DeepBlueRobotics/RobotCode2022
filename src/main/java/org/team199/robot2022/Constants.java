@@ -151,6 +151,7 @@ public final class Constants {
 
             public static final int manualAddPort = 3;
             public static final int manualSubtractPort = 2;
+            public static final int overridePort = 5;
             public static final int shootSoftOnePort = 6;
             public static final int resetAndExtendClimberPort = 9;
             public static final int resetAndRetractClimberPort = 8;
