@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -58,7 +60,9 @@ public class RobotContainer {
 
   public final DigitalInput[] autoSelectors;
   public final AutoPath[] autoPaths;
+  private final SendableChooser<AutoPath> autoSelector = new SendableChooser<>();
 
+  private final boolean inCompetition = true;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -124,6 +128,11 @@ public class RobotContainer {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualAddPort).whenPressed(new InstantCommand(intakeFeeder::manualAdd));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.manualSubtractPort).whenPressed(new InstantCommand(intakeFeeder::manualSub));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
+
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetClimberEncoders). whenPressed(new InstantCommand(()->climber.resetEncodersTo(Climber.EncoderPos.zero,Climber.bothMotors)));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleDriveMode).whenPressed(new InstantCommand( () -> {SmartDashboard.putBoolean("Field Oriented", SmartDashboard.getBoolean("Field Oriented", true) ? false : true);}));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleLongShot).whenPressed(new InstantCommand(shooter::toggleLongShot));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetFieldOriented).whenPressed(new SequentialCommandGroup(new InstantCommand(() -> {SmartDashboard.putBoolean("Field Oriented", true);}), new WaitCommand(0.05), new InstantCommand(() -> {SmartDashboard.putNumber("Field Offset from North (degrees)", SmartDashboard.getNumber("Field Offset from North (degrees)", 0) - dt.getHeadingDeg() + 180);})));
   }
 
   private void configureButtonBindingsRightJoy() {
@@ -132,6 +141,8 @@ public class RobotContainer {
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractLeftClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowRetract,Climber.leftMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(Climber.leftMotor)));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowExtendRightClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowExtend,Climber.rightMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(Climber.rightMotor)));
     new JoystickButton(rightJoy, Constants.OI.RightJoy.slowRetractRightClimberPort).whileHeld(new InstantCommand(()->climber.moveMotors(Climber.MotorSpeed.slowRetract,Climber.rightMotor))).whenReleased(new InstantCommand(()->climber.stopMotors(Climber.rightMotor)));
+
+    new JoystickButton(rightJoy, Constants.OI.RightJoy.overridePort).whenPressed(new InstantCommand(intakeFeeder::override));
   }
 
   private void configureButtonBindingsController() {
