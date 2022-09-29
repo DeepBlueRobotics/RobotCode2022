@@ -27,8 +27,8 @@ public class Climber extends SubsystemBase {
 
     private static final double gearing = 9;
     private static final double kInPerSec = ((kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60);
-    private static final double kSlowDesiredRetractSpeedInps = 1;
-    private static final double kSlowDesiredExtendSpeedInps = 1;
+    private static final double kSlowDesiredRetractSpeedInps = 2;
+    private static final double kSlowDesiredExtendSpeedInps = 2;
 
     // Torque is 2 * 9 * 0.5 = 9
     // Torque on the motor is Torque / ( gearing = 9 ) = 1
@@ -172,10 +172,10 @@ public class Climber extends SubsystemBase {
 
 
     public static enum EncoderPos{
-      extendLeft(-5.317),
-      extendRight(5.315),
-      retractLeft(-1.151),
-      retractRight(-1.172),
+      extendLeft(6.315),
+      extendRight(6.315),
+      retractLeft(-0.6),
+      retractRight(-0.6),
       zero(0.0);
 
       public final double value;
