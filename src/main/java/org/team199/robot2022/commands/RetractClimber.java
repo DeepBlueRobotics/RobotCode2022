@@ -9,7 +9,7 @@ import org.team199.robot2022.subsystems.Climber;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
-public final class RetractClimber extends ParallelCommandGroup {
+public class RetractClimber extends ParallelCommandGroup {
 
     public RetractClimber(Climber climber) {
         super(
