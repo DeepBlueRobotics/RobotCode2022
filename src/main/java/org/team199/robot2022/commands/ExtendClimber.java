@@ -15,15 +15,15 @@ public final class ExtendClimber extends ParallelCommandGroup {
         super(
             new FunctionalCommand(
                 () -> {},
-                () -> {climber.moveMotors(Climber.MotorSpeed.extend,climber.rightMotor);},
-                (interrupted) -> {climber.stopMotors(climber.rightMotor);},
-                () -> {return climber.isMotorExtended(climber.rightMotor);}
+                () -> climber.moveMotors(Climber.MotorSpeed.extend,Climber.rightMotor),
+                (interrupted) -> climber.stopMotors(Climber.rightMotor),
+                () -> climber.isMotorExtended(Climber.rightMotor)
             ),
             new FunctionalCommand(
                 () -> {},
-                () -> {climber.moveMotors(Climber.MotorSpeed.extend,climber.leftMotor);},
-                (interrupted) -> {climber.stopMotors(climber.leftMotor);},
-                () -> {return climber.isMotorExtended(climber.leftMotor);}
+                () -> climber.moveMotors(Climber.MotorSpeed.extend,Climber.leftMotor),
+                (interrupted) -> climber.stopMotors(Climber.leftMotor),
+                () -> climber.isMotorExtended(Climber.leftMotor)
             )
         );
         addRequirements(climber);

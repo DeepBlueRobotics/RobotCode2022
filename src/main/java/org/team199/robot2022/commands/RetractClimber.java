@@ -15,15 +15,15 @@ public final class RetractClimber extends ParallelCommandGroup {
         super(
             new FunctionalCommand(
               () -> {},
-              () -> {climber.moveMotors(Climber.MotorSpeed.retract,climber.rightMotor);},
-              (interrupted) -> {climber.stopMotors(climber.rightMotor);},
-              () -> {return climber.isMotorRetracted(climber.rightMotor);}
+              () -> climber.moveMotors(Climber.MotorSpeed.retract,Climber.rightMotor),
+              (interrupted) -> climber.stopMotors(Climber.rightMotor),
+              () -> climber.isMotorRetracted(Climber.rightMotor)
             ),
             new FunctionalCommand(
               () -> {},
-              () -> {climber.moveMotors(Climber.MotorSpeed.retract,climber.leftMotor);},
-              (interrupted) -> {climber.stopMotors(climber.leftMotor);},
-              () -> {return climber.isMotorRetracted(climber.leftMotor);}
+              () -> climber.moveMotors(Climber.MotorSpeed.retract,Climber.leftMotor),
+              (interrupted) -> climber.stopMotors(Climber.leftMotor),
+              () -> climber.isMotorRetracted(Climber.leftMotor)
             )
         );
         addRequirements(climber);
