@@ -6,10 +6,10 @@ package org.team199.robot2022.commands;
 
 import org.team199.robot2022.subsystems.Drivetrain;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -17,8 +17,8 @@ import frc.robot.lib.Limelight;
 
 public class ShootMove extends CommandBase {
   /* Creates a new AutonomousShoot. */
-  private Drivetrain dt;
-  private Limelight limelight;
+  private final Drivetrain dt;
+  private final Limelight limelight;
   private final double CAMERA_HEIGHT = 1.1519662;
   private final double CAMERA_ANGLE = 48; // in degrees
   // The goal (the very top) is 264cm tall
@@ -28,14 +28,15 @@ public class ShootMove extends CommandBase {
   private final double BALL_VELOCITY_Y = 6.52;
   // number of seconds ball is in air
   private final TeleopDrive teleop;
+
+  // How much the robot needs to turn to shoot accurately
   private double turnAngle = Math.PI; // in radians
   private final double turnTolerance = 5 * Math.PI/180;
 
-
-  private double kp = 1.75;
-  private double ki = 1;
-  private double kd = 1;
-  PIDController drivePid = new PIDController(kp, ki, kd);
+  private double kP = 1.75;
+  private double kI = 1;
+  private double kD = 1;
+  private PIDController drivePid = new PIDController(kP, kI, kD);
 
   private double maxDist = 2.5;
   private double distTolerance = Units.inchesToMeters(6);
@@ -46,9 +47,9 @@ public class ShootMove extends CommandBase {
     addRequirements(this.dt = dt);
     this.limelight = limelight;
     this.teleop = teleop;
-    SmartDashboard.putNumber("ShootMove-kp", kp);
-    SmartDashboard.putNumber("ShootMove-ki", ki);
-    SmartDashboard.putNumber("ShootMove-kd", kd);
+    SmartDashboard.putNumber("ShootMove-kp", kP);
+    SmartDashboard.putNumber("ShootMove-ki", kI);
+    SmartDashboard.putNumber("ShootMove-kd", kD);
 
     timer = new Timer();
     timer.start();
@@ -106,15 +107,15 @@ public class ShootMove extends CommandBase {
     double time = info[0];
     SmartDashboard.putNumber("Desired Turn Angle", turnAngle*180/Math.PI);
 
-    kp = SmartDashboard.getNumber("ShootMove-kp");
-    ki = SmartDashboard.getNumber("ShootMove-ki");
-    kd = SmartDashboard.getNumber("ShootMove-kd");
+    kP = SmartDashboard.getNumber("ShootMove-kp", kP);
+    kI = SmartDashboard.getNumber("ShootMove-ki", kI);
+    kD = SmartDashboard.getNumber("ShootMove-kd", kD);
 
-    double rotSpeed = drivePid.calculate(dt.getHeading(),turnAngle);
+    double rotSpeed = drivePid.calculate(0, turnAngle);
     dt.drive(
       driverInputs[0],
       driverInputs[1],
-      rotSpeed,
+      rotSpeed
     );
     SmartDashboard.putNumber("Turn Angle Velocity", rotSpeed);
 
