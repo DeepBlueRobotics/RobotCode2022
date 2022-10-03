@@ -12,8 +12,6 @@ import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import java.util.function.DoubleConsumer;
-import java.util.Hashtable;
-import java.util.Dictionary;
 
 import org.team199.robot2022.Constants;
 
@@ -22,7 +20,7 @@ public class Climber extends SubsystemBase {
     private static final double kNEOFreeSpeedRPM = 5680;
     private static final double kDiameterIn = 1;
     private static final double kDesiredRetractSpeedInps = 1;
-    private static final double kDesiredExtendSpeedInps = 6;
+    private static final double kDesiredExtendSpeedInps = 24*.6;
     private static final boolean leftInverted = false;
 
     private static final double gearing = 9;
@@ -38,9 +36,9 @@ public class Climber extends SubsystemBase {
     private boolean keepPosition = true;
     private double holdTolerance = 0.05;
 
-    public static final int leftMotor = -1;//because someone requested this and there's no point slapping them in an enum
-    public static final int bothMotors = 0;
-    public static final int rightMotor = 1;
+    public static final int leftMotor = 0;//because someone requested this and there's no point slapping them in an enum
+    public static final int bothMotors = 1;
+    public static final int rightMotor = 2;
 
 
     private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft, TemperatureLimit.NEO);
@@ -119,11 +117,11 @@ public class Climber extends SubsystemBase {
     //motor = -1 left or 1 right or 0 both
     public void resetEncodersTo(EncoderPos posEnum,int motor){
 			// setEncoder[motor+1].accept(dEncoderPos.get(pos));
-      setEncoder[motor+1].accept(posEnum.value);
+      setEncoder[motor].accept(posEnum.value);
     }
 
     public void moveMotors(MotorSpeed speedEnum, int motor){
-      setMotor[motor+1].accept(speedEnum.value);
+      setMotor[motor].accept(speedEnum.value);
     }
 
     public void stopMotors(int motor){
