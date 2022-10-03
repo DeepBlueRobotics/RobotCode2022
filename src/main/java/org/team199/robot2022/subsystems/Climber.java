@@ -127,7 +127,7 @@ public class Climber extends SubsystemBase {
     }
 
     public void stopMotors(int motor){
-      if (motor<1){
+      if (motor!=rightMotor){
         left.set(0);
         SmartDashboard.putString("Left Climber State", "Stopped");
       }
@@ -138,7 +138,7 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isMotorExtended(int motor){//is the motor(s) extended?
-      if (motor<1 && leftEncoder.getPosition() < EncoderPos.extendLeft.value){
+      if (motor!=rightMotor && leftEncoder.getPosition() < EncoderPos.extendLeft.value){
         return false;
       }
       if (motor!=leftMotor && rightEncoder.getPosition() < EncoderPos.extendRight.value){
@@ -148,7 +148,7 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isMotorRetracted(int motor){//is the motor(s) retracted?
-      if (motor<1 && leftEncoder.getPosition() > EncoderPos.retractLeft.value){
+      if (motor!=rightMotor && leftEncoder.getPosition() > EncoderPos.retractLeft.value){
         return false;
       }
       if (motor!=leftMotor && rightEncoder.getPosition() > EncoderPos.retractRight.value){
