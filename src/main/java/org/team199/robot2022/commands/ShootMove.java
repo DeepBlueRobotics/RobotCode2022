@@ -31,11 +31,14 @@ public class ShootMove extends CommandBase {
 
   // How much the robot needs to turn to shoot accurately
   private double turnAngle = Math.PI; // in radians
-  private final double turnTolerance = 5 * Math.PI/180;
+  private final double degree = Math.PI/180;
 
   private double kP = 1.75;
   private double kI = 1;
   private double kD = 1;
+  private final double kPIDAbsLimit = 200;//ex: 200 limits range between -200 to 200
+  private final double kPIDErrDerivTolerance = degree * 20;
+  private final double kPIDTurnTolerance = 5 * degree;// used for PID!
   private PIDController drivePid = new PIDController(kP, kI, kD);
 
   private double maxDist = 2.5;
@@ -47,9 +50,13 @@ public class ShootMove extends CommandBase {
     addRequirements(this.dt = dt);
     this.limelight = limelight;
     this.teleop = teleop;
+
     SmartDashboard.putNumber("ShootMove-kp", kP);
     SmartDashboard.putNumber("ShootMove-ki", kI);
     SmartDashboard.putNumber("ShootMove-kd", kD);
+    drivePid.reset();
+    drivePid.enableContinuousInput(-kPIDAbsLimit,kPIDAbsLimit);
+    drivePid.setTolerance(kPIDTurnTolerance, kPIDErrDerivTolerance);
 
     timer = new Timer();
     timer.start();
@@ -62,8 +69,9 @@ public class ShootMove extends CommandBase {
       return false;
     }
 
-    SmartDashboard.putBoolean("Shooting", Math.abs(turnAngle) < turnTolerance && Math.abs(dist - maxDist) < distTolerance);
-    return (Math.abs(turnAngle) < turnTolerance && Math.abs(dist - maxDist) < distTolerance);
+    boolean shooting = drivePid.atSetpoint() && ( Math.abs(dist - maxDist) < distTolerance );
+    SmartDashboard.putBoolean("Shooting", shooting);
+    return shooting;
     // assume it's a long shot for now
   }
 
@@ -77,11 +85,18 @@ public class ShootMove extends CommandBase {
     // shoot command will be two commands in robotcontainer
     double[] driverInputs = teleop.getAdjustedDriverInputs();
     SmartDashboard.putNumber("Elapsed Time ShootMove", timer.get());
+
+    kP = SmartDashboard.getNumber("ShootMove-kp", kP);
+    kI = SmartDashboard.getNumber("ShootMove-ki", kI);
+    kD = SmartDashboard.getNumber("ShootMove-kd", kD);
+
     // if limelight sees no goal: make robot turn at a constant velocity until it sees goal
     if(NetworkTableInstance.getDefault().getTable(limelight.config.ntName).getEntry("tv").getDouble(0.0) < 0.01) {
       SmartDashboard.putBoolean("Target Found", false);
       turnAngle = Math.PI;
-      dt.drive(driverInputs[0], driverInputs[1], limelight.config.steeringFactor * turnAngle);
+      double rotSpeed = drivePid.calculate(0, turnAngle);
+      dt.drive(driverInputs[0], driverInputs[1], rotSpeed);
+      // dt.drive(,, limelight.config.steeringFactor * turnAngle);
       shouldShoot();
       return;
     }
@@ -106,10 +121,6 @@ public class ShootMove extends CommandBase {
     turnAngle = info[1];
     double time = info[0];
     SmartDashboard.putNumber("Desired Turn Angle", turnAngle*180/Math.PI);
-
-    kP = SmartDashboard.getNumber("ShootMove-kp", kP);
-    kI = SmartDashboard.getNumber("ShootMove-ki", kI);
-    kD = SmartDashboard.getNumber("ShootMove-kd", kD);
 
     double rotSpeed = drivePid.calculate(0, turnAngle);
     dt.drive(
