@@ -85,17 +85,19 @@ public class RobotContainer {
 
     lime.config.steeringFactor = .4;
 
+    boolean useLimelightInAuto = true; // CHANGE THIS TO FALSE IF AUTO LIMELIGHT DOESN'T WORK
+
     intakeFeeder = new IntakeFeeder(robot);
     autoPaths = new AutoPath[] {
       null,
-      new AutoPath(true, loadPaths("ShootAndTaxi1"), false, false),
-      new AutoPath(true, loadPaths("ShootAndTaxi2"), false, false),
-      new AutoPath(true, loadPaths("TarmacShootAndTaxi1"), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
-      new AutoPath(true, loadPaths("TarmacShootAndTaxi2"), false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
-      new AutoPath(true,loadPaths("2BallAuto1(1)", "2BallAuto1(2)"), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
-      new AutoPath(true, loadPaths("2BallAuto2(1)", "2BallAuto2(2)"), true, true, ShotPosition.FENDER, ShotPosition.FENDER),
-      new AutoPath(true, loadPaths("3BallAuto(1)", "3BallAuto(2)", "3BallAuto(3)", "3BallAuto(4)", "3BallAuto(5)"), false, true, ShotPosition.FENDER, ShotPosition.FENDER),
-      new AutoPath(false, loadPaths("RotateInPlace"), false, false, ShotPosition.FENDER, ShotPosition.FENDER)
+      new AutoPath(true, loadPaths("ShootAndTaxi1"), false, false, false),
+      new AutoPath(true, loadPaths("ShootAndTaxi2"), false, false, false),
+      new AutoPath(true, loadPaths("TarmacShootAndTaxi1"), false, false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
+      new AutoPath(true, loadPaths("TarmacShootAndTaxi2"), false, false, false, ShotPosition.TARMAC, ShotPosition.FENDER),
+      new AutoPath(true,loadPaths("2BallAuto1(1)", "2BallAuto1(2)"), true, true, useLimelightInAuto, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(true, loadPaths("2BallAuto2(1)", "2BallAuto2(2)"), true, true, useLimelightInAuto, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(true, loadPaths("3BallAuto(1)", "3BallAuto(2)", "3BallAuto(3)", "3BallAuto(4)", "3BallAuto(5)"), false, true, false, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(false, loadPaths("RotateInPlace"), false, false, false, ShotPosition.FENDER, ShotPosition.FENDER)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
@@ -207,7 +209,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     AutoPath path = getAutoPath();
-    return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter, intakeFeeder);
+    return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter, intakeFeeder, lime);
   }
 
   private double getStickValue(Constants.OI.StickType stick, Constants.OI.StickDirection dir) {
