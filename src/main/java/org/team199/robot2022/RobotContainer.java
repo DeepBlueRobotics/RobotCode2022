@@ -29,6 +29,7 @@ import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.Shooter.ShotPosition;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -283,5 +284,9 @@ public class RobotContainer {
       e.printStackTrace();
       return null;
     }
+  }
+
+  public void setLimelightColor() {
+    NetworkTableInstance.getDefault().getTable(lime.config.ntName).getEntry("pipeline").setNumber(DriverStation.getAlliance().ordinal());
   }
 }
