@@ -8,6 +8,8 @@ import org.team199.robot2022.subsystems.Drivetrain;
 import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -15,13 +17,15 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+
+import org.carlmontrobotics.lib199.Limelight;
 import org.carlmontrobotics.lib199.path.RobotPath;
 
 public class Autonomous extends SequentialCommandGroup {
 
-    public Autonomous(AutoPath path, boolean shootAtStart, boolean shootAtEnd, Drivetrain drivetrain, Shooter shooter, IntakeFeeder intakeFeeder) {
+    public Autonomous(AutoPath path, boolean shootAtStart, boolean shootAtEnd, Drivetrain drivetrain, Shooter shooter, IntakeFeeder intakeFeeder, Limelight lime) {
         addRequirements(drivetrain, shooter, intakeFeeder);
-        addCommands(new PassiveAutomaticIntake(intakeFeeder));
+        addCommands(new PassiveManualIntake(intakeFeeder));
         if(path.shootAtStart) addCommands(new InstantCommand(() -> shooter.setShotPosition(path.startShotPosition)));
 
         addCommands(
@@ -30,9 +34,25 @@ public class Autonomous extends SequentialCommandGroup {
         );
         //addCommands(new WaitCommand(4));
         for (int i = 0; i < path.path.size(); i++){
-            addCommands(new ParallelRaceGroup(path.path.get(i).getPathCommand(false, false), new PassiveAutomaticIntake(intakeFeeder).perpetually()));
+            addCommands(new ParallelRaceGroup(path.path.get(i).getPathCommand(false, false), new PassiveManualIntake(intakeFeeder).perpetually()));
             if (i < path.path.size()-1){
-            addCommands(new InstantCommand(path.path.get(i+1)::initializeDrivetrainPosition));
+                if(path.useLimelight)
+                    addCommands(
+                        new ParallelRaceGroup(
+                            new TeleopDrive(drivetrain, () -> 0D, () -> 0D, () -> 0D, () -> false, () -> true, lime), // Auto-pickup is sketch
+                            new WaitUntilCommand(() -> intakeFeeder.getNumBalls() == 1), // Wait until we pick something up
+                            new SequentialCommandGroup(
+                                new WaitCommand(5), // If we haven't found anything after 5 seconds, abort
+                                new ConditionalCommand(
+                                    new WaitUntilCommand(() -> intakeFeeder.getNumBalls() == 1), // We're chasing a ball! Wait to pick it up
+                                    new InstantCommand(), // We can't see the ball! Just abort
+                                    () -> NetworkTableInstance.getDefault().getTable(lime.config.ntName).getEntry("tv").getDouble(0) == 1
+                                )
+                            )
+                        )
+                    );
+                else
+                    addCommands(new InstantCommand(path.path.get(i+1)::initializeDrivetrainPosition));
             }
         }
         addCommands(new InstantCommand(() -> {drivetrain.stop();}));

@@ -75,6 +75,7 @@ public class Robot extends TimedRobot {
     robotContainer.dt.resetOdometry();
     robotContainer.getAutonomousCommand().schedule();
     robotContainer.initShooterConfig();
+    robotContainer.setLimelightColor();
   }
 
   /** This function is called periodically during autonomous. */
@@ -90,6 +91,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().cancelAll();
     robotContainer.dt.brake();
     robotContainer.initShooterConfig();
+    robotContainer.setLimelightColor();
   }
 
   /** This function is called periodically during operator control. */
@@ -104,6 +106,8 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    robotContainer.setLimelightColor();
+  }
 
 }
