@@ -30,13 +30,14 @@ public class Autonomous extends SequentialCommandGroup {
 
         addCommands(
             new InstantCommand(path.path.get(0)::initializeDrivetrainPosition),
+            shootAtStart ? new SequentialCommandGroup( new WaitUntilCommand(shooter::isAtTargetSpeed),  new WaitCommand(1.5), new Shoot(intakeFeeder, shooter)) : new InstantCommand(),
             shootAtStart ? new SequentialCommandGroup( new WaitUntilCommand(shooter::isAtTargetSpeed),  new WaitCommand(1.5), new Shoot(intakeFeeder, shooter)) : new InstantCommand()
         );
         //addCommands(new WaitCommand(4));
         for (int i = 0; i < path.path.size(); i++){
             addCommands(new ParallelRaceGroup(path.path.get(i).getPathCommand(false, false), new PassiveManualIntake(intakeFeeder).perpetually()));
             if (i < path.path.size()-1){
-                if(path.useLimelight)
+                if(path.useLimelight && false)
                     addCommands(
                         new ParallelRaceGroup(
                             new TeleopDrive(drivetrain, () -> 0D, () -> 0D, () -> 0D, () -> false, () -> true, lime), // Auto-pickup is sketch

@@ -111,6 +111,7 @@ public class IntakeFeeder extends SubsystemBase {
     m_colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes8bit, ProximitySensorMeasurementRate.kProxRate6ms);
 
     cargo.add(true);
+    cargo.add(true);
     robot.addPeriodic(this::updateColorSensor, 0.003);
   }
 

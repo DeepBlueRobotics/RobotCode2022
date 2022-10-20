@@ -26,7 +26,7 @@ import org.carlmontrobotics.lib199.path.SwerveDriveInterface;
 public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     // compassOffset is magnetic north relative to the current heading
     private final double compassOffset;
-    private final AHRS gyro = new AHRS(SerialPort.Port.kUSB); // Also try kUSB and kUSB2
+    private final AHRS gyro = new AHRS(SerialPort.Port.kMXP); // Also try kUSB and kUSB2
 
     private SwerveDriveKinematics kinematics = null;
     private SwerveDriveOdometry odometry = null;
