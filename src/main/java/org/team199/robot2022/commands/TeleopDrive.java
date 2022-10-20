@@ -9,33 +9,40 @@ package org.team199.robot2022.commands;
 
 import java.util.function.Supplier;
 
+import org.carlmontrobotics.lib199.Limelight;
 import org.team199.robot2022.Constants;
 import org.team199.robot2022.subsystems.Drivetrain;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.drive.Vector2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TeleopDrive extends CommandBase {
   private static final double kSlowDriveSpeed = 0.25;
   private static final double kSlowDriveRotation = 0.30;
+  private static final double kAlignMultiplier = 1D/3D;
+  private static final double kAlignForward = 0.6;
 
   private final Drivetrain drivetrain;
   private Supplier<Double> fwd;
   private Supplier<Double> str;
   private Supplier<Double> rcw;
   private Supplier<Boolean> slow;
+  private Supplier<Boolean> align;
+  private Limelight lime;
   double currentForward = 0;
   double currentStrafe = 0;
   /**
    * Creates a new TeleopDrive.
    */
-  public TeleopDrive(Drivetrain drivetrain, Supplier<Double> fwd, Supplier<Double> str, Supplier<Double> rcw, Supplier<Boolean> slow) {
+  public TeleopDrive(Drivetrain drivetrain, Supplier<Double> fwd, Supplier<Double> str, Supplier<Double> rcw, Supplier<Boolean> slow, Supplier<Boolean> align, Limelight lime) {
     addRequirements(this.drivetrain = drivetrain);
     this.fwd = fwd;
     this.str = str;
     this.rcw = rcw;
     this.slow = slow;
+    this.align = align;
+    this.lime = lime;
   }
 
   // Called when the command is initially scheduled.
@@ -76,6 +83,13 @@ public class TeleopDrive extends CommandBase {
    // SmartDashboard.putNumber("Strafe (mps)", currentStrafe);
     double driveMultiplier = slow.get() ? kSlowDriveSpeed : 1;
     double rotationMultiplier = slow.get() ? kSlowDriveRotation : 0.55;
+    if(align.get()) {
+      currentForward = Constants.DriveConstants.maxSpeed * kAlignForward * NetworkTableInstance.getDefault().getTable(lime.config.ntName).getEntry("tv").getDouble(0.0);
+      currentStrafe = 0;
+      driveMultiplier = 1;
+      rotateClockwise = lime.steeringAssist();
+      rotationMultiplier = Constants.DriveConstants.maxRCW * kAlignMultiplier;
+    }
     drivetrain.drive(currentForward * driveMultiplier, currentStrafe * driveMultiplier, rotateClockwise * rotationMultiplier);
   }
 

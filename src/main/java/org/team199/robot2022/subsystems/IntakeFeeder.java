@@ -51,7 +51,7 @@ public class IntakeFeeder extends SubsystemBase {
   private double midSpeed = 400;
   private double botSpeed = 0.7;
 
-  private double rpmTolerance = 7;
+  private double rpmTolerance = 6;
   // Used to calculate whether there is a ball against the motor
   private double minProxmity = 21.5; // TODO : Accurately determine minProxmity constant
   private double maxProxmity = 19.5; // TODO : Accurately determine minProxmity constant
@@ -110,6 +110,7 @@ public class IntakeFeeder extends SubsystemBase {
     m_colorSensor.configureColorSensor(ColorSensorResolution.kColorSensorRes16bit, ColorSensorMeasurementRate.kColorRate25ms, GainFactor.kGain3x);
     m_colorSensor.configureProximitySensor(ProximitySensorResolution.kProxRes8bit, ProximitySensorMeasurementRate.kProxRate6ms);
 
+    cargo.add(true);
     cargo.add(true);
     robot.addPeriodic(this::updateColorSensor, 0.003);
   }

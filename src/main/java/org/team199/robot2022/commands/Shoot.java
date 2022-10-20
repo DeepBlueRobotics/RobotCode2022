@@ -30,7 +30,10 @@ public class Shoot extends ParallelRaceGroup {
         new WaitUntilCommand(shooter::isAtTargetSpeed),
         new FunctionalCommand(
           shooter::disableShooter,
-          () -> {intakeFeeder.invertAndRun(Motor.TOP, false, true);},
+          () -> {
+            intakeFeeder.invertAndRun(Motor.TOP, false, true);
+            intakeFeeder.invertAndRun(Motor.MIDDLE, false, true);
+          },
           interrupted -> {
             if(interrupted) return;
             intakeFeeder.stopRunningFeeder();
