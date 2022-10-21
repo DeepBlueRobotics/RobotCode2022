@@ -11,6 +11,7 @@ import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import java.util.function.DoubleConsumer;
 
 import org.team199.robot2022.Constants;
 
@@ -20,43 +21,56 @@ public class Climber extends SubsystemBase {
     private static final double kDiameterIn = 1;
     private static final double kDesiredRetractSpeedInps = 1;
     private static final double kDesiredExtendSpeedInps = 24*.6;
-
-    // Torque is 2 * 9 * 0.5 = 9
-    // Torque on the motor is Torque / ( gearing = 9 ) = 1
-
-    private static final double kVoltsToCounterTorque = 10.5;
-
     private static final boolean leftInverted = false;
 
-    private static final double extendPositionLeft = 6.315;
-    private static final double extendPositionRight = 6.315;
-
-    private static final double retractPositionLeft = -0.6;
-    private static final double retractPositionRight = -0.6;
     private static final double gearing = 9;
     private static final double kInPerSec = ((kNEOFreeSpeedRPM / gearing) * Math.PI * kDiameterIn / 60);
-    private static double kRetractSpeed = -((kDesiredRetractSpeedInps / kInPerSec)
-            + (kVoltsToCounterTorque / 12)); // ~ -0.06151
-    private static double kExtendSpeed = (kDesiredExtendSpeedInps / kInPerSec); // ~0.30261
-
     private static final double kSlowDesiredRetractSpeedInps = 2;
     private static final double kSlowDesiredExtendSpeedInps = 2;
 
     // Torque is 2 * 9 * 0.5 = 9
     // Torque on the motor is Torque / ( gearing = 9 ) = 1
-
+    private static final double kVoltsToCounterTorque = 10.5;
     private static final double kSlowVoltsToCounterTorque = (1.1D / 32) * 12;
-    private static final double kSlowRetractSpeed = -((kSlowDesiredRetractSpeedInps / kInPerSec)
-            + (kSlowVoltsToCounterTorque / 12)); // ~ -0.06151
-    private static final double kSlowExtendSpeed = (kSlowDesiredExtendSpeedInps / kInPerSec); // ~0.30261
+
+    private boolean keepPosition = true;
+    private double holdTolerance = 0.05;
+
+    public static final int leftMotor = 0;//because someone requested this and there's no point slapping them in an enum
+    public static final int bothMotors = 1;
+    public static final int rightMotor = 2;
+
 
     private final CANSparkMax left = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberLeft, TemperatureLimit.NEO);
     private final CANSparkMax right = MotorControllerFactory.createSparkMax(Constants.DrivePorts.kClimberRight, TemperatureLimit.NEO);
     private final RelativeEncoder leftEncoder = left.getEncoder();
     private final RelativeEncoder rightEncoder = right.getEncoder();
 
-    private boolean keepPosition = true;
-    private double holdTolerance = 0.05;
+    private final DoubleConsumer[] setEncoder = new DoubleConsumer[]{ // faster to array[](inp) than a bunch of if's in a func
+      (pos) -> leftEncoder.setPosition(pos),
+      (pos) -> {
+        leftEncoder.setPosition(pos);
+        rightEncoder.setPosition(pos);
+      },
+      (pos) -> rightEncoder.setPosition(pos),
+    };
+
+    private final DoubleConsumer[] setMotor = new DoubleConsumer[]{
+      (speed) -> {
+        left.set(speed);
+        SmartDashboard.putString("Left Climber State", "Moving");
+      },
+      (speed) -> {
+        left.set(speed);
+        right.set(speed);
+        SmartDashboard.putString("Left Climber State", "Moving");
+        SmartDashboard.putString("Right Climber State", "Moving");
+      },
+      (speed) -> {
+        right.set(speed);
+        SmartDashboard.putString("Right Climber State", "Moving");
+      },
+    };
 
     public Climber() {
         left.setSmartCurrentLimit(80);
@@ -68,16 +82,17 @@ public class Climber extends SubsystemBase {
         leftEncoder.setPosition(0);
         rightEncoder.setPositionConversionFactor(1 / gearing);
         rightEncoder.setPosition(0);
-        SmartDashboard.putString("Left climber is", "Stopped");
-        SmartDashboard.putString("Right climber is", "Stopped");
+        SmartDashboard.putString("Left Climber State", "Stopped");
+        SmartDashboard.putString("Right Climber State", "Stopped");
         SmartDashboard.putNumber("kDesiredExtendSpeedInps", kDesiredExtendSpeedInps);
         SmartDashboard.putNumber("kDesiredRetractSpeedInps", kDesiredRetractSpeedInps);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Left Climber Position", getLeftPosition());
-        SmartDashboard.putNumber("Right Climber Position", getRightPosition());
+        SmartDashboard.putNumber("L Climber Pos", leftEncoder.getPosition());
+        SmartDashboard.putNumber("R Climber Pos", rightEncoder.getPosition());
+
         holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
         SmartDashboard.putBoolean("Climber: Keep Zeroed", keepPosition);
@@ -86,147 +101,86 @@ public class Climber extends SubsystemBase {
 
     public void keepZeroed() {
         if(keepPosition) {
-            if(Math.abs(getLeftPosition()) > holdTolerance) {
-                left.set(Math.signum(getLeftPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
+            if(Math.abs(leftEncoder.getPosition()) > holdTolerance) {
+                left.set(Math.signum(leftEncoder.getPosition()) > 0 ? MotorSpeed.slowRetract.value : MotorSpeed.slowExtend.value);
             } else {
                 left.set(0);
             }
-            if(Math.abs(getRightPosition()) > holdTolerance) {
-                right.set(Math.signum(getRightPosition()) > 0 ? kSlowRetractSpeed : kSlowExtendSpeed);
+            if(Math.abs(rightEncoder.getPosition()) > holdTolerance) {
+                right.set(Math.signum(rightEncoder.getPosition()) > 0 ? MotorSpeed.slowRetract.value : MotorSpeed.slowExtend.value);
             } else {
                 right.set(0);
             }
         }
     }
 
-    public void resetEncodersToExtended() {
-        leftEncoder.setPosition(extendPositionLeft);
-        rightEncoder.setPosition(extendPositionRight);
+    //motor = -1 left or 1 right or 0 both
+    public void resetEncodersTo(EncoderPos posEnum,int motor){
+			// setEncoder[motor+1].accept(dEncoderPos.get(pos));
+      setEncoder[motor].accept(posEnum.value);
     }
 
-    public void resetEncodersToRetracted() {
-        leftEncoder.setPosition(retractPositionLeft);
-        rightEncoder.setPosition(retractPositionRight);
-    }
-    public void resetEncodersToZero() {
-        leftEncoder.setPosition(0);
-        rightEncoder.setPosition(0);
+    public void moveMotors(MotorSpeed speedEnum, int motor){
+      setMotor[motor].accept(speedEnum.value);
     }
 
-    public void extendLeft() {
-        left.set(kExtendSpeed);
-        SmartDashboard.putString("Left climber is", "Extending");
-        keepPosition = false;
-    }
-
-    public void extendRight() {
-        right.set(kExtendSpeed);
-        SmartDashboard.putString("Right climber is", "Extending");
-        keepPosition = false;
-    }
-
-    public void retractLeft() {
-        left.set(kRetractSpeed);
-        SmartDashboard.putString("Left climber is", "Retracting");
-        keepPosition = false;
-    }
-
-    public void retractRight() {
-        right.set(kRetractSpeed);
-        SmartDashboard.putString("Right climber is", "Retracting");
-        keepPosition = false;
-    }
-
-    public void slowExtendLeft() {
-        left.set(kSlowExtendSpeed);
-        SmartDashboard.putString("Left climber is", "Extending");
-        keepPosition = false;
-    }
-
-    public void slowExtendRight() {
-        right.set(kSlowExtendSpeed);
-        SmartDashboard.putString("Right climber is", "Extending");
-        keepPosition = false;
-    }
-    public void slowRetractLeft() {
-        left.set(kSlowRetractSpeed);
-        SmartDashboard.putString("Left climber is", "Retracting");
-        keepPosition = false;
-    }
-
-    public void slowRetractRight() {
-        right.set(kSlowRetractSpeed);
-        SmartDashboard.putString("Right climber is", "Retracting");
-        keepPosition = false;
-    }
-
-    public void stop() {
+    public void stopMotors(int motor){
+      if (motor!=rightMotor){
         left.set(0);
+        SmartDashboard.putString("Left Climber State", "Stopped");
+      }
+      if (motor!=leftMotor){
         right.set(0);
-        SmartDashboard.putString("Left climber is", "Stopped");
-        SmartDashboard.putString("Right climber is", "Stopped");
+        SmartDashboard.putString("Right Climber State", "Stopped");
+      }
     }
 
-    public void stopLeft() {
-        left.set(0);
-        SmartDashboard.putString("Left climber is", "Stopped");
+    public boolean isMotorExtended(int motor){//is the motor(s) extended?
+      if (motor!=rightMotor && leftEncoder.getPosition() < EncoderPos.extendLeft.value){
+        return false;
+      }
+      if (motor!=leftMotor && rightEncoder.getPosition() < EncoderPos.extendRight.value){
+        return false;
+      }
+      return true;
     }
 
-    public void stopRight() {
-        right.set(0);
-        SmartDashboard.putString("Right climber is", "Stopped");
+    public boolean isMotorRetracted(int motor){//is the motor(s) retracted?
+      if (motor!=rightMotor && leftEncoder.getPosition() > EncoderPos.retractLeft.value){
+        return false;
+      }
+      if (motor!=leftMotor && rightEncoder.getPosition() > EncoderPos.retractRight.value){
+        return false;
+      }
+      return true;
     }
 
-    public void stop(boolean interrupted) {
-        stop();
-    }
+    public static enum MotorSpeed{
+      retract(-((kDesiredRetractSpeedInps / kInPerSec) + (kVoltsToCounterTorque / 12))),// ~ -0.06151
+      extend(kDesiredExtendSpeedInps / kInPerSec),// ~0.30261
+      slowRetract(-((kSlowDesiredRetractSpeedInps / kInPerSec) + (kSlowVoltsToCounterTorque / 12))),// ~ -0.06151
+      slowExtend(kSlowDesiredExtendSpeedInps / kInPerSec);// ~0.30261
 
-    public void stopLeft(boolean interrupted) {
-        stopLeft();
-    }
+      public final double value;
 
-    public void stopRight(boolean interrupted) {
-        stopRight();
-    }
+      private MotorSpeed(double value) {
+          this.value = value;
+      }
+    };
 
-    public double getLeftPosition() {
-        return leftEncoder.getPosition();
-    }
 
-    public double getRightPosition() {
-        return rightEncoder.getPosition();
-    }
+    public static enum EncoderPos{
+      extendLeft(6.315),
+      extendRight(6.315),
+      retractLeft(-0.6),
+      retractRight(-0.6),
+      zero(0.0);
 
-    public boolean isLeftExtended() {
-        return getLeftPosition() >= extendPositionLeft;
-    }
+      public final double value;
 
-    public boolean isRightExtended() {
-        return getRightPosition() >= extendPositionRight;
-    }
-
-    public boolean isLeftRetracted() {
-        return getLeftPosition() <= retractPositionLeft;
-    }
-
-    public boolean isRightRetracted() {
-        return getRightPosition() <= retractPositionRight;
-    }
-
-    public boolean isRightResetExtended() {
-        return getRightPosition() >= 0;
-    }
-
-    public boolean isLeftResetExtended() {
-        return getLeftPosition() >= 0;
-    }
-
-    public boolean isRightResetRetracted() {
-        return getRightPosition() <= 0;
-    }
-
-    public boolean isLeftResetRetracted() {
-        return getLeftPosition() <= 0;
-    }
+      private EncoderPos(double value) {
+          this.value = value;
+      }
+    };
 
 }

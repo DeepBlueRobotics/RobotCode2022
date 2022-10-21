@@ -14,19 +14,18 @@ public class RetractClimber extends ParallelCommandGroup {
     public RetractClimber(Climber climber) {
         super(
             new FunctionalCommand(
-                () -> {},
-                climber::retractLeft,
-                climber::stopLeft,
-                climber::isLeftRetracted
+              () -> {},
+              () -> climber.moveMotors(Climber.MotorSpeed.retract,Climber.rightMotor),
+              (interrupted) -> climber.stopMotors(Climber.rightMotor),
+              () -> climber.isMotorRetracted(Climber.rightMotor)
             ),
             new FunctionalCommand(
-                () -> {},
-                climber::retractRight,
-                climber::stopRight,
-                climber::isRightRetracted
+              () -> {},
+              () -> climber.moveMotors(Climber.MotorSpeed.retract,Climber.leftMotor),
+              (interrupted) -> climber.stopMotors(Climber.leftMotor),
+              () -> climber.isMotorRetracted(Climber.leftMotor)
             )
         );
         addRequirements(climber);
     }
-
 }
