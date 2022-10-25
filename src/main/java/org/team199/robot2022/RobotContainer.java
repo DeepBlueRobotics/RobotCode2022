@@ -159,9 +159,9 @@ public class RobotContainer {
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetAndExtendClimberPort).whenPressed(new ResetAndExtendClimber(climber));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetAndRetractClimberPort).whenPressed(new ResetAndRetractClimber(climber));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetClimberEncoders). whenPressed(new InstantCommand(climber::resetEncodersToZero));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleDriveMode).whenPressed(new InstantCommand( () -> {SmartDashboard.putBoolean("Field Oriented", SmartDashboard.getBoolean("Field Oriented", true) ? false : true);}));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleDriveMode).whenPressed(new InstantCommand( () -> dt.setFieldOriented(!dt.isFieldOriented()) ));
     new JoystickButton(leftJoy, Constants.OI.LeftJoy.toggleLongShot).whenPressed(new InstantCommand(shooter::toggleLongShot));
-    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetFieldOriented).whenPressed(new SequentialCommandGroup(new InstantCommand(() -> {SmartDashboard.putBoolean("Field Oriented", true);}), new WaitCommand(0.05), new InstantCommand(() -> {SmartDashboard.putNumber("Field Offset from North (degrees)", SmartDashboard.getNumber("Field Offset from North (degrees)", 0) - dt.getHeadingDeg() + 180);})));
+    new JoystickButton(leftJoy, Constants.OI.LeftJoy.resetFieldOriented).whenPressed(new SequentialCommandGroup(new InstantCommand(() -> dt.setFieldOriented(true)), new WaitCommand(0.05), new InstantCommand(dt::resetFieldOrientation)));
   }
 
   private void configureButtonBindingsRightJoy() {

@@ -4,15 +4,15 @@
 
 package org.team199.robot2022.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.carlmontrobotics.lib199.MotorControllerFactory;
-import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
+import org.carlmontrobotics.lib199.MotorControllerFactory;
+import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
 import org.team199.robot2022.Constants;
+
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
 
@@ -68,20 +68,24 @@ public class Climber extends SubsystemBase {
         leftEncoder.setPosition(0);
         rightEncoder.setPositionConversionFactor(1 / gearing);
         rightEncoder.setPosition(0);
-        SmartDashboard.putString("Left climber is", "Stopped");
-        SmartDashboard.putString("Right climber is", "Stopped");
-        SmartDashboard.putNumber("kDesiredExtendSpeedInps", kDesiredExtendSpeedInps);
-        SmartDashboard.putNumber("kDesiredRetractSpeedInps", kDesiredRetractSpeedInps);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Left Climber Position", getLeftPosition());
-        SmartDashboard.putNumber("Right Climber Position", getRightPosition());
-        holdTolerance = SmartDashboard.getNumber("Climber: Tolerance", holdTolerance);
-        SmartDashboard.putNumber("Climber: Tolerance", holdTolerance);
-        SmartDashboard.putBoolean("Climber: Keep Zeroed", keepPosition);
         keepZeroed();
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addDoubleProperty("Left Position", this::getLeftPosition, null);
+        builder.addDoubleProperty("Right Position", this::getRightPosition, null);
+        builder.addDoubleProperty("Tolerance", () -> holdTolerance, newTolerance -> holdTolerance = newTolerance);
+        builder.addBooleanProperty("Keep Zeroed", () -> keepPosition, keepZeroed -> keepPosition = keepZeroed);
+        builder.addDoubleProperty("kDesiredExtendSpeedInps", () -> kDesiredExtendSpeedInps, null);
+        builder.addDoubleProperty("kDesiredRetractSpeedInps", () -> kDesiredRetractSpeedInps, null);
+        builder.addStringProperty("Left climber is", () -> left.get() == 0 ? "Stopped" : left.get() > 0 ? "Extending" : "Retracting", null);
+        builder.addStringProperty("Right climber is", () -> right.get() == 0 ? "Stopped" : right.get() > 0 ? "Extending" : "Retracting", null);
     }
 
     public void keepZeroed() {
@@ -115,66 +119,54 @@ public class Climber extends SubsystemBase {
 
     public void extendLeft() {
         left.set(kExtendSpeed);
-        SmartDashboard.putString("Left climber is", "Extending");
         keepPosition = false;
     }
 
     public void extendRight() {
         right.set(kExtendSpeed);
-        SmartDashboard.putString("Right climber is", "Extending");
         keepPosition = false;
     }
 
     public void retractLeft() {
         left.set(kRetractSpeed);
-        SmartDashboard.putString("Left climber is", "Retracting");
         keepPosition = false;
     }
 
     public void retractRight() {
         right.set(kRetractSpeed);
-        SmartDashboard.putString("Right climber is", "Retracting");
         keepPosition = false;
     }
 
     public void slowExtendLeft() {
         left.set(kSlowExtendSpeed);
-        SmartDashboard.putString("Left climber is", "Extending");
         keepPosition = false;
     }
 
     public void slowExtendRight() {
         right.set(kSlowExtendSpeed);
-        SmartDashboard.putString("Right climber is", "Extending");
         keepPosition = false;
     }
     public void slowRetractLeft() {
         left.set(kSlowRetractSpeed);
-        SmartDashboard.putString("Left climber is", "Retracting");
         keepPosition = false;
     }
 
     public void slowRetractRight() {
         right.set(kSlowRetractSpeed);
-        SmartDashboard.putString("Right climber is", "Retracting");
         keepPosition = false;
     }
 
     public void stop() {
         left.set(0);
         right.set(0);
-        SmartDashboard.putString("Left climber is", "Stopped");
-        SmartDashboard.putString("Right climber is", "Stopped");
     }
 
     public void stopLeft() {
         left.set(0);
-        SmartDashboard.putString("Left climber is", "Stopped");
     }
 
     public void stopRight() {
         right.set(0);
-        SmartDashboard.putString("Right climber is", "Stopped");
     }
 
     public void stop(boolean interrupted) {

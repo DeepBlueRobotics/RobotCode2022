@@ -1,30 +1,31 @@
 package org.team199.robot2022.subsystems;
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 import com.revrobotics.CANSparkMax;
-import org.team199.robot2022.Constants;
-import org.team199.robot2022.Robot;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.carlmontrobotics.lib199.MotorControllerFactory;
-import org.carlmontrobotics.lib199.SparkVelocityPIDController;
-import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.util.Color;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorSensorV3.ColorSensorMeasurementRate;
 import com.revrobotics.ColorSensorV3.ColorSensorResolution;
 import com.revrobotics.ColorSensorV3.GainFactor;
 import com.revrobotics.ColorSensorV3.ProximitySensorMeasurementRate;
 import com.revrobotics.ColorSensorV3.ProximitySensorResolution;
-import com.revrobotics.ColorMatchResult;
-import com.revrobotics.ColorMatch;
 
-import java.util.Deque;
-import java.util.LinkedList;
+import org.carlmontrobotics.lib199.MotorControllerFactory;
+import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
+import org.carlmontrobotics.lib199.SparkVelocityPIDController;
+import org.team199.robot2022.Constants;
+import org.team199.robot2022.Robot;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeFeeder extends SubsystemBase {
 
@@ -53,8 +54,8 @@ public class IntakeFeeder extends SubsystemBase {
 
   private double rpmTolerance = 6;
   // Used to calculate whether there is a ball against the motor
-  private double minProxmity = 21.5; // TODO : Accurately determine minProxmity constant
-  private double maxProxmity = 19.5; // TODO : Accurately determine minProxmity constant
+  private double minProximity = 21.5; // TODO : Accurately determine minProxmity constant
+  private double maxProximity = 19.5; // TODO : Accurately determine minProxmity constant
 
   private boolean hasDetectedBall = false;
   // If there is a jam or carpet rolled over color sensor, override the color sensor's actions
@@ -81,8 +82,6 @@ public class IntakeFeeder extends SubsystemBase {
   private static double proximityVal = 0;
 
   public IntakeFeeder(Robot robot) {
-    if (!m_colorSensor.isConnected())
-      SmartDashboard.putString("Detected Color", "Error, the color sensor is disconnected");
     m_colorMatcher.addColorMatch(Color.kBlue);
     m_colorMatcher.addColorMatch(Color.kRed);
 
@@ -91,15 +90,6 @@ public class IntakeFeeder extends SubsystemBase {
     bottom.setInverted(botInverted);
     middle.setInverted(midInverted);
     top.setInverted(topInverted);
-    SmartDashboard.putNumber("Min Proximity", minProxmity);
-    SmartDashboard.putNumber("Max Proximity", maxProxmity);
-    SmartDashboard.putString("Add Ball to Queue", "");
-    SmartDashboard.putNumber("Remove Ball from Queue", 0);
-    SmartDashboard.putNumber("Size", 0);
-    SmartDashboard.putNumber("Top Speed", topSpeed);
-    SmartDashboard.putNumber("Mid Speed", midSpeed);
-    SmartDashboard.putNumber("Bot Speed", botSpeed);
-    SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
 
     middlePID = new SparkVelocityPIDController("Intake Feeder (Middle)", middle, 0, 0, 0, 0, 0.0106, 0, rpmTolerance); //TODO: make sure feeder runs later
     topPID = new SparkVelocityPIDController("Intake Feeder (Top)", top, 0, 0, 0, 0, 0.0107, 0, rpmTolerance); //TODO: make sure feeder runs later
@@ -116,41 +106,15 @@ public class IntakeFeeder extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    // Ocassionally update the team color if the team put the wrong one by accident
-    topSpeed = SmartDashboard.getNumber("Top Speed", topSpeed);
-    midSpeed = SmartDashboard.getNumber("Mid Speed", midSpeed);
-    botSpeed = SmartDashboard.getNumber("Bot Speed", botSpeed);
-    SmartDashboard.putNumber("Top Actual Speed", top.getEncoder().getVelocity());
-    SmartDashboard.putNumber("Mid Actual Speed", middle.getEncoder().getVelocity());
-    SmartDashboard.putNumber("Bot Actual Speed", bottom.getEncoder().getVelocity());
-    SmartDashboard.putNumber("Bot Current", bottom.getOutputCurrent());
-    SmartDashboard.putNumber("Bot Temp", bottom.getMotorTemperature());
-    SmartDashboard.putNumber("Bot Applied Voltage", bottom.getAppliedOutput());
-    minProxmity = SmartDashboard.getNumber("Min Proximity", minProxmity);
-    maxProxmity = SmartDashboard.getNumber("Max Proximity", maxProxmity);
-    middlePID.periodic();
-    topPID.periodic();
-
-    SmartDashboard.putBoolean("IntakeFeeder Autonomous Control", useAutonomousControl());
-    dumbMode = SmartDashboard.getBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
-
-    SmartDashboard.putString("Detected Color", currentColor.toString());
-    SmartDashboard.putNumber("Size", cargo.size());
-    SmartDashboard.putNumber("Proximity", proximityVal);
-    proximityVal = 0;
-
-    addBalls();
-    debug();
-  }
+  public void periodic() {}
 
   public void updateColorSensor() {
     if(!m_colorSensor.isConnected()) return;
 
     double proximity = m_colorSensor.getProximity();
 
-    if(proximity >= minProxmity) ballDetected = true;
-    else if(proximity < maxProxmity) ballDetected = false;
+    if(proximity >= minProximity) ballDetected = true;
+    else if(proximity < maxProximity) ballDetected = false;
 
     Color detectedColor = m_colorSensor.getColor();
     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
@@ -199,6 +163,12 @@ public class IntakeFeeder extends SubsystemBase {
 
   public int getNumBalls() {
     return cargo.size();
+  }
+
+  public void setNumBalls(int size) {
+    size = MathUtil.clamp(size, 0, 2);
+    while(getNumBalls() > size) manualSub();
+    while(getNumBalls() < size) manualAdd();
   }
 
   public void run(Motor motor, boolean running) {
@@ -282,10 +252,12 @@ public class IntakeFeeder extends SubsystemBase {
     middlePID.setTargetSpeed(midSpeed);
     topPID.setTargetSpeed(topSpeed);
   }
+
   public void stopRunningFeeder(){
     middlePID.setTargetSpeed(0);
     topPID.setTargetSpeed(0);
   }
+
   public void stop(){
     run(Motor.BOTTOM, false);
     run(Motor.MIDDLE, false);
@@ -342,7 +314,6 @@ public class IntakeFeeder extends SubsystemBase {
   {
     dumbMode = !dumbMode;
     if(!dumbMode) cargo.clear();
-    SmartDashboard.putBoolean("IntakeFeeder Dumb Mode", isDumbModeEnabled());
   }
 
   public boolean isDumbModeEnabled()
@@ -375,73 +346,6 @@ public class IntakeFeeder extends SubsystemBase {
         return false;
     }
   }
-  /**
-   * Puts whether the ball is the team color or not and whether its in the feeder or shooter
-   * in "shooter" basically means the next ball to be shot
-   */
-  public void debug()
-  {
-    Object[] arr = cargo.toArray();
-
-    if (cargo.size() >= 2)
-    {
-      SmartDashboard.putString("Lower Ball", ((Boolean) arr[1]).toString());
-    }
-    else
-    {
-      SmartDashboard.putString("Lower Ball", "None");
-    }
-
-    if (cargo.size() >= 1)
-    {
-      SmartDashboard.putString("Upper Ball", ((Boolean) arr[0]).toString());
-    }
-    else
-    {
-      SmartDashboard.putString("Upper Ball", "None");
-    }
-
-    SmartDashboard.putNumber("Bottom Current", bottom.getOutputCurrent());
-    SmartDashboard.putNumber("Top current", top.getOutputCurrent());
-    SmartDashboard.putNumber("Middle current", middle.getOutputCurrent());
-    SmartDashboard.putString("Current Command (IntakeFeeder)", getCurrentCommand() == null ? "<None>" : getCurrentCommand().getName());
-  }
-
-  /**
-   * Another debugging tool to add/remove balls to the cargo
-   */
-  public void addBalls()
-  {
-    if (cargo.size() >= 2)
-    {
-      return;
-    }
-    else
-    {
-      char[] ballAddedArr = SmartDashboard.getString("Add Ball to Queue", "").toUpperCase().toCharArray();
-      // By default set to "Unknown"
-      char ballAdded = 'U';
-      if (ballAddedArr.length > 0)
-        ballAdded = ballAddedArr[0];
-      int numBallsRemoved = (int)SmartDashboard.getNumber("Remove Ball(s) from Queue", 0);
-
-      //REMOVES BALLS
-      for (int i = 0; i < numBallsRemoved; i++)
-      {
-        cargo.pollFirst();
-      }
-
-      //ADDS BALLS
-      if (ballAdded == 'T')
-      {
-        cargo.add(true);
-      }
-      else if (ballAdded == 'F')
-      {
-        cargo.add(false);
-      }
-    }
-  }
 
 
   /**
@@ -469,6 +373,30 @@ public class IntakeFeeder extends SubsystemBase {
     }
     else if (!ballDetected)
       hasDetectedBall = false;
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.addStringProperty("Detected Color", () -> m_colorSensor.isConnected() ? currentColor.toString() : "Disconnected", null);
+    builder.addDoubleProperty("Min Proximity", () -> minProximity, proximity -> minProximity = proximity);
+    builder.addDoubleProperty("Max Proximity", () -> maxProximity, proximity -> maxProximity = proximity);
+    builder.addDoubleProperty("Size", this::getNumBalls, size -> setNumBalls((int) size));
+    builder.addBooleanProperty("Dumb Mode", this::isDumbModeEnabled, enabled -> dumbMode = enabled);
+    builder.addBooleanProperty("Autonomous Control", this::useAutonomousControl, null);
+    builder.addBooleanProperty("Override Sensor", () -> overrideSensor, override -> overrideSensor = override);
+    builder.addDoubleProperty("Proximity", () -> {
+      double val = proximityVal;
+      proximityVal = 0;
+      return val;
+    }, null);
+    builder.addDoubleProperty("Top current", top::getOutputCurrent, null);
+    builder.addDoubleProperty("Middle current", middle::getOutputCurrent, null);
+    builder.addDoubleProperty("Bottom Current", bottom::getOutputCurrent, null);
+    builder.addStringProperty("Lower Ball", () -> getNumBalls() >= 2 ? getCargo().getLast().toString() : "None", null);
+    builder.addStringProperty("Upper Ball", () -> getNumBalls() >= 1 ? getCargo().getFirst().toString() : "None", null);
+    addChild("Middle PID", middlePID);
+    addChild("Top PID", topPID);
   }
 
   public static enum Motor {

@@ -1,18 +1,20 @@
 package org.team199.robot2022.subsystems;
 
+import java.util.stream.Stream;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import org.team199.robot2022.Constants;
-
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.carlmontrobotics.lib199.MotorControllerFactory;
-import org.carlmontrobotics.lib199.SparkVelocityPIDController;
-import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
 import org.carlmontrobotics.lib199.LinearActuator;
 import org.carlmontrobotics.lib199.LinearInterpolation;
+import org.carlmontrobotics.lib199.MotorControllerFactory;
+import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
+import org.carlmontrobotics.lib199.SparkVelocityPIDController;
+import org.team199.robot2022.Constants;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
     private static double kV = 0.129 / 60;
@@ -23,7 +25,6 @@ public class Shooter extends SubsystemBase {
 
     private double kTargetSpeed = 2800;
     private final double speedOffsetMain = 0;
-    private double linearActuatorPos = 0;
     private final LinearActuator linearActuator = new LinearActuator(0, 0, 50);
     private final double linearActuatorMaxPos = 1;
     private final double linearActuatorMinPos = 0;
@@ -60,14 +61,12 @@ public class Shooter extends SubsystemBase {
 
         master.setIdleMode(IdleMode.kCoast);
         slave.setIdleMode(IdleMode.kCoast);
-        
-        SmartDashboard.putNumber("Ball PSI", ballPSI);
     }
 
     public void updateFromPSI() {
         double targetPID = chooseFromPosition(fenderRPM, awayFenderRPM, tarmacRPM).calculate(ballPSI);
         pidController.setTargetSpeed(targetPID == 0 ? kTargetSpeed : targetPID);
-        SmartDashboard.putNumber("Linear Actuator Position", chooseFromPosition(fenderPos, awayFenderPos, tarmacPos).calculate(ballPSI));
+        setLinearActuatorPos(chooseFromPosition(fenderPos, awayFenderPos, tarmacPos).calculate(ballPSI));
     }
 
     public void setShotPosition(ShotPosition pos) {
@@ -76,7 +75,11 @@ public class Shooter extends SubsystemBase {
     }
 
     public void toggleLongShot() {
-        if(shotPosition == ShotPosition.FENDER) {
+        setLongShot(shotPosition == ShotPosition.FENDER);
+    }
+
+    public void setLongShot(boolean isLong) {
+        if(isLong) {
             shotPosition = ballPSI <= maxMidShotPSI ? ballPSI >= minMidShotPSI ? ShotPosition.AWAY_FROM_FENDER : ShotPosition.FENDER : ShotPosition.TARMAC;
         } else {
             shotPosition = ShotPosition.FENDER;
@@ -85,21 +88,6 @@ public class Shooter extends SubsystemBase {
     }
 
     public void periodic()  {
-        pidController.periodic();
-        SmartDashboard.putBoolean("isAtTargetSpeed", isAtTargetSpeed());
-        //SmartDashboard.putNumber("Shooter Target Speed", pidController.getTargetSpeed());
-        SmartDashboard.putString("Shooter: Mode", dutyCycleMode ? "Duty Cycle" : "PID");
-        SmartDashboard.putBoolean("Shooter Disabled", shooterDisabled);
-        SmartDashboard.putNumber("Shooter RPM", master.getEncoder().getVelocity());
-        linearActuatorPos = SmartDashboard.getNumber("Linear Actuator Position", linearActuatorPos);
-        SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
-        linearActuator.set(linearActuatorPos);
-        ballPSI = SmartDashboard.getNumber("Ball PSI", ballPSI);
-
-        SmartDashboard.putBoolean("Long Shot", shotPosition != ShotPosition.FENDER);
-
-        SmartDashboard.putString("Shot Position", shotPosition.toString());
-
         if(dutyCycleMode) {
             if(!pidController.isAtTargetSpeed() && !shooterDisabled) {
                 master.set(kV * getTargetSpeed() / 12D);
@@ -110,27 +98,15 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setMainSpeed(double mainSpeed) {
-        if (mainSpeed > 3200){
-            pidController.setTargetSpeed(3200);
-        }else if (mainSpeed < 2300){
-            pidController.setTargetSpeed(2300);
-        }else{
-            pidController.setTargetSpeed(mainSpeed);
-        }
+        pidController.setTargetSpeed(MathUtil.clamp(mainSpeed, 2300, 3200));
     }
 
     public void setLinearActuatorPos(double value){
-        if (value > linearActuatorMaxPos){
-            linearActuatorPos = linearActuatorMaxPos;
-        }else if (value < linearActuatorMinPos){
-            linearActuatorPos = linearActuatorMinPos;
-        }else{
-            linearActuatorPos = value;
-        }
-        SmartDashboard.putNumber("Linear Actuator Position", linearActuatorPos);
+        linearActuator.set(MathUtil.clamp(value, linearActuatorMinPos, linearActuatorMaxPos));
     }
+
     public double getLinearActuatorPos(){
-        return linearActuatorPos;
+        return linearActuator.get();
     }
 
     public double getTargetSpeed() {
@@ -179,8 +155,19 @@ public class Shooter extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
-        builder.addDoubleProperty("Shooter Master Current", master::getOutputCurrent, null);
-        builder.addDoubleProperty("Shooter Slave Current", slave::getOutputCurrent, null);
+        builder.addDoubleProperty("Master Current", master::getOutputCurrent, null);
+        builder.addDoubleProperty("Slave Current", slave::getOutputCurrent, null);
+        builder.addBooleanProperty("isAtTargetSpeed", this::isAtTargetSpeed, null);
+        builder.addBooleanProperty("dutyCycleMode", () -> dutyCycleMode, newMode -> dutyCycleMode = newMode);
+        builder.addBooleanProperty("shooterDisabled", () -> shooterDisabled, isDisabled -> shooterDisabled = isDisabled);
+        builder.addDoubleProperty("Linear Actuator Position", this::getLinearActuatorPos, this::setLinearActuatorPos);
+        builder.addDoubleProperty("Ball PSI", () -> ballPSI, psi -> {
+            ballPSI = psi;
+            updateFromPSI();
+        });
+        builder.addBooleanProperty("Long Shot", () -> shotPosition != ShotPosition.FENDER, this::setLongShot);
+        builder.addStringProperty("Shot Position", () -> shotPosition.toString(), newPos -> shotPosition = Stream.of(ShotPosition.values()).filter(pos -> pos.toString().equals(newPos)).findFirst().orElse(shotPosition));
+        addChild("PID Controller", pidController);
     }
 
     public static enum ShotPosition {

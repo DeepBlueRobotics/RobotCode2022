@@ -6,7 +6,7 @@ package org.team199.robot2022;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
-import org.carlmontrobotics.lib199.SwerveConfig;
+import org.carlmontrobotics.lib199.swerve.SwerveConfig;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
