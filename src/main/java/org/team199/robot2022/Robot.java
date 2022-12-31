@@ -4,12 +4,14 @@
 
 package org.team199.robot2022;
 
+import org.carlmontrobotics.lib199.MotorErrors;
+import org.carlmontrobotics.lib199.sim.MockedSparkEncoder;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import org.carlmontrobotics.lib199.MotorErrors;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -52,6 +54,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("PDP Voltage", batteryVolts);
     SmartDashboard.putNumber("PDP Current", totalAmps);
     MotorErrors.printSparkMaxErrorMessages();
+  }
+
+  @Override
+  public void simulationInit() {
+    MockedSparkEncoder.setGearing(Constants.DrivePorts.driveFrontLeft, Constants.DriveConstants.driveGearing);
+    MockedSparkEncoder.setGearing(Constants.DrivePorts.driveFrontRight, Constants.DriveConstants.driveGearing);
+    MockedSparkEncoder.setGearing(Constants.DrivePorts.driveBackLeft, Constants.DriveConstants.driveGearing);
+    MockedSparkEncoder.setGearing(Constants.DrivePorts.driveBackRight, Constants.DriveConstants.driveGearing);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

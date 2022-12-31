@@ -110,7 +110,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         for (int i = 0; i < 4; i++) {
             modules[i].periodic();
             // Uncommenting the following line will contribute to loop overrun errors
-            // modules[i].updateSmartDashboard();
+            modules[i].updateSmartDashboard();
         }
 
         // Update the odometry with current heading and encoder position

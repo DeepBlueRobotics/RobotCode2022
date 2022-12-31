@@ -74,7 +74,7 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.12'
-    implementation "com.github.deepbluerobotics:lib199:1.0.2"
+    implementation "com.github.deepbluerobotics:lib199:f3df7100205973c52d7901d78029cf8703d356cd"
 }
 
 // Simulation configuration (e.g. environment variables).
