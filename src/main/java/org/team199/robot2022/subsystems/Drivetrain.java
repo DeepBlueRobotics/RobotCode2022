@@ -74,7 +74,6 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
                 -Constants.DriveConstants.trackWidth / 2);
 
         kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
-        odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(Units.degreesToRadians(getHeading())));
         initPitch = 0;
         initRoll = 0;
         Supplier<Float> pitchSupplier = () -> initPitch;
@@ -103,6 +102,8 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
                 MotorControllerFactory.createCANCoder(Constants.DrivePorts.canCoderPortBR), Constants.DriveConstants.driveModifier,
                 Constants.DriveConstants.maxSpeed, 3, pitchSupplier, rollSupplier);
         modules = new SwerveModule[] { moduleFL, moduleFR, moduleBL, moduleBR };
+
+        odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(Units.degreesToRadians(getHeading())));
 
         SmartDashboard.putBoolean("Teleop Face Direction of Travel", false);
         SmartDashboard.putBoolean("Field Oriented", true);
@@ -158,15 +159,18 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
             double currTimestamp = Timer.getFPGATimestamp();
             double deltaAngle = (currTimestamp - prevTimestamp) * kinematics.toChassisSpeeds(modules[0].getCurrentState(), modules[1].getCurrentState(),
             modules[2].getCurrentState(), modules[3].getCurrentState()).omegaRadiansPerSecond;
+            deltaAngle = -deltaAngle; // Convert from CCW + to CCW -
             deltaAngle = Math.toDegrees(deltaAngle);
             angle += deltaAngle;
             prevTimestamp = currTimestamp;
         }
 
+        double fieldAdjustedAngle = angle;
+
         if (fieldOriented) { //TODO: field oriented
-            angle -= SmartDashboard.getNumber("Field Offset from North (degrees)", 0);
+            fieldAdjustedAngle -= SmartDashboard.getNumber("Field Offset from North (degrees)", 0);
         }
-        return Math.IEEEremainder(angle * (isGyroReversed ? -1.0 : 1.0), 360);
+        return Math.IEEEremainder(fieldAdjustedAngle * (isGyroReversed ? -1.0 : 1.0), 360);
     }
 
     // Resets the gyro, so that the direction the robotic currently faces is
