@@ -37,10 +37,14 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     private final float initPitch;
     private final float initRoll;
 
+    private double angle = 0;
+    private double prevTimestamp = 0;
+
     public Drivetrain() {
         gyro.calibrate();
         initTimestamp = Timer.getFPGATimestamp();
         double currentTimestamp = initTimestamp;
+        prevTimestamp = initTimestamp;
         while (gyro.isCalibrating() && currentTimestamp - initTimestamp < 10) {
             currentTimestamp = Timer.getFPGATimestamp();
             try {
@@ -147,11 +151,22 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     }
 
     public double getHeading() {
-        double x = gyro.getAngle();
-        if (fieldOriented) { //TODO: field oriented
-            x -= SmartDashboard.getNumber("Field Offset from North (degrees)", 0);
+        if (gyro.isConnected())
+        {
+            angle = gyro.getAngle();
+        } else {
+            double currTimestamp = Timer.getFPGATimestamp();
+            double deltaAngle = (currTimestamp - prevTimestamp) * kinematics.toChassisSpeeds(modules[0].getCurrentState(), modules[1].getCurrentState(),
+            modules[2].getCurrentState(), modules[3].getCurrentState()).omegaRadiansPerSecond;
+            deltaAngle = Math.toDegrees(deltaAngle);
+            angle += deltaAngle;
+            prevTimestamp = currTimestamp;
         }
-        return Math.IEEEremainder(x * (isGyroReversed ? -1.0 : 1.0), 360);
+
+        if (fieldOriented) { //TODO: field oriented
+            angle -= SmartDashboard.getNumber("Field Offset from North (degrees)", 0);
+        }
+        return Math.IEEEremainder(angle * (isGyroReversed ? -1.0 : 1.0), 360);
     }
 
     // Resets the gyro, so that the direction the robotic currently faces is
