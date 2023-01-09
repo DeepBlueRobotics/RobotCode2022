@@ -1,10 +1,15 @@
 package org.team199.robot2022.subsystems;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
-import com.kauailabs.navx.frc.AHRS;
-
+import org.carlmontrobotics.lib199.MotorControllerFactory;
+import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
+import org.carlmontrobotics.lib199.path.SwerveDriveInterface;
+import org.carlmontrobotics.lib199.swerve.SwerveModule;
 import org.team199.robot2022.Constants;
+
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,16 +17,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.carlmontrobotics.lib199.MotorControllerFactory;
-import org.carlmontrobotics.lib199.SwerveModule;
-import org.carlmontrobotics.lib199.MotorErrors.TemperatureLimit;
-import org.carlmontrobotics.lib199.path.SwerveDriveInterface;
 
 public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     // compassOffset is magnetic north relative to the current heading
@@ -70,7 +71,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
                 -Constants.DriveConstants.trackWidth / 2);
 
         kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
-        odometry = new SwerveDriveOdometry(kinematics, new Rotation2d(Units.degreesToRadians(getHeading())));
+        odometry = new SwerveDriveOdometry(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions());
         initPitch = 0;
         initRoll = 0;
         Supplier<Float> pitchSupplier = () -> initPitch;
@@ -114,9 +115,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         }
 
         // Update the odometry with current heading and encoder position
-        odometry.update(Rotation2d.fromDegrees(getHeading()), modules[0].getCurrentState(),
-                modules[1].getCurrentState(),
-                modules[2].getCurrentState(), modules[3].getCurrentState());
+        odometry.update(Rotation2d.fromDegrees(getHeading()), getModulePositions());
 
         // SmartDashboard.putNumber("Odometry X",
         // odometry.getPoseMeters().getTranslation().getX());
@@ -142,7 +141,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
     }
 
     public void resetOdometry() {
-        odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(0));
+        odometry.resetPosition(Rotation2d.fromDegrees(0), getModulePositions(), new Pose2d());
         gyro.reset();
     }
 
@@ -263,6 +262,12 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
             Constants.DriveConstants.yPIDController,
             Constants.DriveConstants.thetaPIDController
         };
+    }
+
+    @Override
+    public SwerveModulePosition[] getModulePositions() {
+        // TODO Auto-generated method stub
+        return Arrays.stream(modules).map(SwerveModule::getCurrentPosition).toArray(SwerveModulePosition[]::new);
     }
 
 }

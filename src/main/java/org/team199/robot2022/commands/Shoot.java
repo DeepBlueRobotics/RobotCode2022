@@ -6,10 +6,11 @@
 package org.team199.robot2022.commands;
 
 import org.team199.robot2022.subsystems.IntakeFeeder;
-import org.team199.robot2022.subsystems.Shooter;
 import org.team199.robot2022.subsystems.IntakeFeeder.Motor;
+import org.team199.robot2022.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -46,12 +47,7 @@ public class Shoot extends ParallelRaceGroup {
       ),
       new WaitCommand(5.5)
     );
+    andThen(new InstantCommand(shooter::enableShooter));
     addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-      super.end(interrupted);
-      shooter.enableShooter();
   }
 }

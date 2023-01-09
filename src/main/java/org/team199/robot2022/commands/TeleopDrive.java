@@ -14,7 +14,6 @@ import org.team199.robot2022.Constants;
 import org.team199.robot2022.subsystems.Drivetrain;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TeleopDrive extends CommandBase {
@@ -67,14 +66,15 @@ public class TeleopDrive extends CommandBase {
     else rotateClockwise = Constants.DriveConstants.maxRCW * rotateClockwise;
     //double currentForward = drivetrain.getSpeeds().vxMetersPerSecond;
     //double currentStrafe = -drivetrain.getSpeeds().vyMetersPerSecond;
-    Vector2d targetAcceleration = new Vector2d((rawForward - currentForward)/deltaT, (rawStrafe - currentStrafe)/deltaT);
-    double accelerationMagnitude = targetAcceleration.magnitude();
+    double targetAccelerationX = (rawForward - currentForward)/deltaT;
+    double targetAccelerationY = (rawStrafe - currentStrafe)/deltaT;
+    double accelerationMagnitude = Math.hypot(targetAccelerationX, targetAccelerationY);
     if (accelerationMagnitude >= Constants.DriveConstants.autoMaxAccelMps2) {
-      targetAcceleration.x *= Constants.DriveConstants.autoMaxAccelMps2/accelerationMagnitude;
-      targetAcceleration.y *= Constants.DriveConstants.autoMaxAccelMps2/accelerationMagnitude;
+      targetAccelerationX *= Constants.DriveConstants.autoMaxAccelMps2/accelerationMagnitude;
+      targetAccelerationY *= Constants.DriveConstants.autoMaxAccelMps2/accelerationMagnitude;
     }
-    currentForward += targetAcceleration.x*deltaT;
-    currentStrafe += targetAcceleration.y*deltaT;
+    currentForward += targetAccelerationX*deltaT;
+    currentStrafe += targetAccelerationY*deltaT;
     if (Math.abs(currentForward) <= Constants.OI.JOY_THRESH)
       currentForward = 0;
     if (Math.abs(currentStrafe) <= Constants.OI.JOY_THRESH)
