@@ -97,7 +97,9 @@ public class RobotContainer {
       new AutoPath(true, loadPaths("2BallAuto1(1)", "2BallAuto1(2)"), true, true, useLimelightInAuto, ShotPosition.FENDER, ShotPosition.FENDER),
       new AutoPath(true, loadPaths("2BallAuto2(1)", "2BallAuto2(2)"), true, true, useLimelightInAuto, ShotPosition.FENDER, ShotPosition.FENDER),
       new AutoPath(true, loadPaths("3BallAuto(1)", "3BallAuto(2)", "3BallAuto(3)", "3BallAuto(4)", "3BallAuto(5)"), false, true, false, ShotPosition.FENDER, ShotPosition.FENDER),
-      new AutoPath(false, loadPaths("RotateInPlace"), false, false, false, ShotPosition.FENDER, ShotPosition.FENDER)
+      new AutoPath(false, loadPaths("RotateInPlace"), false, false, false, ShotPosition.FENDER, ShotPosition.FENDER),
+      new AutoPath(false, loadPaths("DriveWhileRotating"), false, false, false, ShotPosition.FENDER, ShotPosition.FENDER)
+      // new AutoPath(false, loadPaths("Square(1)", "Square(2)", "Square(3)", "Square(4)"), false, false, false, ShotPosition.FENDER, ShotPosition.FENDER)
     };
 
     autoSelectors = new DigitalInput[Math.min(autoPaths.length, 26)];
@@ -209,7 +211,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     AutoPath path = getAutoPath();
-    return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter, intakeFeeder, lime);
+    return new SequentialCommandGroup(path.path.stream().map(seg -> new Command[] {new InstantCommand(seg::initializeDrivetrainPosition), seg.getPathCommand(true, false)}).flatMap(Arrays::stream).toArray(Command[]::new));
+    // return path == null ? new InstantCommand() : new Autonomous(path, path.shootAtStart, path.shootAtEnd, dt, shooter, intakeFeeder, lime);
   }
 
   private double getStickValue(Constants.OI.StickType stick, Constants.OI.StickDirection dir) {

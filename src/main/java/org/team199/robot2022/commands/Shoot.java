@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
-public class Shoot extends ParallelRaceGroup {
+public class Shoot extends SequentialCommandGroup {
 
   private final IntakeFeeder intakeFeeder;
   private final Shooter shooter;
@@ -27,27 +27,29 @@ public class Shoot extends ParallelRaceGroup {
      */
 
     addCommands(
-      new SequentialCommandGroup(
-        new WaitUntilCommand(shooter::isAtTargetSpeed),
-        new FunctionalCommand(
-          shooter::disableShooter,
-          () -> {
-            intakeFeeder.invertAndRun(Motor.TOP, false, true);
-            intakeFeeder.invertAndRun(Motor.MIDDLE, false, true);
-          },
-          interrupted -> {
-            if(interrupted) return;
-            intakeFeeder.stopRunningFeeder();
-            intakeFeeder.popFirstBall();
-          },
-          () -> !shooter.isAtTargetSpeed(),
-          intakeFeeder
+      new ParallelRaceGroup(
+        new SequentialCommandGroup(
+          new WaitUntilCommand(shooter::isAtTargetSpeed),
+          new FunctionalCommand(
+            shooter::disableShooter,
+            () -> {
+              intakeFeeder.invertAndRun(Motor.TOP, false, true);
+              intakeFeeder.invertAndRun(Motor.MIDDLE, false, true);
+            },
+            interrupted -> {
+              if(interrupted) return;
+              intakeFeeder.stopRunningFeeder();
+              intakeFeeder.popFirstBall();
+            },
+            () -> !shooter.isAtTargetSpeed(),
+            intakeFeeder
+          ),
+          new WaitCommand(1)
         ),
-        new WaitCommand(1)
+        new WaitCommand(5.5)
       ),
-      new WaitCommand(5.5)
+      new InstantCommand(shooter::enableShooter)
     );
-    andThen(new InstantCommand(shooter::enableShooter));
     addRequirements(this.intakeFeeder = intakeFeeder, this.shooter = shooter);
   }
 }

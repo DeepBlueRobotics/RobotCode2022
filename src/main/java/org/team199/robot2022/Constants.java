@@ -56,7 +56,8 @@ public final class Constants {
 
         public static final boolean[] reversed = {false, false, false, false};
         // Determine correct turnZero constants (FL, FR, BL, BR)
-        public static final double[] turnZero = {-44.384, 172.178, -154.863, 140.801};
+        // public static final double[] turnZero = {-44.384, 172.178, -154.863, 140.801};
+        public static final double[] turnZero = {135.616, -7.822, 25.137, -39.199};
         // public static final double[] turnZero = {-134.384, 82.178, 115.137, 50.801};
 
         // kP, kI, and kD constants for turn motor controllers in the order of front-left, front-right, back-left, back-right.
