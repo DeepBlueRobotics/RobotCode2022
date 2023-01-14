@@ -1,5 +1,3 @@
-import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
-
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2023.1.1"
@@ -74,7 +72,7 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.12'
-    implementation "com.github.deepbluerobotics:lib199:71ebed8"
+    implementation "com.github.deepbluerobotics:lib199:2.0.0"
 }
 
 // Simulation configuration (e.g. environment variables).
@@ -95,3 +93,8 @@ jar {
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+
+// Configure string concat to always inline compile
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add '-XDstringConcat=inline'
+}
