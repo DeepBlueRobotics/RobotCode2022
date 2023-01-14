@@ -71,7 +71,6 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
                 -Constants.DriveConstants.trackWidth / 2);
 
         kinematics = new SwerveDriveKinematics(locationFL, locationFR, locationBL, locationBR);
-        odometry = new SwerveDriveOdometry(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions());
         initPitch = 0;
         initRoll = 0;
         Supplier<Float> pitchSupplier = () -> initPitch;
@@ -100,6 +99,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
                 MotorControllerFactory.createCANCoder(Constants.DrivePorts.canCoderPortBR), Constants.DriveConstants.driveModifier,
                 Constants.DriveConstants.maxSpeed, 3, pitchSupplier, rollSupplier);
         modules = new SwerveModule[] { moduleFL, moduleFR, moduleBL, moduleBR };
+        odometry = new SwerveDriveOdometry(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions());
 
         SmartDashboard.putBoolean("Teleop Face Direction of Travel", false);
         SmartDashboard.putBoolean("Field Oriented", true);
@@ -111,7 +111,7 @@ public class Drivetrain extends SubsystemBase implements SwerveDriveInterface {
         for (int i = 0; i < 4; i++) {
             modules[i].periodic();
             // Uncommenting the following line will contribute to loop overrun errors
-            // modules[i].updateSmartDashboard();
+            modules[i].updateSmartDashboard();
         }
 
         // Update the odometry with current heading and encoder position

@@ -56,7 +56,8 @@ public final class Constants {
 
         public static final boolean[] reversed = {false, false, false, false};
         // Determine correct turnZero constants (FL, FR, BL, BR)
-        public static final double[] turnZero = {-72.861, 47.549, -178.505, 66.885};
+        public static final double[] turnZero = {-44.384, 172.178, -154.863, 140.801};
+        // public static final double[] turnZero = {-134.384, 82.178, 115.137, 50.801};
 
         // kP, kI, and kD constants for turn motor controllers in the order of front-left, front-right, back-left, back-right.
         // Determine correct turn PID constants
@@ -112,15 +113,15 @@ public final class Constants {
 
     public static final class DrivePorts {
 
-        public static final int driveFrontLeft = 10;
-        public static final int driveFrontRight = 2;
-        public static final int driveBackLeft = 11;
-        public static final int driveBackRight = 17;
+        public static final int driveFrontLeft = 1;
+        public static final int driveFrontRight = 16;
+        public static final int driveBackLeft = 3;
+        public static final int driveBackRight = 14;
 
-        public static final int turnFrontLeft = 9;
-        public static final int turnFrontRight = 1;
-        public static final int turnBackLeft = 12;
-        public static final int turnBackRight = 18;
+        public static final int turnFrontLeft = 2;
+        public static final int turnFrontRight = 15;
+        public static final int turnBackLeft = 4;
+        public static final int turnBackRight = 13;
 
         public static final int canCoderPortFL = 1;
         public static final int canCoderPortFR = 2;
@@ -130,11 +131,11 @@ public final class Constants {
         public static final int kShooterMaster = 19;
         public static final int kShooterSlave = 20;
 
-        public static final int kIntakeTop = 3;
-        public static final int kIntakeMiddle = 4;
+        public static final int kIntakeTop = 30;
+        public static final int kIntakeMiddle = 42;
         public static final int kIntakeBottom = 5;
 
-        public static final int kClimberLeft = 15;
+        public static final int kClimberLeft = 40;
         public static final int kClimberRight = 6;
 
     }
